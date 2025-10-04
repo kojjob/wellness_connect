@@ -8,6 +8,8 @@ class DashboardController < ApplicationController
     @availabilities = @provider_profile.availabilities.where("start_time >= ?", Time.current).order(start_time: :asc).limit(10)
     @total_services = @provider_profile.services.count
     @total_availability_slots = @provider_profile.availabilities.where(is_booked: false).where("start_time >= ?", Time.current).count
+
+    render :provider_dashboard
   end
 
   private

@@ -57,7 +57,7 @@
     <% if available_slots.any? %>
       <div class="space-y-3">
         <% available_slots.each do |availability| %>
-          <div class="flex justify-between items-center p-4 border border-gray-200 rounded-lg">
+          <div class="flex justify-between items-center p-4 border border-gray-200 rounded-lg hover:border-blue-300 transition" id="availability-<%= availability.id %>">
             <div>
               <p class="font-semibold text-gray-900">
                 <%= availability.start_time.strftime("%B %d, %Y") %>
@@ -66,7 +66,9 @@
                 <%= availability.start_time.strftime("%I:%M %p") %> - <%= availability.end_time.strftime("%I:%M %p") %>
               </p>
             </div>
-            <span class="px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full">Available</span>
+            <div class="flex items-center space-x-3">
+              <span class="px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full">Available</span>
+            </div>
           </div>
         <% end %>
       </div>
@@ -78,6 +80,9 @@
       <p class="text-gray-500">No available time slots at this time.</p>
     <% end %>
   </div>
+
+  <!-- Turbo Frame for inline booking -->
+  <%= turbo_frame_tag "appointment_booking" %>
 
   <!-- Action Buttons -->
   <div class="mt-6 flex gap-2">
