@@ -33,6 +33,10 @@ class AppointmentsController < ApplicationController
     ActiveRecord::Base.transaction do
       if @appointment.save
         availability.update!(is_booked: true)
+
+        # Create notifications for both provider and patient
+        NotificationService.notify_appointment_booked(@appointment)
+
         redirect_to dashboard_path, notice: "Appointment successfully booked!"
       else
         @availability = availability
@@ -67,6 +71,9 @@ class AppointmentsController < ApplicationController
         end_time: @appointment.end_time
       )
       availability&.update(is_booked: false)
+
+      # Create notification for the other party
+      NotificationService.notify_appointment_cancelled(@appointment, current_user)
 
       redirect_to dashboard_path, notice: "Appointment cancelled successfully"
     else
