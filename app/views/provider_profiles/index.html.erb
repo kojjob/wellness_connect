@@ -1,68 +1,110 @@
-<div class="container mx-auto px-4 py-8">
-  <div class="flex justify-between items-center mb-6">
-    <h1 class="text-3xl font-bold">Browse Service Providers</h1>
-    <% if user_signed_in? && current_user.provider? %>
-      <%= link_to "New Provider Profile", new_provider_profile_path, class: "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600" %>
-    <% end %>
-  </div>
+<div class="min-h-screen bg-gray-50">
+  <!-- Hero Section -->
+  <section class="relative bg-gradient-to-br from-indigo-600 via-purple-600 to-indigo-800 text-white overflow-hidden">
+    <!-- Decorative background elements -->
+    <div class="absolute inset-0 opacity-10">
+      <div class="absolute top-0 left-0 w-96 h-96 bg-white rounded-full filter blur-3xl"></div>
+      <div class="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full filter blur-3xl"></div>
+    </div>
 
-  <!-- Search and Filter Section -->
-  <div class="bg-white shadow rounded-lg p-6 mb-8">
-    <%= form_with url: providers_path, method: :get, class: "space-y-4 md:space-y-0 md:flex md:gap-4" do |form| %>
-      <div class="flex-1">
-        <%= form.text_field :search,
-            value: params[:search],
-            placeholder: "Search by provider name...",
-            class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" %>
+    <div class="relative container mx-auto px-4 py-16">
+      <div class="max-w-4xl mx-auto text-center">
+        <h1 class="text-4xl lg:text-6xl font-bold mb-6">
+          Find Your Perfect Wellness Provider
+        </h1>
+        <p class="text-xl lg:text-2xl text-indigo-100 mb-8">
+          Connect with verified professionals who can help you achieve your wellness goals
+        </p>
+
+        <!-- Quick Stats -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+            <div class="text-3xl font-bold mb-1"><%= @provider_profiles.count %></div>
+            <div class="text-sm opacity-90">Providers</div>
+          </div>
+          <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+            <div class="text-3xl font-bold mb-1"><%= ProviderProfile.distinct.pluck(:specialty).compact.count %></div>
+            <div class="text-sm opacity-90">Specialties</div>
+          </div>
+          <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+            <div class="text-3xl font-bold mb-1">100%</div>
+            <div class="text-sm opacity-90">Verified</div>
+          </div>
+          <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+            <div class="text-3xl font-bold mb-1">4.8</div>
+            <div class="text-sm opacity-90">Avg Rating</div>
+          </div>
+        </div>
+
+        <% if user_signed_in? && current_user.provider? && !current_user.provider_profile.present? %>
+          <%= link_to new_provider_profile_path,
+              class: "inline-flex items-center px-8 py-4 bg-white text-indigo-600 rounded-lg font-semibold hover:bg-indigo-50 transition shadow-lg" do %>
+            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+            </svg>
+            Create Your Provider Profile
+          <% end %>
+        <% end %>
       </div>
+    </div>
 
-      <div class="flex-1">
-        <%= form.select :specialty,
-            options_for_select(ProviderProfile.distinct.pluck(:specialty).compact, params[:specialty]),
-            { include_blank: "All Specialties" },
-            class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" %>
-      </div>
+    <!-- Wave divider -->
+    <div class="absolute bottom-0 left-0 right-0">
+      <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto">
+        <path d="M0 0L60 10C120 20 240 40 360 46.7C480 53 600 47 720 43.3C840 40 960 40 1080 46.7C1200 53 1320 67 1380 73.3L1440 80V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0V0Z"
+              fill="#F9FAFB"/>
+      </svg>
+    </div>
+  </section>
 
-      <div>
-        <%= form.submit "Search", class: "w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg transition duration-200" %>
-      </div>
+  <div class="container mx-auto px-4 py-12">
+    <!-- Search and Filter Section -->
+    <div class="bg-white rounded-2xl shadow-lg p-6 mb-8 -mt-20 relative z-10">
+      <%= form_with url: providers_path, method: :get, class: "space-y-4" do |form| %>
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+          <!-- Search Input -->
+          <div class="md:col-span-5">
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              <svg class="w-4 h-4 inline mr-1" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+              </svg>
+              Search Providers
+            </label>
+            <%= form.text_field :search,
+                value: params[:search],
+                placeholder: "Search by name, specialty, or keyword...",
+                class: "w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" %>
+          </div>
 
-      <% if params[:search].present? || params[:specialty].present? %>
-        <div>
-          <%= link_to "Clear", providers_path, class: "w-full md:w-auto block text-center bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold px-6 py-2 rounded-lg transition duration-200" %>
+          <!-- Specialty Filter -->
+          <div class="md:col-span-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              <svg class="w-4 h-4 inline mr-1" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
+              </svg>
+              Specialty
+            </label>
+            <%= form.select :specialty,
+                options_for_select(ProviderProfile.distinct.pluck(:specialty).compact.sort, params[:specialty]),
+                { include_blank: "All Specialties" },
+                class: "w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" %>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="md:col-span-3 flex gap-2">
+            <div class="flex-1">
+              <%= form.submit "Search",
+                  class: "w-full h-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-3 rounded-xl transition shadow-md flex items-center justify-center" %>
+            </div>
+            <% if params[:search].present? || params[:specialty].present? %>
+              <%= link_to providers_path,
+                  class: "px-4 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-xl transition flex items-center justify-center" do %>
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                </svg>
+              <% end %>
+            <% end %>
+          </div>
         </div>
       <% end %>
-    <% end %>
-  </div>
-
-  <!-- Results Count -->
-  <% if params[:search].present? || params[:specialty].present? %>
-    <div class="mb-4">
-      <p class="text-gray-600">Found <%= pluralize(@provider_profiles.count, 'provider') %></p>
     </div>
-  <% end %>
-
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    <% @provider_profiles.each do |provider_profile| %>
-      <div class="bg-white shadow rounded-lg p-6">
-        <h2 class="text-xl font-bold mb-2"><%= provider_profile.user.first_name %> <%= provider_profile.user.last_name %></h2>
-        <p class="text-gray-600 mb-2"><%= provider_profile.specialty %></p>
-        <p class="text-sm text-gray-500 mb-4"><%= provider_profile.credentials %></p>
-        <p class="text-gray-700 mb-4"><%= truncate(provider_profile.bio, length: 100) %></p>
-        <div class="flex justify-between items-center">
-          <span class="text-lg font-semibold text-green-600">$<%= provider_profile.consultation_rate %>/session</span>
-          <%= link_to "View Profile", provider_profile_path(provider_profile), class: "bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" %>
-        </div>
-      </div>
-    <% end %>
-  </div>
-
-  <% if @provider_profiles.empty? %>
-    <div class="text-center py-12">
-      <p class="text-gray-500 text-lg">No provider profiles yet.</p>
-      <% if current_user.provider? %>
-        <%= link_to "Create your profile", new_provider_profile_path, class: "mt-4 inline-block bg-green-500 text-white px-6 py-3 rounded hover:bg-green-600" %>
-      <% end %>
-    </div>
-  <% end %>
-</div>
