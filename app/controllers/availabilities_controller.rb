@@ -1,7 +1,7 @@
 class AvailabilitiesController < ApplicationController
   before_action :authenticate_user!
   before_action :set_provider_profile
-  before_action :set_availability, only: [:show, :edit, :update, :destroy]
+  before_action :set_availability, only: [ :show, :edit, :update, :destroy ]
 
   def index
     @availabilities = @provider_profile.availabilities.order(start_time: :asc)
