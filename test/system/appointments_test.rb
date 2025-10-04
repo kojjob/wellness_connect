@@ -13,25 +13,28 @@ class AppointmentsTest < ApplicationSystemTestCase
     sign_in @patient
     visit provider_profile_path(@provider_profile)
 
-    assert_selector "#availability-#{@availability.id}"
-    assert_text @availability.start_time.strftime("%B %d, %Y")
-    assert_text "Available"
+    # Should see booking widget with available slots
+    within "#booking" do
+      assert_text "Next Available Slots"
+      assert_text @availability.start_time.strftime("%b %d")
+      assert_text @availability.start_time.strftime("%I:%M %p")
+    end
   end
 
   test "patient can book an appointment through provider profile" do
     sign_in @patient
     visit provider_profile_path(@provider_profile)
 
-    within "#availability-#{@availability.id}" do
-      click_button "Book Appointment"
+    # Click first available "Book" link in booking widget
+    within "#booking" do
+      first(:link, "Book").click
     end
 
-    # Should display booking form in Turbo Frame
-    assert_selector "turbo-frame#appointment_booking"
+    # Should navigate to appointment booking page
     assert_text "Confirm Appointment"
 
     # Select service and confirm
-    select @service.name, from: "Service"
+    select @service.name, from: "appointment_service_id"
 
     assert_difference "Appointment.count", 1 do
       click_button "Confirm Booking"
@@ -47,11 +50,12 @@ class AppointmentsTest < ApplicationSystemTestCase
 
     assert_not @availability.is_booked
 
-    within "#availability-#{@availability.id}" do
-      click_button "Book Appointment"
+    # Click Book link from booking widget
+    within "#booking" do
+      first(:link, "Book").click
     end
 
-    select @service.name, from: "Service"
+    select @service.name, from: "appointment_service_id"
     click_button "Confirm Booking"
 
     @availability.reload
@@ -59,20 +63,25 @@ class AppointmentsTest < ApplicationSystemTestCase
   end
 
   test "booked availability slots are not shown as bookable" do
-    @availability.update!(is_booked: true)
+    # Mark all availabilities as booked
+    @provider_profile.availabilities.update_all(is_booked: true)
 
     sign_in @patient
     visit provider_profile_path(@provider_profile)
 
-    # Should not show the booked availability in available slots
-    refute_selector "#availability-#{@availability.id}"
+    # Should show "No available slots" message instead of booking list
+    within "#booking" do
+      assert_text "No available slots at this time"
+      refute_text "Next Available Slots"
+    end
   end
 
   test "unauthenticated user is redirected when trying to book" do
     visit provider_profile_path(@provider_profile)
 
-    within "#availability-#{@availability.id}" do
-      click_link "Book Appointment"
+    # Unauthenticated users see "Sign In to Book" button
+    within "#booking" do
+      click_link "Sign In to Book"
     end
 
     # Should be redirected to sign in
@@ -83,8 +92,13 @@ class AppointmentsTest < ApplicationSystemTestCase
     sign_in @provider
     visit provider_profile_path(@provider_profile)
 
-    # Should not see booking buttons on own profile
-    refute_button "Book Appointment"
+    # Should see booking widget but without "Book" links (providers can't book themselves)
+    within "#booking" do
+      assert_text "Next Available Slots"
+      assert_text @availability.start_time.strftime("%b %d")
+      # No "Book" links should be present for providers
+      assert_no_link "Book"
+    end
   end
 
   test "patient can view their appointments on dashboard" do

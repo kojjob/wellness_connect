@@ -71,6 +71,16 @@ class ProviderProfilesController < ApplicationController
   end
 
   def provider_profile_params
-    params.require(:provider_profile).permit(:specialty, :bio, :credentials, :consultation_rate)
+    params.require(:provider_profile).permit(
+      :specialty, :bio, :credentials, :consultation_rate,
+      :years_of_experience, :education, :certifications, :languages,
+      :phone, :office_address, :website,
+      :linkedin_url, :twitter_url, :facebook_url, :instagram_url,
+      :avatar,
+      gallery_images: [],
+      gallery_videos: [],
+      gallery_audio: [],
+      documents: []
+    )
   end
 end
