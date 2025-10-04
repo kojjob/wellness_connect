@@ -1,3 +1,27 @@
-Appointment#provider_booking_notification
+NEW BOOKING
+===========
 
-<%= @greeting %>, find me in app/views/appointment_mailer/provider_booking_notification.text.erb
+Hi <%= @provider.full_name %>,
+
+You have a new appointment booking from <%= @patient.full_name %>.
+
+APPOINTMENT DETAILS
+-------------------
+Client:      <%= @patient.full_name %>
+Service:     <%= @service.name %>
+Date:        <%= @appointment.start_time.strftime("%A, %B %d, %Y") %>
+Time:        <%= @appointment.start_time.strftime("%I:%M %p") %> - <%= @appointment.end_time.strftime("%I:%M %p") %><% if @provider.time_zone.present? %> <%= @provider.time_zone %><% end %>
+Duration:    <%= @service.duration_minutes %> minutes
+Price:       $<%= number_to_currency(@service.price, unit: '') %>
+
+ACTION ITEMS
+------------
+* Prepare any materials or notes for the session
+* Ensure your calendar is updated
+* Test your video/audio setup before the appointment
+
+View your dashboard: <%= dashboard_url %>
+
+---
+© <%= Time.current.year %> WellnessConnect. All rights reserved.
+Questions? Contact us at support@wellnessconnect.com
