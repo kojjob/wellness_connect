@@ -11,8 +11,21 @@ class ApplicationController < ActionController::Base
   # Ensure user is authenticated with Devise
   before_action :authenticate_user!
 
+  # Configure permitted parameters for Devise
+  before_action :configure_permitted_parameters, if: :devise_controller?
+
   # Rescue from Pundit authorization errors
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
+
+  protected
+
+  def configure_permitted_parameters
+    # Permit additional parameters for sign up
+    devise_parameter_sanitizer.permit(:sign_up, keys: [ :first_name, :last_name, :role ])
+
+    # Permit additional parameters for account update
+    devise_parameter_sanitizer.permit(:account_update, keys: [ :first_name, :last_name, :role ])
+  end
 
   private
 

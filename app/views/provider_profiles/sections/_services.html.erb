@@ -1,0 +1,94 @@
+<section id="services" class="bg-white rounded-2xl shadow-lg p-8 scroll-mt-24">
+  <h2 class="text-3xl font-bold text-gray-900 mb-6 flex items-center">
+    <svg class="w-8 h-8 mr-3 text-indigo-600" fill="currentColor" viewBox="0 0 24 24">
+      <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+    </svg>
+    Services Offered
+  </h2>
+
+  <% if provider_profile.services.where(is_active: true).any? %>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <% provider_profile.services.where(is_active: true).each do |service| %>
+        <div class="group relative bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-6 border-2 border-gray-200 hover:border-indigo-500 hover:shadow-xl transition-all duration-300">
+          <!-- Service Header -->
+          <div class="flex items-start justify-between mb-4">
+            <div class="flex-1">
+              <h3 class="text-xl font-bold text-gray-900 mb-2 group-hover:text-indigo-600 transition">
+                <%= service.name %>
+              </h3>
+              <div class="flex items-center gap-3 text-sm text-gray-600">
+                <span class="inline-flex items-center">
+                  <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+                  </svg>
+                  <%= service.duration_minutes %> min
+                </span>
+              </div>
+            </div>
+            <div class="flex-shrink-0 ml-4">
+              <div class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-center">
+                <div class="text-2xl font-bold">$<%= number_with_precision(service.price, precision: 0) %></div>
+                <div class="text-xs opacity-90">per session</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Service Description -->
+          <p class="text-gray-700 leading-relaxed mb-4">
+            <%= service.description %>
+          </p>
+
+          <!-- Service Features/Tags -->
+          <div class="flex flex-wrap gap-2 mb-4">
+            <span class="inline-flex items-center px-3 py-1 bg-white rounded-full text-xs font-medium text-gray-700 border border-gray-300">
+              <svg class="w-3 h-3 mr-1 text-green-500" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+              </svg>
+              Active
+            </span>
+            <span class="inline-flex items-center px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full text-xs font-medium">
+              Professional Service
+            </span>
+          </div>
+
+          <!-- Book Button -->
+          <% if user_signed_in? && current_user.patient? %>
+            <%= link_to "#booking", 
+                class: "block w-full text-center px-4 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition shadow-md",
+                data: { action: "click->smooth-scroll#scroll" } do %>
+              <span class="inline-flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
+                </svg>
+                Book This Service
+              </span>
+            <% end %>
+          <% elsif !user_signed_in? %>
+            <%= link_to new_user_session_path, 
+                class: "block w-full text-center px-4 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition shadow-md" do %>
+              <span class="inline-flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
+                </svg>
+                Sign In to Book
+              </span>
+            <% end %>
+          <% else %>
+            <div class="block w-full text-center px-4 py-3 bg-gray-300 text-gray-600 rounded-lg font-semibold cursor-not-allowed">
+              Provider View
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="text-center py-12">
+      <svg class="w-24 h-24 mx-auto text-gray-300 mb-4" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+      </svg>
+      <h3 class="text-xl font-semibold text-gray-600 mb-2">No Services Available</h3>
+      <p class="text-gray-500">This provider hasn't added any services yet.</p>
+    </div>
+  <% end %>
+</section>
+

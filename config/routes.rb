@@ -4,7 +4,27 @@ Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
   root "home#index"
 
-  resources :provider_profiles
+  # Provider dashboard
+  get "dashboard", to: "dashboard#index", as: :dashboard
+
+  # Public provider browsing
+  get "providers", to: "provider_profiles#index", as: :providers
+
+  # Static pages
+  get "become-a-provider", to: "pages#become_provider", as: :become_provider
+  get "about", to: "pages#about", as: :about
+
+  resources :provider_profiles do
+    resources :services
+    resources :availabilities
+  end
+
+  # Appointments
+  resources :appointments, only: [ :index, :new, :create, :show ] do
+    member do
+      patch :cancel
+    end
+  end
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.

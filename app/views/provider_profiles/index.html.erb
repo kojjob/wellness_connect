@@ -1,32 +1,303 @@
-<div class="container mx-auto px-4 py-8">
-  <div class="flex justify-between items-center mb-6">
-    <h1 class="text-3xl font-bold">Provider Profiles</h1>
-    <% if current_user.provider? %>
-      <%= link_to "New Provider Profile", new_provider_profile_path, class: "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600" %>
-    <% end %>
-  </div>
+<div class="min-h-screen bg-gray-50">
+  <!-- Hero Section -->
+  <section class="relative bg-gradient-to-br from-indigo-600 via-purple-600 to-indigo-800 text-white overflow-hidden">
+    <!-- Decorative background elements -->
+    <div class="absolute inset-0 opacity-10">
+      <div class="absolute top-0 left-0 w-96 h-96 bg-white rounded-full filter blur-3xl"></div>
+      <div class="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full filter blur-3xl"></div>
+    </div>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    <% @provider_profiles.each do |provider_profile| %>
-      <div class="bg-white shadow rounded-lg p-6">
-        <h2 class="text-xl font-bold mb-2"><%= provider_profile.user.first_name %> <%= provider_profile.user.last_name %></h2>
-        <p class="text-gray-600 mb-2"><%= provider_profile.specialty %></p>
-        <p class="text-sm text-gray-500 mb-4"><%= provider_profile.credentials %></p>
-        <p class="text-gray-700 mb-4"><%= truncate(provider_profile.bio, length: 100) %></p>
-        <div class="flex justify-between items-center">
-          <span class="text-lg font-semibold text-green-600">$<%= provider_profile.consultation_rate %>/session</span>
-          <%= link_to "View Profile", provider_profile_path(provider_profile), class: "bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" %>
+    <div class="relative container mx-auto px-4 py-16">
+      <div class="max-w-4xl mx-auto text-center">
+        <h1 class="text-4xl lg:text-6xl font-bold mb-6">
+          Find Your Perfect Wellness Provider
+        </h1>
+        <p class="text-xl lg:text-2xl text-indigo-100 mb-8">
+          Connect with verified professionals who can help you achieve your wellness goals
+        </p>
+
+        <!-- Quick Stats -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+            <div class="text-3xl font-bold mb-1"><%= @provider_profiles.count %></div>
+            <div class="text-sm opacity-90">Providers</div>
+          </div>
+          <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+            <div class="text-3xl font-bold mb-1"><%= ProviderProfile.distinct.pluck(:specialty).compact.count %></div>
+            <div class="text-sm opacity-90">Specialties</div>
+          </div>
+          <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+            <div class="text-3xl font-bold mb-1">100%</div>
+            <div class="text-sm opacity-90">Verified</div>
+          </div>
+          <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+            <div class="text-3xl font-bold mb-1">4.8</div>
+            <div class="text-sm opacity-90">Avg Rating</div>
+          </div>
+        </div>
+
+        <% if user_signed_in? && current_user.provider? && !current_user.provider_profile.present? %>
+          <%= link_to new_provider_profile_path,
+              class: "inline-flex items-center px-8 py-4 bg-white text-indigo-600 rounded-lg font-semibold hover:bg-indigo-50 transition shadow-lg" do %>
+            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+            </svg>
+            Create Your Provider Profile
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Wave divider -->
+    <div class="absolute bottom-0 left-0 right-0">
+      <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto">
+        <path d="M0 0L60 10C120 20 240 40 360 46.7C480 53 600 47 720 43.3C840 40 960 40 1080 46.7C1200 53 1320 67 1380 73.3L1440 80V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0V0Z"
+              fill="#F9FAFB"/>
+      </svg>
+    </div>
+  </section>
+
+  <div class="container mx-auto px-4 py-12">
+    <!-- Search and Filter Section -->
+    <div class="bg-white rounded-2xl shadow-lg p-6 mb-8 -mt-20 relative z-10">
+      <%= form_with url: providers_path, method: :get, class: "space-y-4" do |form| %>
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+          <!-- Search Input -->
+          <div class="md:col-span-5">
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              <svg class="w-4 h-4 inline mr-1" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+              </svg>
+              Search Providers
+            </label>
+            <%= form.text_field :search,
+                value: params[:search],
+                placeholder: "Search by name, specialty, or keyword...",
+                class: "w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" %>
+          </div>
+
+          <!-- Specialty Filter -->
+          <div class="md:col-span-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              <svg class="w-4 h-4 inline mr-1" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
+              </svg>
+              Specialty
+            </label>
+            <%= form.select :specialty,
+                options_for_select(ProviderProfile.distinct.pluck(:specialty).compact.sort, params[:specialty]),
+                { include_blank: "All Specialties" },
+                class: "w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" %>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="md:col-span-3 flex gap-2">
+            <div class="flex-1">
+              <%= form.submit "Search",
+                  class: "w-full h-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-3 rounded-xl transition shadow-md flex items-center justify-center" %>
+            </div>
+            <% if params[:search].present? || params[:specialty].present? %>
+              <%= link_to providers_path,
+                  class: "px-4 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-xl transition flex items-center justify-center" do %>
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                </svg>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Results Count and Sorting -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+      <div>
+        <% if params[:search].present? || params[:specialty].present? %>
+          <h2 class="text-2xl font-bold text-gray-900">
+            <%= pluralize(@provider_profiles.count, 'Provider') %> Found
+          </h2>
+          <p class="text-gray-600 mt-1">
+            <% if params[:search].present? %>
+              Searching for "<%= params[:search] %>"
+            <% end %>
+            <% if params[:specialty].present? %>
+              in <%= params[:specialty] %>
+            <% end %>
+          </p>
+        <% else %>
+          <h2 class="text-2xl font-bold text-gray-900">
+            All Providers (<%= @provider_profiles.count %>)
+          </h2>
+          <p class="text-gray-600 mt-1">Browse our verified wellness professionals</p>
+        <% end %>
+      </div>
+
+      <!-- Sort Options (Future Enhancement) -->
+      <div class="flex gap-2">
+        <button class="px-4 py-2 bg-white border-2 border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:border-indigo-500 transition">
+          <svg class="w-4 h-4 inline mr-1" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+          </svg>
+          Highest Rated
+        </button>
+      </div>
+    </div>
+
+    <!-- Provider Cards Grid -->
+    <% if @provider_profiles.any? %>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <% @provider_profiles.each do |provider_profile| %>
+          <%= link_to provider_profile_path(provider_profile), class: "block group" do %>
+            <div class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden h-full transform group-hover:-translate-y-1">
+              <!-- Provider Header with Avatar -->
+              <div class="relative bg-gradient-to-br from-indigo-500 to-purple-600 p-6 pb-16">
+                <div class="absolute top-4 right-4">
+                  <div class="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-white text-xs font-medium">
+                    Verified
+                  </div>
+                </div>
+
+                <div class="flex items-center space-x-4">
+                  <div class="relative">
+                    <% if provider_profile.avatar.attached? %>
+                      <%= image_tag provider_profile.avatar,
+                          alt: provider_profile.full_name,
+                          class: "w-20 h-20 rounded-full object-cover border-4 border-white shadow-lg" %>
+                    <% else %>
+                      <div class="w-20 h-20 rounded-full bg-white/20 backdrop-blur-sm border-4 border-white shadow-lg flex items-center justify-center">
+                        <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                        </svg>
+                      </div>
+                    <% end %>
+                    <div class="absolute -bottom-1 -right-1 bg-green-500 rounded-full p-1 border-2 border-white">
+                      <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                      </svg>
+                    </div>
+                  </div>
+
+                  <div class="flex-1 min-w-0">
+                    <h3 class="text-xl font-bold text-white truncate">
+                      <%= provider_profile.full_name %>
+                    </h3>
+                    <p class="text-indigo-100 text-sm truncate">
+                      <%= provider_profile.credentials %>
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Provider Info -->
+              <div class="p-6 -mt-10 relative">
+                <!-- Specialty Badge -->
+                <div class="mb-4">
+                  <span class="inline-flex items-center px-4 py-2 bg-indigo-100 text-indigo-800 rounded-full text-sm font-medium">
+                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
+                    </svg>
+                    <%= provider_profile.specialty %>
+                  </span>
+                </div>
+
+                <!-- Bio Preview -->
+                <p class="text-gray-700 mb-4 line-clamp-3">
+                  <%= truncate(provider_profile.bio, length: 150) %>
+                </p>
+
+                <!-- Stats Row -->
+                <div class="flex items-center justify-between mb-4 pb-4 border-b border-gray-200">
+                  <div class="flex items-center space-x-4 text-sm">
+                    <!-- Rating -->
+                    <div class="flex items-center">
+                      <svg class="w-5 h-5 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                      </svg>
+                      <span class="font-semibold text-gray-900"><%= provider_profile.display_rating %></span>
+                      <span class="text-gray-500 ml-1">(<%= provider_profile.total_reviews || 0 %>)</span>
+                    </div>
+
+                    <!-- Experience -->
+                    <% if provider_profile.years_of_experience.present? %>
+                      <div class="flex items-center text-gray-600">
+                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+                        </svg>
+                        <%= provider_profile.years_of_experience %>+ yrs
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+
+                <!-- Price and CTA -->
+                <div class="flex items-center justify-between">
+                  <div>
+                    <p class="text-sm text-gray-600">Starting from</p>
+                    <p class="text-2xl font-bold text-indigo-600">
+                      $<%= number_with_precision(provider_profile.consultation_rate, precision: 0) %>
+                      <span class="text-sm text-gray-500 font-normal">/session</span>
+                    </p>
+                  </div>
+
+                  <div class="flex items-center text-indigo-600 font-semibold group-hover:text-indigo-700">
+                    View Profile
+                    <svg class="w-5 h-5 ml-1 transform group-hover:translate-x-1 transition" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    <% else %>
+      <!-- Empty State -->
+      <div class="text-center py-16">
+        <div class="max-w-md mx-auto">
+          <div class="bg-gradient-to-br from-indigo-100 to-purple-100 rounded-full w-32 h-32 flex items-center justify-center mx-auto mb-6">
+            <svg class="w-16 h-16 text-indigo-600" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+            </svg>
+          </div>
+
+          <h3 class="text-2xl font-bold text-gray-900 mb-3">
+            <% if params[:search].present? || params[:specialty].present? %>
+              No Providers Found
+            <% else %>
+              No Provider Profiles Yet
+            <% end %>
+          </h3>
+
+          <p class="text-gray-600 mb-6">
+            <% if params[:search].present? || params[:specialty].present? %>
+              We couldn't find any providers matching your search criteria. Try adjusting your filters or search terms.
+            <% else %>
+              Be the first to create a provider profile and start connecting with clients.
+            <% end %>
+          </p>
+
+          <div class="flex flex-col sm:flex-row gap-3 justify-center">
+            <% if params[:search].present? || params[:specialty].present? %>
+              <%= link_to providers_path,
+                  class: "inline-flex items-center justify-center px-6 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition shadow-md" do %>
+                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                </svg>
+                Clear Filters
+              <% end %>
+            <% elsif user_signed_in? && current_user.provider? %>
+              <%= link_to new_provider_profile_path,
+                  class: "inline-flex items-center justify-center px-6 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition shadow-md" do %>
+                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                </svg>
+                Create Your Profile
+              <% end %>
+            <% end %>
+          </div>
         </div>
       </div>
     <% end %>
   </div>
-
-  <% if @provider_profiles.empty? %>
-    <div class="text-center py-12">
-      <p class="text-gray-500 text-lg">No provider profiles yet.</p>
-      <% if current_user.provider? %>
-        <%= link_to "Create your profile", new_provider_profile_path, class: "mt-4 inline-block bg-green-500 text-white px-6 py-3 rounded hover:bg-green-600" %>
-      <% end %>
-    </div>
-  <% end %>
 </div>

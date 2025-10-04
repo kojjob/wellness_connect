@@ -1,0 +1,55 @@
+<footer class="bg-gray-50 border-t border-gray-200 mt-auto">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <!-- About section -->
+      <div>
+        <h3 class="text-sm font-semibold text-gray-900 tracking-wider uppercase mb-4">
+          About WellnessConnect
+        </h3>
+        <p class="text-sm text-gray-600">
+          Connecting clients with trusted wellness providers for a healthier tomorrow.
+        </p>
+      </div>
+
+      <!-- Quick links -->
+      <div>
+        <h3 class="text-sm font-semibold text-gray-900 tracking-wider uppercase mb-4">
+          Quick Links
+        </h3>
+        <ul class="space-y-2">
+          <li>
+            <%= link_to "Browse Providers", providers_path, class: "text-sm text-gray-600 hover:text-indigo-600" %>
+          </li>
+          <% unless user_signed_in? %>
+            <li>
+              <%= link_to "Sign In", new_user_session_path, class: "text-sm text-gray-600 hover:text-indigo-600" %>
+            </li>
+            <li>
+              <%= link_to "Sign Up", new_user_registration_path, class: "text-sm text-gray-600 hover:text-indigo-600" %>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+
+      <!-- Contact -->
+      <div>
+        <h3 class="text-sm font-semibold text-gray-900 tracking-wider uppercase mb-4">
+          Contact
+        </h3>
+        <p class="text-sm text-gray-600">
+          Questions? Reach out to us at<br>
+          <a href="mailto:support@wellnessconnect.com" class="text-indigo-600 hover:text-indigo-700">
+            support@wellnessconnect.com
+          </a>
+        </p>
+      </div>
+    </div>
+
+    <!-- Copyright -->
+    <div class="mt-8 pt-8 border-t border-gray-200 text-center">
+      <p class="text-sm text-gray-500">
+        © <%= Time.current.year %> WellnessConnect. All rights reserved.
+      </p>
+    </div>
+  </div>
+</footer>

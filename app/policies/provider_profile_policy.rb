@@ -21,11 +21,11 @@ class ProviderProfilePolicy < ApplicationPolicy
   end
 
   def new?
-    user.provider? # Only providers can create provider profiles
+    user.present? && user.provider? # Only providers can create provider profiles
   end
 
   def create?
-    user.provider? # Only providers can create provider profiles
+    user.present? && user.provider? # Only providers can create provider profiles
   end
 
   def edit?
@@ -43,6 +43,6 @@ class ProviderProfilePolicy < ApplicationPolicy
   private
 
   def user_is_profile_owner?
-    record.user_id == user.id
+    user.present? && record.user_id == user.id
   end
 end

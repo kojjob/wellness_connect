@@ -1,0 +1,40 @@
+<nav class="bg-white shadow-sm border-b border-gray-200">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between h-16">
+      <!-- Logo and brand -->
+      <div class="flex items-center">
+        <%= link_to root_path, class: "flex items-center space-x-2 text-indigo-600 hover:text-indigo-700" do %>
+          <svg class="h-8 w-8" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M10 3.5a1.5 1.5 0 013 0V4a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-.5a1.5 1.5 0 000 3h.5a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-.5a1.5 1.5 0 00-3 0v.5a1 1 0 01-1 1H6a1 1 0 01-1-1v-3a1 1 0 00-1-1h-.5a1.5 1.5 0 010-3H4a1 1 0 001-1V6a1 1 0 011-1h3a1 1 0 001-1v-.5z"/>
+          </svg>
+          <span class="text-xl font-bold">WellnessConnect</span>
+        <% end %>
+      </div>
+
+      <!-- Navigation links -->
+      <div class="flex items-center space-x-4">
+        <% if user_signed_in? %>
+          <!-- Authenticated user menu -->
+          <div class="flex items-center space-x-4">
+            <% if current_user.provider? && current_user.provider_profile.present? %>
+              <%= link_to "My Dashboard", provider_profile_path(current_user.provider_profile), class: "text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium" %>
+            <% elsif current_user.provider? %>
+              <%= link_to "Create Profile", new_provider_profile_path, class: "text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium" %>
+            <% else %>
+              <%= link_to "Providers", providers_path, class: "text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium" %>
+            <% end %>
+
+            <div class="flex items-center space-x-2">
+              <span class="text-sm text-gray-700"><%= current_user.email %></span>
+              <%= button_to "Sign Out", destroy_user_session_path, method: :delete, class: "bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition" %>
+            </div>
+          </div>
+        <% else %>
+          <!-- Guest menu -->
+          <%= link_to "Sign In", new_user_session_path, class: "text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium" %>
+          <%= link_to "Sign Up", new_user_registration_path, class: "bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition" %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</nav>
