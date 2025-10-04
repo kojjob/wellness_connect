@@ -1,40 +1,301 @@
-<nav class="bg-white shadow-sm border-b border-gray-200">
+<nav class="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm shadow-sm border-b border-gray-200 z-50" data-controller="navbar">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex justify-between h-16">
+    <div class="flex justify-between items-center h-16">
       <!-- Logo and brand -->
       <div class="flex items-center">
-        <%= link_to root_path, class: "flex items-center space-x-2 text-indigo-600 hover:text-indigo-700" do %>
-          <svg class="h-8 w-8" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M10 3.5a1.5 1.5 0 013 0V4a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-.5a1.5 1.5 0 000 3h.5a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-.5a1.5 1.5 0 00-3 0v.5a1 1 0 01-1 1H6a1 1 0 01-1-1v-3a1 1 0 00-1-1h-.5a1.5 1.5 0 010-3H4a1 1 0 001-1V6a1 1 0 011-1h3a1 1 0 001-1v-.5z"/>
+        <%= link_to root_path, class: "flex items-center space-x-2 group" do %>
+          <svg class="h-8 w-8 text-indigo-600 group-hover:text-indigo-700 transition" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
           </svg>
-          <span class="text-xl font-bold">WellnessConnect</span>
+          <span class="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">WellnessConnect</span>
         <% end %>
       </div>
 
-      <!-- Navigation links -->
-      <div class="flex items-center space-x-4">
-        <% if user_signed_in? %>
-          <!-- Authenticated user menu -->
-          <div class="flex items-center space-x-4">
-            <% if current_user.provider? && current_user.provider_profile.present? %>
-              <%= link_to "My Dashboard", provider_profile_path(current_user.provider_profile), class: "text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium" %>
-            <% elsif current_user.provider? %>
-              <%= link_to "Create Profile", new_provider_profile_path, class: "text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium" %>
-            <% else %>
-              <%= link_to "Providers", providers_path, class: "text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium" %>
-            <% end %>
+      <!-- Desktop Navigation -->
+      <div class="hidden md:flex md:items-center md:space-x-1">
+        <%= link_to "Browse Providers", providers_path,
+            class: "text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 px-3 py-2 rounded-md text-sm font-medium transition" %>
 
-            <div class="flex items-center space-x-2">
-              <span class="text-sm text-gray-700"><%= current_user.email %></span>
-              <%= button_to "Sign Out", destroy_user_session_path, method: :delete, class: "bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition" %>
+        <%= link_to "About", about_path,
+            class: "text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 px-3 py-2 rounded-md text-sm font-medium transition" %>
+
+        <%= link_to "Become a Provider", become_provider_path,
+            class: "text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 px-3 py-2 rounded-md text-sm font-medium transition" %>
+      </div>
+
+      <!-- Right side navigation -->
+      <div class="hidden md:flex md:items-center md:space-x-3">
+        <% if user_signed_in? %>
+          <!-- Notifications Dropdown -->
+          <div class="relative" data-controller="dropdown">
+            <button type="button"
+                    data-dropdown-target="button"
+                    data-action="click->dropdown#toggle"
+                    class="relative p-2 text-gray-400 hover:text-gray-500 hover:bg-gray-100 rounded-full transition"
+                    aria-label="View notifications"
+                    aria-haspopup="true"
+                    aria-expanded="false">
+              <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+              </svg>
+              <% if current_user.notifications.unread.any? %>
+                <span class="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>
+              <% end %>
+            </button>
+
+            <!-- Notifications Dropdown Menu -->
+            <div data-dropdown-target="menu"
+                 class="hidden absolute right-0 mt-2 w-80 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50"
+                 role="menu">
+              <div class="py-1">
+                <div class="px-4 py-3 border-b border-gray-200">
+                  <div class="flex items-center justify-between">
+                    <h3 class="text-sm font-semibold text-gray-900">Notifications</h3>
+                    <% if current_user.notifications.unread.any? %>
+                      <%= link_to "Mark all read", mark_all_as_read_notifications_path,
+                          data: { turbo_method: :post },
+                          class: "text-xs text-indigo-600 hover:text-indigo-700" %>
+                    <% end %>
+                  </div>
+                </div>
+
+                <div class="max-h-96 overflow-y-auto">
+                  <% if current_user.notifications.recent.any? %>
+                    <% current_user.notifications.recent.each do |notification| %>
+                      <%= link_to mark_as_read_notification_path(notification),
+                          data: { turbo_method: :post },
+                          class: "block px-4 py-3 hover:bg-gray-50 transition #{notification.unread? ? 'bg-indigo-50' : ''}" do %>
+                        <div class="flex items-start">
+                          <div class="flex-shrink-0">
+                            <% case notification.notification_type %>
+                            <% when 'appointment_booked', 'appointment_reminder' %>
+                              <div class="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
+                                <svg class="h-5 w-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                                </svg>
+                              </div>
+                            <% when 'appointment_cancelled' %>
+                              <div class="h-8 w-8 rounded-full bg-red-100 flex items-center justify-center">
+                                <svg class="h-5 w-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                                </svg>
+                              </div>
+                            <% when 'payment_received' %>
+                              <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
+                                <svg class="h-5 w-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                  <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"/>
+                                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd"/>
+                                </svg>
+                              </div>
+                            <% else %>
+                              <div class="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center">
+                                <svg class="h-5 w-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                </svg>
+                              </div>
+                            <% end %>
+                          </div>
+                          <div class="ml-3 flex-1">
+                            <p class="text-sm font-medium text-gray-900"><%= notification.title %></p>
+                            <p class="text-xs text-gray-500 mt-1"><%= notification.message %></p>
+                            <p class="text-xs text-gray-400 mt-1"><%= time_ago_in_words(notification.created_at) %> ago</p>
+                          </div>
+                          <% if notification.unread? %>
+                            <div class="ml-2">
+                              <span class="inline-block h-2 w-2 rounded-full bg-indigo-600"></span>
+                            </div>
+                          <% end %>
+                        </div>
+                      <% end %>
+                    <% end %>
+                  <% else %>
+                    <div class="px-4 py-8 text-center">
+                      <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                      </svg>
+                      <p class="mt-2 text-sm text-gray-500">No notifications yet</p>
+                    </div>
+                  <% end %>
+                </div>
+
+                <% if current_user.notifications.any? %>
+                  <div class="border-t border-gray-200">
+                    <%= link_to "View all notifications", notifications_path,
+                        class: "block px-4 py-3 text-center text-sm text-indigo-600 hover:bg-gray-50 font-medium" %>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          </div>
+
+          <!-- User Profile Dropdown -->
+          <div class="relative" data-controller="dropdown">
+            <button type="button"
+                    data-dropdown-target="button"
+                    data-action="click->dropdown#toggle"
+                    class="flex items-center space-x-2 text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                    aria-label="User menu">
+              <div class="h-8 w-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-semibold">
+                <%= current_user.email[0].upcase %>
+              </div>
+              <svg class="h-4 w-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+              </svg>
+            </button>
+
+            <div data-dropdown-target="menu"
+                 class="hidden absolute right-0 mt-2 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 z-50"
+                 role="menu">
+              <!-- User info -->
+              <div class="px-4 py-3">
+                <p class="text-sm font-medium text-gray-900 truncate"><%= current_user.email %></p>
+                <p class="text-xs text-gray-500 mt-1">
+                  <%= current_user.provider? ? "Provider Account" : "Patient Account" %>
+                </p>
+              </div>
+
+              <!-- Menu items -->
+              <div class="py-1">
+                <% if current_user.provider? && current_user.provider_profile.present? %>
+                  <%= link_to provider_profile_path(current_user.provider_profile),
+                      class: "group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600",
+                      role: "menuitem" do %>
+                    <svg class="mr-3 h-5 w-5 text-gray-400 group-hover:text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+                    </svg>
+                    My Dashboard
+                  <% end %>
+                <% elsif current_user.provider? %>
+                  <%= link_to new_provider_profile_path,
+                      class: "group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600",
+                      role: "menuitem" do %>
+                    <svg class="mr-3 h-5 w-5 text-gray-400 group-hover:text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z"/>
+                    </svg>
+                    Create Profile
+                  <% end %>
+                <% else %>
+                  <%= link_to dashboard_path,
+                      class: "group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600",
+                      role: "menuitem" do %>
+                    <svg class="mr-3 h-5 w-5 text-gray-400 group-hover:text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+                    </svg>
+                    My Dashboard
+                  <% end %>
+                <% end %>
+              </div>
+
+              <div class="py-1">
+                <%= button_to destroy_user_session_path,
+                    method: :delete,
+                    class: "group flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600",
+                    role: "menuitem" do %>
+                  <svg class="mr-3 h-5 w-5 text-gray-400 group-hover:text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"/>
+                  </svg>
+                  Sign Out
+                <% end %>
+              </div>
             </div>
           </div>
         <% else %>
-          <!-- Guest menu -->
-          <%= link_to "Sign In", new_user_session_path, class: "text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium" %>
-          <%= link_to "Sign Up", new_user_registration_path, class: "bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition" %>
+          <!-- Guest buttons -->
+          <%= link_to "Sign In", new_user_session_path,
+              class: "text-gray-700 hover:text-indigo-600 px-4 py-2 rounded-md text-sm font-medium transition" %>
+          <%= link_to "Get Started", new_user_registration_path,
+              class: "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-6 py-2 rounded-lg text-sm font-semibold transition shadow-md" %>
         <% end %>
       </div>
+
+      <!-- Mobile menu button -->
+      <div class="md:hidden flex items-center">
+        <button type="button"
+                data-navbar-target="mobileMenuButton"
+                data-action="click->navbar#toggleMobileMenu"
+                class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
+                aria-controls="mobile-menu"
+                aria-expanded="false"
+                aria-label="Toggle navigation menu">
+          <svg data-navbar-target="mobileMenuIcon" class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+          <svg data-navbar-target="mobileMenuCloseIcon" class="hidden h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
     </div>
+  </div>
+
+  <!-- Mobile menu -->
+  <div data-navbar-target="mobileMenu"
+       class="hidden md:hidden border-t border-gray-200 bg-white"
+       id="mobile-menu">
+    <div class="px-2 pt-2 pb-3 space-y-1">
+      <%= link_to "Browse Providers", providers_path,
+          data: { action: "click->navbar#handleLinkClick" },
+          class: "block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 transition" %>
+
+      <%= link_to "About", about_path,
+          data: { action: "click->navbar#handleLinkClick" },
+          class: "block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 transition" %>
+
+      <%= link_to "Become a Provider", become_provider_path,
+          data: { action: "click->navbar#handleLinkClick" },
+          class: "block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 transition" %>
+    </div>
+
+    <% if user_signed_in? %>
+      <div class="pt-4 pb-3 border-t border-gray-200">
+        <div class="flex items-center px-4">
+          <div class="flex-shrink-0">
+            <div class="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-semibold">
+              <%= current_user.email[0].upcase %>
+            </div>
+          </div>
+          <div class="ml-3">
+            <div class="text-base font-medium text-gray-800"><%= current_user.email %></div>
+            <div class="text-sm font-medium text-gray-500">
+              <%= current_user.provider? ? "Provider Account" : "Patient Account" %>
+            </div>
+          </div>
+        </div>
+        <div class="mt-3 px-2 space-y-1">
+          <%= link_to "Notifications #{current_user.notifications.unread.count > 0 ? "(#{current_user.notifications.unread.count})" : ''}", notifications_path,
+              data: { action: "click->navbar#handleLinkClick" },
+              class: "block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 transition" %>
+
+          <% if current_user.provider? && current_user.provider_profile.present? %>
+            <%= link_to "My Dashboard", provider_profile_path(current_user.provider_profile),
+                data: { action: "click->navbar#handleLinkClick" },
+                class: "block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 transition" %>
+          <% elsif current_user.provider? %>
+            <%= link_to "Create Profile", new_provider_profile_path,
+                data: { action: "click->navbar#handleLinkClick" },
+                class: "block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 transition" %>
+          <% else %>
+            <%= link_to "My Dashboard", dashboard_path,
+                data: { action: "click->navbar#handleLinkClick" },
+                class: "block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 transition" %>
+          <% end %>
+
+          <%= button_to "Sign Out", destroy_user_session_path,
+              method: :delete,
+              class: "block w-full text-left px-3 py-2 rounded-md text-base font-medium text-red-600 hover:bg-red-50 transition" %>
+        </div>
+      </div>
+    <% else %>
+      <div class="pt-4 pb-3 border-t border-gray-200 px-2 space-y-2">
+        <%= link_to "Sign In", new_user_session_path,
+            data: { action: "click->navbar#handleLinkClick" },
+            class: "block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 transition text-center" %>
+        <%= link_to "Get Started", new_user_registration_path,
+            data: { action: "click->navbar#handleLinkClick" },
+            class: "block px-3 py-2 rounded-md text-base font-semibold bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-700 hover:to-purple-700 transition text-center" %>
+      </div>
+    <% end %>
   </div>
 </nav>

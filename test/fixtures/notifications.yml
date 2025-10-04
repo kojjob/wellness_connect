@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: patient_user
+  title: Appointment Reminder
+  message: You have an upcoming appointment
+  notification_type: appointment_reminder
+  read_at: 2025-10-04 21:17:16
+  action_url: /appointments/1
+
+two:
+  user: provider_user
+  title: New Booking
+  message: You have a new appointment booking
+  notification_type: new_booking
+  read_at: 2025-10-04 21:17:16
+  action_url: /appointments/1
