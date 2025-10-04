@@ -1,48 +1,630 @@
-<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+<% content_for :title, "WellnessConnect - Connect with Qualified Service Providers" %>
+<% content_for :head do %>
+  <meta name="description" content="WellnessConnect connects you with qualified service providers for virtual consultations. Book wellness coaches, business consultants, legal advisors, and more.">
+  <meta name="keywords" content="wellness, coaching, consulting, virtual appointments, professional services">
+  <meta property="og:title" content="WellnessConnect - Professional Services Marketplace">
+  <meta property="og:description" content="Connect with qualified service providers for virtual consultations and professional services.">
+  <meta property="og:type" content="website">
+<% end %>
+
+<div class="w-full">
+  <!-- Navigation -->
+  <nav class="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm shadow-sm z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-20">
+        <!-- Logo -->
+        <div class="flex-shrink-0 flex items-center">
+          <%= link_to root_path, class: "flex items-center space-x-2" do %>
+            <svg class="w-10 h-10 text-indigo-600" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
+            </svg>
+            <span class="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">WellnessConnect</span>
+          <% end %>
+        </div>
+
+        <!-- Desktop Navigation -->
+        <div class="hidden md:flex md:items-center md:space-x-8">
+          <%= link_to "Browse Providers", "#providers", class: "text-gray-700 hover:text-indigo-600 font-medium transition" %>
+          <%= link_to "How It Works", "#how-it-works", class: "text-gray-700 hover:text-indigo-600 font-medium transition" %>
+          <%= link_to "For Providers", "#for-providers", class: "text-gray-700 hover:text-indigo-600 font-medium transition" %>
+
+          <% if user_signed_in? %>
+            <%= link_to "Dashboard", root_path, class: "px-6 py-2.5 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition shadow-md" %>
+          <% else %>
+            <%= link_to "Sign In", new_user_session_path, class: "text-gray-700 hover:text-indigo-600 font-medium transition" %>
+            <%= link_to "Get Started", new_user_registration_path, class: "px-6 py-2.5 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition shadow-md" %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </nav>
+
   <!-- Hero Section -->
-  <div class="container mx-auto px-4 py-16">
-    <div class="text-center max-w-4xl mx-auto">
-      <h1 class="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-        WellnessConnect
-      </h1>
-      <p class="text-xl md:text-2xl text-gray-700 mb-8">
-        Your trusted marketplace for virtual wellness appointments
-      </p>
-      <p class="text-lg text-gray-600 mb-12">
-        Connect with certified wellness providers from the comfort of your home. Book appointments with nutritionists, mental health counselors, fitness coaches, and more.
-      </p>
-
-      <!-- CTA Buttons -->
-      <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-        <% if user_signed_in? %>
-          <%= link_to "Dashboard", root_path, class: "px-8 py-4 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition duration-200 shadow-lg" %>
-          <%= link_to "Sign Out", destroy_user_session_path, data: { turbo_method: :delete }, class: "px-8 py-4 bg-gray-600 text-white font-semibold rounded-lg hover:bg-gray-700 transition duration-200" %>
-        <% else %>
-          <%= link_to "Sign Up", new_user_registration_path, class: "px-8 py-4 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition duration-200 shadow-lg" %>
-          <%= link_to "Sign In", new_user_session_path, class: "px-8 py-4 bg-white text-indigo-600 font-semibold rounded-lg hover:bg-gray-50 transition duration-200 border-2 border-indigo-600" %>
-        <% end %>
-      </div>
+  <section class="relative bg-gradient-to-br from-indigo-50 via-white to-purple-50 pt-32 pb-20 overflow-hidden">
+    <!-- Background decoration -->
+    <div class="absolute inset-0 overflow-hidden">
+      <div class="absolute -top-40 -right-40 w-80 h-80 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
+      <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
     </div>
 
-    <!-- Features Section -->
-    <div class="grid md:grid-cols-3 gap-8 mt-20">
-      <div class="bg-white p-8 rounded-xl shadow-md">
-        <div class="text-indigo-600 text-4xl mb-4">🏥</div>
-        <h3 class="text-xl font-semibold mb-3">Certified Providers</h3>
-        <p class="text-gray-600">All our wellness providers are verified and certified professionals.</p>
-      </div>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid lg:grid-cols-2 gap-12 items-center">
+        <!-- Left Column - Content -->
+        <div class="text-left">
+          <div class="inline-flex items-center px-4 py-2 bg-indigo-100 rounded-full mb-6">
+            <svg class="w-4 h-4 text-indigo-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+            </svg>
+            <span class="text-sm font-semibold text-indigo-600">Trusted by 10,000+ Professionals</span>
+          </div>
 
-      <div class="bg-white p-8 rounded-xl shadow-md">
-        <div class="text-indigo-600 text-4xl mb-4">📅</div>
-        <h3 class="text-xl font-semibold mb-3">Easy Booking</h3>
-        <p class="text-gray-600">Book appointments instantly with our simple scheduling system.</p>
-      </div>
+          <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 leading-tight mb-6">
+            Connect with
+            <span class="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Qualified Experts</span>
+          </h1>
 
-      <div class="bg-white p-8 rounded-xl shadow-md">
-        <div class="text-indigo-600 text-4xl mb-4">💻</div>
-        <h3 class="text-xl font-semibold mb-3">Virtual Consultations</h3>
-        <p class="text-gray-600">Meet your wellness provider from anywhere via secure video calls.</p>
+          <p class="text-xl md:text-2xl text-gray-600 mb-8 leading-relaxed">
+            Book virtual consultations with certified professionals across wellness, business, legal, and more. Get expert guidance from anywhere.
+          </p>
+
+          <!-- Search Bar -->
+          <div class="bg-white rounded-2xl shadow-xl p-3 mb-8 max-w-2xl">
+            <div class="flex flex-col sm:flex-row gap-3">
+              <input type="text" placeholder="What service are you looking for?" class="flex-1 px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <button class="px-8 py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition shadow-md">
+                Search Providers
+              </button>
+            </div>
+          </div>
+
+          <!-- Stats -->
+          <div class="grid grid-cols-3 gap-6 max-w-md">
+            <div>
+              <div class="text-3xl font-bold text-indigo-600">5K+</div>
+              <div class="text-sm text-gray-600">Providers</div>
+            </div>
+            <div>
+              <div class="text-3xl font-bold text-indigo-600">50K+</div>
+              <div class="text-sm text-gray-600">Sessions</div>
+            </div>
+            <div>
+              <div class="text-3xl font-bold text-indigo-600">4.9</div>
+              <div class="text-sm text-gray-600">Avg Rating</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column - Visual -->
+        <div class="relative hidden lg:block">
+          <div class="relative w-full h-[600px] bg-gradient-to-br from-indigo-100 to-purple-100 rounded-3xl overflow-hidden shadow-2xl">
+            <!-- Placeholder for hero image -->
+            <div class="absolute inset-0 flex items-center justify-center">
+              <svg class="w-64 h-64 text-indigo-300" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Floating Cards -->
+          <div class="absolute -top-6 -right-6 bg-white rounded-2xl shadow-xl p-4 max-w-xs">
+            <div class="flex items-center space-x-3">
+              <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                <svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+                </svg>
+              </div>
+              <div>
+                <div class="text-sm font-semibold text-gray-900">Session Confirmed</div>
+                <div class="text-xs text-gray-500">With Sarah Johnson</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="absolute -bottom-6 -left-6 bg-white rounded-2xl shadow-xl p-4 max-w-xs">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm font-semibold text-gray-900">Top Rated</span>
+              <div class="flex text-yellow-400">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                </svg>
+                <span class="text-xs ml-1 text-gray-600">5.0</span>
+              </div>
+            </div>
+            <p class="text-xs text-gray-600">"Life-changing experience! Highly recommend."</p>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
+  </section>
+
+  <!-- Service Categories Section -->
+  <section id="providers" class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Explore Expert Services</h2>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto">Find qualified professionals across multiple categories</p>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Category Card 1 -->
+        <div class="group bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-8 hover:shadow-xl transition-all duration-300 cursor-pointer">
+          <div class="w-16 h-16 bg-blue-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+            <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-gray-900 mb-2">Business Consulting</h3>
+          <p class="text-gray-600 text-sm mb-4">Strategy, operations, and growth experts</p>
+          <div class="flex items-center text-blue-600 font-semibold text-sm">
+            <span>500+ Consultants</span>
+            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Category Card 2 -->
+        <div class="group bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl p-8 hover:shadow-xl transition-all duration-300 cursor-pointer">
+          <div class="w-16 h-16 bg-purple-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+            <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-gray-900 mb-2">Wellness & Health</h3>
+          <p class="text-gray-600 text-sm mb-4">Nutrition, fitness, and mental health</p>
+          <div class="flex items-center text-purple-600 font-semibold text-sm">
+            <span>1200+ Coaches</span>
+            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Category Card 3 -->
+        <div class="group bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-8 hover:shadow-xl transition-all duration-300 cursor-pointer">
+          <div class="w-16 h-16 bg-green-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+            <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-gray-900 mb-2">Legal Advisory</h3>
+          <p class="text-gray-600 text-sm mb-4">Attorneys and legal consultants</p>
+          <div class="flex items-center text-green-600 font-semibold text-sm">
+            <span>300+ Advisors</span>
+            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Category Card 4 -->
+        <div class="group bg-gradient-to-br from-orange-50 to-orange-100 rounded-2xl p-8 hover:shadow-xl transition-all duration-300 cursor-pointer">
+          <div class="w-16 h-16 bg-orange-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+            <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762z"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-gray-900 mb-2">Education & Tutoring</h3>
+          <p class="text-gray-600 text-sm mb-4">Tutors, mentors, and career coaches</p>
+          <div class="flex items-center text-orange-600 font-semibold text-sm">
+            <span>800+ Educators</span>
+            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section id="how-it-works" class="py-20 bg-gradient-to-br from-gray-50 to-gray-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">How It Works</h2>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto">Get started in three simple steps</p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-8 relative">
+        <!-- Step 1 -->
+        <div class="relative bg-white rounded-2xl p-8 shadow-lg">
+          <div class="absolute -top-6 left-8 w-12 h-12 bg-indigo-600 text-white rounded-full flex items-center justify-center text-xl font-bold shadow-lg">
+            1
+          </div>
+          <div class="pt-6">
+            <div class="w-16 h-16 bg-indigo-100 rounded-xl flex items-center justify-center mb-6">
+              <svg class="w-8 h-8 text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-3">Browse Providers</h3>
+            <p class="text-gray-600">Search and filter through thousands of qualified service providers across multiple categories.</p>
+          </div>
+        </div>
+
+        <!-- Connection Line -->
+        <div class="hidden md:block absolute top-1/3 left-1/4 w-1/4 border-t-4 border-dashed border-indigo-200"></div>
+
+        <!-- Step 2 -->
+        <div class="relative bg-white rounded-2xl p-8 shadow-lg">
+          <div class="absolute -top-6 left-8 w-12 h-12 bg-indigo-600 text-white rounded-full flex items-center justify-center text-xl font-bold shadow-lg">
+            2
+          </div>
+          <div class="pt-6">
+            <div class="w-16 h-16 bg-purple-100 rounded-xl flex items-center justify-center mb-6">
+              <svg class="w-8 h-8 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"/>
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-3">Book Session</h3>
+            <p class="text-gray-600">Choose a convenient time slot from the provider's availability and secure your booking with payment.</p>
+          </div>
+        </div>
+
+        <!-- Connection Line -->
+        <div class="hidden md:block absolute top-1/3 right-1/4 w-1/4 border-t-4 border-dashed border-indigo-200"></div>
+
+        <!-- Step 3 -->
+        <div class="relative bg-white rounded-2xl p-8 shadow-lg">
+          <div class="absolute -top-6 left-8 w-12 h-12 bg-indigo-600 text-white rounded-full flex items-center justify-center text-xl font-bold shadow-lg">
+            3
+          </div>
+          <div class="pt-6">
+            <div class="w-16 h-16 bg-green-100 rounded-xl flex items-center justify-center mb-6">
+              <svg class="w-8 h-8 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"/>
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-3">Connect & Meet</h3>
+            <p class="text-gray-600">Join your virtual session from anywhere via secure video call and get expert guidance.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features/Benefits Section -->
+  <section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid lg:grid-cols-2 gap-16 items-center">
+        <!-- Left Column - Features List -->
+        <div>
+          <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">Why Choose WellnessConnect?</h2>
+          <p class="text-xl text-gray-600 mb-12">A platform built for quality, security, and convenience</p>
+
+          <div class="space-y-8">
+            <!-- Feature 1 -->
+            <div class="flex items-start space-x-4">
+              <div class="flex-shrink-0 w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
+                <svg class="w-6 h-6 text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                </svg>
+              </div>
+              <div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Verified Professionals</h3>
+                <p class="text-gray-600">All service providers are thoroughly vetted and verified for credentials and expertise.</p>
+              </div>
+            </div>
+
+            <!-- Feature 2 -->
+            <div class="flex items-start space-x-4">
+              <div class="flex-shrink-0 w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                <svg class="w-6 h-6 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"/>
+                </svg>
+              </div>
+              <div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Secure & Private</h3>
+                <p class="text-gray-600">End-to-end encryption for all sessions and secure payment processing via Stripe.</p>
+              </div>
+            </div>
+
+            <!-- Feature 3 -->
+            <div class="flex items-start space-x-4">
+              <div class="flex-shrink-0 w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                <svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                  <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"/>
+                </svg>
+              </div>
+              <div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">24/7 Availability</h3>
+                <p class="text-gray-600">Book sessions that fit your schedule with providers across different time zones.</p>
+              </div>
+            </div>
+
+            <!-- Feature 4 -->
+            <div class="flex items-start space-x-4">
+              <div class="flex-shrink-0 w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                <svg class="w-6 h-6 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"/>
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z"/>
+                </svg>
+              </div>
+              <div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Flexible Pricing</h3>
+                <p class="text-gray-600">Pay per session or choose subscription plans. No hidden fees, cancel anytime.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column - Visual/Image Placeholder -->
+        <div class="relative">
+          <div class="bg-gradient-to-br from-indigo-100 to-purple-100 rounded-3xl p-12 shadow-2xl">
+            <div class="bg-white rounded-2xl p-8 shadow-lg mb-6">
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center space-x-3">
+                  <div class="w-12 h-12 bg-indigo-600 rounded-full"></div>
+                  <div>
+                    <div class="font-semibold text-gray-900">Dr. Sarah Johnson</div>
+                    <div class="text-sm text-gray-500">Business Consultant</div>
+                  </div>
+                </div>
+                <div class="flex text-yellow-400">
+                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                  </svg>
+                  <span class="ml-1 text-sm text-gray-600">5.0 (243 reviews)</span>
+                </div>
+              </div>
+              <div class="space-y-2 text-sm">
+                <div class="flex justify-between">
+                  <span class="text-gray-600">60-Min Session</span>
+                  <span class="font-semibold text-gray-900">$120</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-gray-600">Response Time</span>
+                  <span class="font-semibold text-green-600">< 2 hours</span>
+                </div>
+              </div>
+              <button class="w-full mt-4 px-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition">
+                Book Now
+              </button>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-2 gap-4">
+              <div class="bg-white rounded-xl p-4 shadow">
+                <div class="text-2xl font-bold text-indigo-600">98%</div>
+                <div class="text-sm text-gray-600">Client Satisfaction</div>
+              </div>
+              <div class="bg-white rounded-xl p-4 shadow">
+                <div class="text-2xl font-bold text-purple-600">4.9</div>
+                <div class="text-sm text-gray-600">Average Rating</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials Section -->
+  <section class="py-20 bg-gradient-to-br from-indigo-50 to-purple-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">What Our Clients Say</h2>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto">Join thousands of satisfied clients who found the right expert</p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-8">
+        <!-- Testimonial 1 -->
+        <div class="bg-white rounded-2xl p-8 shadow-lg">
+          <div class="flex text-yellow-400 mb-4">
+            <%= 5.times.map { '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>' }.join.html_safe %>
+          </div>
+          <p class="text-gray-700 mb-6">"WellnessConnect helped me find an amazing business consultant who transformed my startup strategy. The booking process was seamless and the session quality exceeded my expectations."</p>
+          <div class="flex items-center space-x-3">
+            <div class="w-12 h-12 bg-indigo-600 rounded-full"></div>
+            <div>
+              <div class="font-semibold text-gray-900">Michael Chen</div>
+              <div class="text-sm text-gray-500">Startup Founder</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Testimonial 2 -->
+        <div class="bg-white rounded-2xl p-8 shadow-lg">
+          <div class="flex text-yellow-400 mb-4">
+            <%= 5.times.map { '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>' }.join.html_safe %>
+          </div>
+          <p class="text-gray-700 mb-6">"As a busy professional, finding time for wellness was challenging. This platform made it easy to connect with a nutritionist who fits my schedule. Highly recommend!"</p>
+          <div class="flex items-center space-x-3">
+            <div class="w-12 h-12 bg-purple-600 rounded-full"></div>
+            <div>
+              <div class="font-semibold text-gray-900">Emma Rodriguez</div>
+              <div class="text-sm text-gray-500">Marketing Director</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Testimonial 3 -->
+        <div class="bg-white rounded-2xl p-8 shadow-lg">
+          <div class="flex text-yellow-400 mb-4">
+            <%= 5.times.map { '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>' }.join.html_safe %>
+          </div>
+          <p class="text-gray-700 mb-6">"The quality of professionals on this platform is exceptional. I found a career coach who helped me navigate a major career transition. Worth every penny!"</p>
+          <div class="flex items-center space-x-3">
+            <div class="w-12 h-12 bg-green-600 rounded-full"></div>
+            <div>
+              <div class="font-semibold text-gray-900">David Thompson</div>
+              <div class="text-sm text-gray-500">Software Engineer</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- For Providers CTA Section -->
+  <section id="for-providers" class="py-20 bg-gradient-to-r from-indigo-600 to-purple-600">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid lg:grid-cols-2 gap-12 items-center">
+        <div class="text-white">
+          <h2 class="text-4xl md:text-5xl font-bold mb-6">Are You a Service Provider?</h2>
+          <p class="text-xl text-indigo-100 mb-8">Join thousands of professionals growing their practice on WellnessConnect</p>
+
+          <ul class="space-y-4 mb-8">
+            <li class="flex items-center space-x-3">
+              <svg class="w-6 h-6 text-green-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+              </svg>
+              <span class="text-lg">Reach thousands of potential clients</span>
+            </li>
+            <li class="flex items-center space-x-3">
+              <svg class="w-6 h-6 text-green-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+              </svg>
+              <span class="text-lg">Manage your schedule with ease</span>
+            </li>
+            <li class="flex items-center space-x-3">
+              <svg class="w-6 h-6 text-green-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+              </svg>
+              <span class="text-lg">Get paid securely and on time</span>
+            </li>
+            <li class="flex items-center space-x-3">
+              <svg class="w-6 h-6 text-green-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+              </svg>
+              <span class="text-lg">Build your professional brand</span>
+            </li>
+          </ul>
+
+          <%= link_to "Join as a Provider", new_user_registration_path, class: "inline-block px-8 py-4 bg-white text-indigo-600 font-bold rounded-lg hover:bg-gray-100 transition shadow-xl" %>
+        </div>
+
+        <div class="bg-white/10 backdrop-blur-sm rounded-3xl p-8">
+          <div class="bg-white rounded-2xl p-6 shadow-2xl">
+            <div class="text-center mb-6">
+              <div class="text-4xl font-bold text-gray-900 mb-2">Start Growing Today</div>
+              <p class="text-gray-600">Join in 3 simple steps</p>
+            </div>
+
+            <div class="space-y-4">
+              <div class="flex items-start space-x-3">
+                <div class="flex-shrink-0 w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center font-bold text-sm">1</div>
+                <div>
+                  <div class="font-semibold text-gray-900">Create Your Profile</div>
+                  <div class="text-sm text-gray-600">Set up your professional profile and credentials</div>
+                </div>
+              </div>
+
+              <div class="flex items-start space-x-3">
+                <div class="flex-shrink-0 w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center font-bold text-sm">2</div>
+                <div>
+                  <div class="font-semibold text-gray-900">List Your Services</div>
+                  <div class="text-sm text-gray-600">Define your offerings and set your rates</div>
+                </div>
+              </div>
+
+              <div class="flex items-start space-x-3">
+                <div class="flex-shrink-0 w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center font-bold text-sm">3</div>
+                <div>
+                  <div class="font-semibold text-gray-900">Start Accepting Bookings</div>
+                  <div class="text-sm text-gray-600">Connect with clients and grow your practice</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-white py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid md:grid-cols-4 gap-12 mb-12">
+        <!-- Company Info -->
+        <div class="md:col-span-1">
+          <div class="flex items-center space-x-2 mb-4">
+            <svg class="w-8 h-8 text-indigo-400" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
+            </svg>
+            <span class="text-xl font-bold">WellnessConnect</span>
+          </div>
+          <p class="text-gray-400 text-sm mb-4">Connecting clients with qualified service providers for a better tomorrow.</p>
+          <div class="flex space-x-4">
+            <a href="#" class="text-gray-400 hover:text-white transition">
+              <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-white transition">
+              <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-white transition">
+              <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- For Clients -->
+        <div>
+          <h3 class="text-lg font-bold mb-4">For Clients</h3>
+          <ul class="space-y-2">
+            <li><a href="#" class="text-gray-400 hover:text-white transition">Browse Providers</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition">How It Works</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition">Pricing</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition">FAQ</a></li>
+          </ul>
+        </div>
+
+        <!-- For Providers -->
+        <div>
+          <h3 class="text-lg font-bold mb-4">For Providers</h3>
+          <ul class="space-y-2">
+            <li><a href="#" class="text-gray-400 hover:text-white transition">Become a Provider</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition">Provider Benefits</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition">Resources</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition">Support</a></li>
+          </ul>
+        </div>
+
+        <!-- Company -->
+        <div>
+          <h3 class="text-lg font-bold mb-4">Company</h3>
+          <ul class="space-y-2">
+            <li><a href="#" class="text-gray-400 hover:text-white transition">About Us</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition">Contact</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition">Privacy Policy</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition">Terms of Service</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="pt-8 border-t border-gray-800 text-center text-gray-400 text-sm">
+        <p>&copy; <%= Time.current.year %> WellnessConnect. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
 </div>
+
+<style>
+  @keyframes blob {
+    0% {
+      transform: translate(0px, 0px) scale(1);
+    }
+    33% {
+      transform: translate(30px, -50px) scale(1.1);
+    }
+    66% {
+      transform: translate(-20px, 20px) scale(0.9);
+    }
+    100% {
+      transform: translate(0px, 0px) scale(1);
+    }
+  }
+
+  .animate-blob {
+    animation: blob 7s infinite;
+  }
+
+  .animation-delay-2000 {
+    animation-delay: 2s;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+</style>
