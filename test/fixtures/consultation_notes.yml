@@ -1,0 +1,5 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+consultation_note_one:
+  appointment: appointment_one
+  content: Patient reported improved sleep quality. Discussed coping strategies for anxiety.

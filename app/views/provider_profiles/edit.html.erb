@@ -1,0 +1,8 @@
+<div class="container mx-auto px-4 py-8">
+  <h1 class="text-3xl font-bold mb-6">Edit Provider Profile</h1>
+
+  <%= render "form", provider_profile: @provider_profile %>
+
+  <%= link_to "Show", provider_profile_path(@provider_profile), class: "mt-4 inline-block text-blue-500 hover:underline" %> |
+  <%= link_to "Back", provider_profiles_path, class: "text-blue-500 hover:underline" %>
+</div>

@@ -1,0 +1,37 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="bg-white shadow rounded-lg p-6">
+    <h1 class="text-3xl font-bold mb-4"><%= @provider_profile.user.first_name %> <%= @provider_profile.user.last_name %></h1>
+
+    <div class="mb-4">
+      <h2 class="text-xl font-semibold text-gray-700">Specialty</h2>
+      <p class="text-gray-600"><%= @provider_profile.specialty %></p>
+    </div>
+
+    <div class="mb-4">
+      <h2 class="text-xl font-semibold text-gray-700">Credentials</h2>
+      <p class="text-gray-600"><%= @provider_profile.credentials %></p>
+    </div>
+
+    <div class="mb-4">
+      <h2 class="text-xl font-semibold text-gray-700">Bio</h2>
+      <p class="text-gray-600"><%= @provider_profile.bio %></p>
+    </div>
+
+    <div class="mb-4">
+      <h2 class="text-xl font-semibold text-gray-700">Consultation Rate</h2>
+      <p class="text-gray-600">$<%= @provider_profile.consultation_rate %> per session</p>
+    </div>
+
+    <div class="mt-6 flex gap-2">
+      <% if policy(@provider_profile).edit? %>
+        <%= link_to "Edit", edit_provider_profile_path(@provider_profile), class: "bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" %>
+      <% end %>
+
+      <%= link_to "Back to Providers", provider_profiles_path, class: "bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600" %>
+
+      <% if policy(@provider_profile).destroy? %>
+        <%= button_to "Delete", provider_profile_path(@provider_profile), method: :delete, form: { data: { turbo_confirm: "Are you sure?" } }, class: "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600" %>
+      <% end %>
+    </div>
+  </div>
+</div>

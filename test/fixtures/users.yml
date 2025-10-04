@@ -1,0 +1,25 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+patient_user:
+  email: patient@example.com
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password123') %>
+  first_name: John
+  last_name: Doe
+  role: 0 # patient
+  time_zone: America/New_York
+
+provider_user:
+  email: provider@example.com
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password123') %>
+  first_name: Dr. Jane
+  last_name: Smith
+  role: 1 # provider
+  time_zone: America/Los_Angeles
+
+admin_user:
+  email: admin@example.com
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password123') %>
+  first_name: Admin
+  last_name: User
+  role: 2 # admin
+  time_zone: UTC

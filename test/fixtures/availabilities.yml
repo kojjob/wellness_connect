@@ -1,0 +1,7 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+availability_one:
+  provider_profile: provider_profile_one
+  start_time: <%= 2.days.from_now.change(hour: 9, min: 0) %>
+  end_time: <%= 2.days.from_now.change(hour: 10, min: 0) %>
+  is_booked: false

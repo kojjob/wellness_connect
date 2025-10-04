@@ -1,0 +1,10 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+payment_one:
+  payer: patient_user
+  appointment: appointment_one
+  amount: 150.00
+  currency: USD
+  status: 1
+  stripe_payment_intent_id: pi_test_123456
+  paid_at: <%= 1.day.ago %>

@@ -1,0 +1,9 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+service_one:
+  provider_profile: provider_profile_one
+  name: Individual Therapy Session
+  description: One-on-one counseling session for anxiety and depression
+  duration_minutes: 60
+  price: 150.00
+  is_active: true

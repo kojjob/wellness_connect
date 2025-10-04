@@ -1,0 +1,125 @@
+# This file is auto-generated from the current state of the database. Instead
+# of editing this file, please use the migrations feature of Active Record to
+# incrementally modify your database, and then regenerate this schema definition.
+#
+# This file is the source Rails uses to define your schema when running `bin/rails
+# db:schema:load`. When creating a new database, `bin/rails db:schema:load` tends to
+# be faster and is potentially less error prone than running all of your
+# migrations from scratch. Old migrations may fail to apply correctly if those
+# migrations use external dependencies or application code.
+#
+# It's strongly recommended that you check this file into your version control system.
+
+ActiveRecord::Schema[8.1].define(version: 2025_10_04_142336) do
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "pg_catalog.plpgsql"
+
+  create_table "appointments", force: :cascade do |t|
+    t.text "cancellation_reason"
+    t.datetime "created_at", null: false
+    t.datetime "end_time"
+    t.bigint "patient_id", null: false
+    t.bigint "provider_id", null: false
+    t.bigint "service_id", null: false
+    t.datetime "start_time"
+    t.integer "status"
+    t.datetime "updated_at", null: false
+    t.string "video_session_id"
+    t.index ["patient_id"], name: "index_appointments_on_patient_id"
+    t.index ["provider_id"], name: "index_appointments_on_provider_id"
+    t.index ["service_id"], name: "index_appointments_on_service_id"
+  end
+
+  create_table "availabilities", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "end_time"
+    t.boolean "is_booked", default: false
+    t.bigint "provider_profile_id", null: false
+    t.datetime "start_time"
+    t.datetime "updated_at", null: false
+    t.index ["provider_profile_id"], name: "index_availabilities_on_provider_profile_id"
+  end
+
+  create_table "consultation_notes", force: :cascade do |t|
+    t.bigint "appointment_id", null: false
+    t.text "content"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["appointment_id"], name: "index_consultation_notes_on_appointment_id"
+  end
+
+  create_table "patient_profiles", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.date "date_of_birth"
+    t.text "health_goals"
+    t.text "medical_history_summary"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id"], name: "index_patient_profiles_on_user_id"
+  end
+
+  create_table "payments", force: :cascade do |t|
+    t.decimal "amount"
+    t.bigint "appointment_id"
+    t.datetime "created_at", null: false
+    t.string "currency", default: "USD"
+    t.datetime "paid_at"
+    t.bigint "payer_id", null: false
+    t.integer "status"
+    t.string "stripe_payment_intent_id"
+    t.datetime "updated_at", null: false
+    t.index ["appointment_id"], name: "index_payments_on_appointment_id"
+    t.index ["payer_id"], name: "index_payments_on_payer_id"
+    t.index ["stripe_payment_intent_id"], name: "index_payments_on_stripe_payment_intent_id"
+  end
+
+  create_table "provider_profiles", force: :cascade do |t|
+    t.text "bio"
+    t.decimal "consultation_rate"
+    t.datetime "created_at", null: false
+    t.text "credentials"
+    t.string "specialty"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id"], name: "index_provider_profiles_on_user_id"
+  end
+
+  create_table "services", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.integer "duration_minutes"
+    t.boolean "is_active", default: true
+    t.string "name"
+    t.decimal "price"
+    t.bigint "provider_profile_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_profile_id"], name: "index_services_on_provider_profile_id"
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "email", default: "", null: false
+    t.string "encrypted_password", default: "", null: false
+    t.string "first_name"
+    t.string "last_name"
+    t.datetime "remember_created_at"
+    t.datetime "reset_password_sent_at"
+    t.string "reset_password_token"
+    t.integer "role", default: 0, null: false
+    t.string "time_zone", default: "UTC"
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+  end
+
+  add_foreign_key "appointments", "services"
+  add_foreign_key "appointments", "users", column: "patient_id"
+  add_foreign_key "appointments", "users", column: "provider_id"
+  add_foreign_key "availabilities", "provider_profiles"
+  add_foreign_key "consultation_notes", "appointments"
+  add_foreign_key "patient_profiles", "users"
+  add_foreign_key "payments", "appointments"
+  add_foreign_key "payments", "users", column: "payer_id"
+  add_foreign_key "provider_profiles", "users"
+  add_foreign_key "services", "provider_profiles"
+end

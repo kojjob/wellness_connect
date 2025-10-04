@@ -1,0 +1,32 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold">Provider Profiles</h1>
+    <% if current_user.provider? %>
+      <%= link_to "New Provider Profile", new_provider_profile_path, class: "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600" %>
+    <% end %>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <% @provider_profiles.each do |provider_profile| %>
+      <div class="bg-white shadow rounded-lg p-6">
+        <h2 class="text-xl font-bold mb-2"><%= provider_profile.user.first_name %> <%= provider_profile.user.last_name %></h2>
+        <p class="text-gray-600 mb-2"><%= provider_profile.specialty %></p>
+        <p class="text-sm text-gray-500 mb-4"><%= provider_profile.credentials %></p>
+        <p class="text-gray-700 mb-4"><%= truncate(provider_profile.bio, length: 100) %></p>
+        <div class="flex justify-between items-center">
+          <span class="text-lg font-semibold text-green-600">$<%= provider_profile.consultation_rate %>/session</span>
+          <%= link_to "View Profile", provider_profile_path(provider_profile), class: "bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <% if @provider_profiles.empty? %>
+    <div class="text-center py-12">
+      <p class="text-gray-500 text-lg">No provider profiles yet.</p>
+      <% if current_user.provider? %>
+        <%= link_to "Create your profile", new_provider_profile_path, class: "mt-4 inline-block bg-green-500 text-white px-6 py-3 rounded hover:bg-green-600" %>
+      <% end %>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,48 @@
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+  <!-- Hero Section -->
+  <div class="container mx-auto px-4 py-16">
+    <div class="text-center max-w-4xl mx-auto">
+      <h1 class="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+        WellnessConnect
+      </h1>
+      <p class="text-xl md:text-2xl text-gray-700 mb-8">
+        Your trusted marketplace for virtual wellness appointments
+      </p>
+      <p class="text-lg text-gray-600 mb-12">
+        Connect with certified wellness providers from the comfort of your home. Book appointments with nutritionists, mental health counselors, fitness coaches, and more.
+      </p>
+
+      <!-- CTA Buttons -->
+      <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+        <% if user_signed_in? %>
+          <%= link_to "Dashboard", root_path, class: "px-8 py-4 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition duration-200 shadow-lg" %>
+          <%= link_to "Sign Out", destroy_user_session_path, data: { turbo_method: :delete }, class: "px-8 py-4 bg-gray-600 text-white font-semibold rounded-lg hover:bg-gray-700 transition duration-200" %>
+        <% else %>
+          <%= link_to "Sign Up", new_user_registration_path, class: "px-8 py-4 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition duration-200 shadow-lg" %>
+          <%= link_to "Sign In", new_user_session_path, class: "px-8 py-4 bg-white text-indigo-600 font-semibold rounded-lg hover:bg-gray-50 transition duration-200 border-2 border-indigo-600" %>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="grid md:grid-cols-3 gap-8 mt-20">
+      <div class="bg-white p-8 rounded-xl shadow-md">
+        <div class="text-indigo-600 text-4xl mb-4">🏥</div>
+        <h3 class="text-xl font-semibold mb-3">Certified Providers</h3>
+        <p class="text-gray-600">All our wellness providers are verified and certified professionals.</p>
+      </div>
+
+      <div class="bg-white p-8 rounded-xl shadow-md">
+        <div class="text-indigo-600 text-4xl mb-4">📅</div>
+        <h3 class="text-xl font-semibold mb-3">Easy Booking</h3>
+        <p class="text-gray-600">Book appointments instantly with our simple scheduling system.</p>
+      </div>
+
+      <div class="bg-white p-8 rounded-xl shadow-md">
+        <div class="text-indigo-600 text-4xl mb-4">💻</div>
+        <h3 class="text-xl font-semibold mb-3">Virtual Consultations</h3>
+        <p class="text-gray-600">Meet your wellness provider from anywhere via secure video calls.</p>
+      </div>
+    </div>
+  </div>
+</div>
