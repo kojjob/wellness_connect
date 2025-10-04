@@ -44,13 +44,29 @@ class StripeWebhooksController < ApplicationController
     payment = Payment.find_by(stripe_payment_intent_id: payment_intent[:id])
 
     if payment
-      payment.update!(
-        status: :succeeded,
-        paid_at: Time.current
-      )
+      ActiveRecord::Base.transaction do
+        # Update payment status
+        payment.update!(
+          status: :succeeded,
+          paid_at: Time.current
+        )
 
-      # TODO: Send confirmation email to patient
-      # TODO: Send notification to provider
+        # Update appointment status from payment_pending to scheduled
+        if payment.appointment
+          appointment = payment.appointment
+
+          if appointment.payment_pending?
+            appointment.update!(status: :scheduled)
+
+            # Send confirmation notifications to both patient and provider
+            NotificationService.notify_appointment_booked(appointment)
+
+            Rails.logger.info "Appointment #{appointment.id} confirmed: payment #{payment.id} succeeded"
+          else
+            Rails.logger.info "Payment #{payment.id} succeeded but appointment #{appointment.id} already in #{appointment.status} status"
+          end
+        end
+      end
 
       Rails.logger.info "Payment #{payment.id} succeeded for appointment #{payment.appointment_id}"
     else
@@ -62,10 +78,49 @@ class StripeWebhooksController < ApplicationController
     payment = Payment.find_by(stripe_payment_intent_id: payment_intent[:id])
 
     if payment
-      payment.update!(status: :failed)
+      ActiveRecord::Base.transaction do
+        # Update payment status
+        payment.update!(status: :failed)
 
-      # TODO: Notify patient about failed payment
-      # TODO: Release availability slot if payment fails
+        # Release availability slot and cancel appointment if payment fails
+        if payment.appointment
+          appointment = payment.appointment
+
+          if appointment.payment_pending?
+            # Find and release the availability slot
+            availability = Availability.find_by(
+              provider_profile: appointment.service.provider_profile,
+              start_time: appointment.start_time,
+              end_time: appointment.end_time,
+              is_booked: true
+            )
+
+            if availability
+              availability.update!(is_booked: false)
+              Rails.logger.info "Released availability slot #{availability.id} for failed payment"
+            end
+
+            # Cancel the appointment
+            appointment.update!(
+              status: :cancelled_by_patient,
+              cancellation_reason: "Payment failed"
+            )
+
+            # Notify patient about failed payment
+            Notification.create!(
+              user: appointment.patient,
+              title: "Payment Failed",
+              message: "Your payment for the appointment on #{appointment.start_time.strftime('%B %d at %I:%M %p')} failed. The appointment has been cancelled. Please try booking again.",
+              notification_type: "payment_failed",
+              action_url: "/appointments/new?availability_id=#{availability&.id}"
+            )
+
+            Rails.logger.info "Appointment #{appointment.id} cancelled: payment #{payment.id} failed"
+          else
+            Rails.logger.info "Payment #{payment.id} failed but appointment #{appointment.id} already in #{appointment.status} status"
+          end
+        end
+      end
 
       Rails.logger.info "Payment #{payment.id} failed for appointment #{payment.appointment_id}"
     else

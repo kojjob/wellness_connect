@@ -25,32 +25,92 @@ class AppointmentsController < ApplicationController
   def create
     @appointment = Appointment.new(appointment_params)
     @appointment.patient = current_user
-    @appointment.status = :scheduled
+    # Status defaults to payment_pending
 
-    # Get availability and mark as booked
+    # Get availability and service
     availability = Availability.find(params[:availability_id])
+    service = @appointment.service
 
     ActiveRecord::Base.transaction do
       if @appointment.save
+        # Mark availability as booked to prevent double-booking during payment
         availability.update!(is_booked: true)
 
-        # Create notifications for both provider and patient
-        NotificationService.notify_appointment_booked(@appointment)
+        begin
+          # Create Stripe Payment Intent
+          payment_intent = Stripe::PaymentIntent.create(
+            amount: (service.price.to_f * 100).to_i, # Stripe uses cents
+            currency: "usd",
+            metadata: {
+              appointment_id: @appointment.id,
+              patient_id: current_user.id,
+              provider_id: @appointment.provider.id
+            }
+          )
 
-        redirect_to dashboard_path, notice: "Appointment successfully booked!"
+          # Create Payment record
+          payment = Payment.create!(
+            payer: current_user,
+            appointment: @appointment,
+            amount: service.price,
+            currency: "USD",
+            status: :pending,
+            stripe_payment_intent_id: payment_intent.id
+          )
+
+          # Return payment info for frontend
+          respond_to do |format|
+            format.html { redirect_to dashboard_path, notice: "Please complete payment to confirm your appointment." }
+            format.json do
+              render json: {
+                success: true,
+                appointment_id: @appointment.id,
+                client_secret: payment_intent.client_secret,
+                payment_intent_id: payment_intent.id,
+                payment_id: payment.id,
+                amount: service.price
+              }, status: :ok
+            end
+          end
+        rescue Stripe::StripeError => e
+          # Payment Intent creation failed - rollback appointment and availability
+          availability.update!(is_booked: false)
+          @appointment.destroy
+
+          respond_to do |format|
+            format.html do
+              @availability = availability
+              @provider_profile = availability.provider_profile
+              @services = @provider_profile.services.where(is_active: true)
+              flash.now[:alert] = "Payment processing error: #{e.message}"
+              render :new, status: :unprocessable_entity
+            end
+            format.json { render json: { error: e.message }, status: :unprocessable_entity }
+          end
+        end
       else
         @availability = availability
         @provider_profile = availability.provider_profile
         @services = @provider_profile.services.where(is_active: true)
-        render :new, status: :unprocessable_entity
+
+        respond_to do |format|
+          format.html { render :new, status: :unprocessable_entity }
+          format.json { render json: { errors: @appointment.errors.full_messages }, status: :unprocessable_entity }
+        end
       end
     end
   rescue ActiveRecord::RecordInvalid => e
     @availability = availability
     @provider_profile = availability.provider_profile
     @services = @provider_profile.services.where(is_active: true)
-    flash.now[:alert] = "Failed to book appointment: #{e.message}"
-    render :new, status: :unprocessable_entity
+
+    respond_to do |format|
+      format.html do
+        flash.now[:alert] = "Failed to book appointment: #{e.message}"
+        render :new, status: :unprocessable_entity
+      end
+      format.json { render json: { error: e.message }, status: :unprocessable_entity }
+    end
   end
 
   def show
