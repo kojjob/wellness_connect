@@ -4,6 +4,9 @@ Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
   root "home#index"
 
+  # Provider dashboard
+  get "dashboard", to: "dashboard#index", as: :dashboard
+
   # Static pages
   get "become-a-provider", to: "pages#become_provider", as: :become_provider
   get "about", to: "pages#about", as: :about
