@@ -68,6 +68,16 @@
             </div>
             <div class="flex items-center space-x-3">
               <span class="px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full">Available</span>
+              <% if user_signed_in? && current_user.patient? %>
+                <%= link_to "Book Appointment",
+                            new_appointment_path(availability_id: availability.id),
+                            class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500",
+                            data: { turbo_frame: "appointment_booking" } %>
+              <% elsif !user_signed_in? %>
+                <%= link_to "Book Appointment",
+                            new_user_session_path,
+                            class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+              <% end %>
             </div>
           </div>
         <% end %>
