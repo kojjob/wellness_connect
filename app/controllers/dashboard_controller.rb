@@ -15,6 +15,12 @@ class DashboardController < ApplicationController
 
   def render_provider_dashboard
     @provider_profile = current_user.provider_profile
+
+    unless @provider_profile
+      redirect_to new_provider_profile_path, alert: "Please complete your provider profile to access the dashboard."
+      return
+    end
+
     @services = @provider_profile.services.order(created_at: :desc)
     @availabilities = @provider_profile.availabilities.where("start_time >= ?", Time.current).order(start_time: :asc).limit(10)
     @total_services = @provider_profile.services.count
