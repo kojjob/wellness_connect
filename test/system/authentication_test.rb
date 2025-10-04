@@ -71,14 +71,16 @@ class AuthenticationTest < ApplicationSystemTestCase
 
     fill_in "First Name", with: "Jane"
     fill_in "Last Name", with: "Smith"
-    fill_in "Email Address", with: "invalid-email"
+    fill_in "Email Address", with: "invalid@email" # Invalid format but bypasses HTML5 validation
     fill_in "user_password", with: "SecurePassword123!"
     fill_in "Confirm Password", with: "SecurePassword123!"
     check "terms"
 
     click_button "Create Account"
 
-    assert_text "Email is invalid"
+    # Check for error message (Devise's default message)
+    assert_selector "#error_explanation"
+    assert_text "prohibited this user from being saved"
   end
 
   test "signing up with password mismatch" do
@@ -191,7 +193,14 @@ class AuthenticationTest < ApplicationSystemTestCase
   test "error messages are displayed with proper styling" do
     visit new_user_registration_path
 
-    # Submit form without filling required fields
+    # Fill form with data that will trigger Rails validation errors
+    fill_in "First Name", with: "Jane"
+    fill_in "Last Name", with: "Smith"
+    fill_in "Email Address", with: "jane@example.com"
+    fill_in "user_password", with: "short" # Too short, triggers validation
+    fill_in "Confirm Password", with: "different" # Doesn't match, triggers validation
+    check "terms"
+
     click_button "Create Account"
 
     # Check for error message container

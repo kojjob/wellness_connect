@@ -47,12 +47,13 @@ export default class extends Controller {
   updateStrengthUI(strength) {
     const bar = this.strengthBarTarget
     const text = this.strengthTextTarget
-    
+    const password = this.inputTarget.value
+
     // Update bar width
     bar.style.width = `${strength}%`
-    
+
     // Update colors and text
-    if (strength === 0) {
+    if (password.length === 0) {
       bar.className = "h-full rounded-full transition-all duration-300"
       text.textContent = ""
       text.className = "text-sm font-medium"
