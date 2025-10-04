@@ -58,7 +58,7 @@ class AuthenticationTest < ApplicationSystemTestCase
     fill_in "Email Address", with: "jane.smith@example.com"
     fill_in "user_password", with: "SecurePassword123!"
     fill_in "Confirm Password", with: "SecurePassword123!"
-    choose "user_role_patient"
+    find("label", text: "Client").click
     check "terms"
 
     click_button "Create Account"
@@ -163,7 +163,7 @@ class AuthenticationTest < ApplicationSystemTestCase
   test "can select provider role during sign up" do
     visit new_user_registration_path
 
-    choose "user_role_provider"
+    find("label", text: "Provider").click
 
     assert find("input[value='provider']").checked?
   end
