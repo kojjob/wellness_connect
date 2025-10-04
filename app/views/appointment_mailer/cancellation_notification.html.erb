@@ -1,5 +1,108 @@
-<h1>Appointment#cancellation_notification</h1>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); color: white; padding: 30px 20px; text-align: center; border-radius: 8px 8px 0 0; }
+    .content { background: #f9fafb; padding: 30px 20px; }
+    .card { background: white; border-radius: 8px; padding: 20px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .detail-row { padding: 12px 0; border-bottom: 1px solid #e5e7eb; }
+    .detail-label { font-weight: 600; color: #6b7280; }
+    .detail-value { color: #111827; }
+    .button { display: inline-block; background: #dc2626; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; margin: 20px 0; }
+    .footer { text-align: center; color: #6b7280; padding: 20px; font-size: 14px; }
+    .cancellation-reason { background: #fef2f2; border-left: 4px solid #dc2626; padding: 15px; margin: 20px 0; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1 style="margin: 0;">❌ Appointment Cancelled</h1>
+      <p style="margin: 10px 0 0 0;">We're sorry about the cancellation</p>
+    </div>
 
-<p>
-  <%= @greeting %>, find me in app/views/appointment_mailer/cancellation_notification.html.erb
-</p>
+    <div class="content">
+      <% if @is_patient %>
+        <p>Hi <%= @patient.full_name %>,</p>
+        <p>We're writing to inform you that your appointment has been cancelled by the provider.</p>
+      <% else %>
+        <p>Hi <%= @provider.full_name %>,</p>
+        <p>We're writing to inform you that <%= @patient.full_name %> has cancelled their appointment.</p>
+      <% end %>
+
+      <div class="card">
+        <h2 style="margin-top: 0; color: #dc2626;">Cancelled Appointment Details</h2>
+
+        <% if @is_patient %>
+          <div class="detail-row">
+            <div class="detail-label">Service</div>
+            <div class="detail-value"><%= @service.name %></div>
+          </div>
+
+          <div class="detail-row">
+            <div class="detail-label">Provider</div>
+            <div class="detail-value"><%= @provider.full_name %></div>
+          </div>
+        <% else %>
+          <div class="detail-row">
+            <div class="detail-label">Client</div>
+            <div class="detail-value"><%= @patient.full_name %></div>
+          </div>
+
+          <div class="detail-row">
+            <div class="detail-label">Service</div>
+            <div class="detail-value"><%= @service.name %></div>
+          </div>
+        <% end %>
+
+        <div class="detail-row">
+          <div class="detail-label">Date</div>
+          <div class="detail-value"><%= @appointment.start_time.strftime("%A, %B %d, %Y") %></div>
+        </div>
+
+        <div class="detail-row">
+          <div class="detail-label">Time</div>
+          <div class="detail-value">
+            <%= @appointment.start_time.strftime("%I:%M %p") %> - <%= @appointment.end_time.strftime("%I:%M %p") %>
+            <% if @recipient.time_zone.present? %> <%= @recipient.time_zone %><% end %>
+          </div>
+        </div>
+
+        <div class="detail-row">
+          <div class="detail-label">Duration</div>
+          <div class="detail-value"><%= @service.duration_minutes %> minutes</div>
+        </div>
+
+        <div class="detail-row" style="border-bottom: none;">
+          <div class="detail-label">Price</div>
+          <div class="detail-value">$<%= number_to_currency(@service.price, unit: '') %></div>
+        </div>
+      </div>
+
+      <% if @appointment.cancellation_reason.present? %>
+        <div class="cancellation-reason">
+          <strong>Cancellation Reason:</strong><br>
+          <%= @appointment.cancellation_reason %>
+        </div>
+      <% end %>
+
+      <% if @is_patient %>
+        <p>You can browse other available providers and book a new appointment at any time.</p>
+      <% else %>
+        <p>The time slot has been released and is now available for other bookings.</p>
+      <% end %>
+
+      <p style="text-align: center;">
+        <%= link_to "View Dashboard", dashboard_url, class: "button" %>
+      </p>
+    </div>
+
+    <div class="footer">
+      <p>© <%= Time.current.year %> WellnessConnect. All rights reserved.</p>
+      <p>Questions? Contact us at support@wellnessconnect.com</p>
+    </div>
+  </div>
+</body>
+</html>

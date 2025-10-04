@@ -1,3 +1,29 @@
-Appointment#booking_confirmation
+APPOINTMENT CONFIRMED
+====================
 
-<%= @greeting %>, find me in app/views/appointment_mailer/booking_confirmation.text.erb
+Hi <%= @patient.full_name %>,
+
+Great news! Your appointment with <%= @provider.full_name %> has been confirmed.
+
+APPOINTMENT DETAILS
+-------------------
+Service:     <%= @service.name %>
+Provider:    <%= @provider.full_name %>
+Date:        <%= @appointment.start_time.strftime("%A, %B %d, %Y") %>
+Time:        <%= @appointment.start_time.strftime("%I:%M %p") %> - <%= @appointment.end_time.strftime("%I:%M %p") %><% if @patient.time_zone.present? %> <%= @patient.time_zone %><% end %>
+Duration:    <%= @service.duration_minutes %> minutes
+Price:       $<%= number_to_currency(@service.price, unit: '') %>
+
+WHAT'S NEXT?
+------------
+* You'll receive a reminder email 24 hours before your appointment
+* Make sure you're in a quiet space with a good internet connection
+* Have any questions or materials ready for your session
+
+View your dashboard: <%= dashboard_url %>
+
+If you need to cancel or reschedule, please do so at least 24 hours in advance.
+
+---
+© <%= Time.current.year %> WellnessConnect. All rights reserved.
+Questions? Contact us at support@wellnessconnect.com

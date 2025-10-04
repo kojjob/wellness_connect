@@ -1,3 +1,44 @@
-Appointment#cancellation_notification
+APPOINTMENT CANCELLED
+====================
 
-<%= @greeting %>, find me in app/views/appointment_mailer/cancellation_notification.text.erb
+<% if @is_patient %>
+Hi <%= @patient.full_name %>,
+
+We're writing to inform you that your appointment has been cancelled by the provider.
+<% else %>
+Hi <%= @provider.full_name %>,
+
+We're writing to inform you that <%= @patient.full_name %> has cancelled their appointment.
+<% end %>
+
+CANCELLED APPOINTMENT DETAILS
+------------------------------
+<% if @is_patient %>
+Service:     <%= @service.name %>
+Provider:    <%= @provider.full_name %>
+<% else %>
+Client:      <%= @patient.full_name %>
+Service:     <%= @service.name %>
+<% end %>
+Date:        <%= @appointment.start_time.strftime("%A, %B %d, %Y") %>
+Time:        <%= @appointment.start_time.strftime("%I:%M %p") %> - <%= @appointment.end_time.strftime("%I:%M %p") %><% if @recipient.time_zone.present? %> <%= @recipient.time_zone %><% end %>
+Duration:    <%= @service.duration_minutes %> minutes
+Price:       $<%= number_to_currency(@service.price, unit: '') %>
+
+<% if @appointment.cancellation_reason.present? %>
+CANCELLATION REASON
+-------------------
+<%= @appointment.cancellation_reason %>
+
+<% end %>
+<% if @is_patient %>
+You can browse other available providers and book a new appointment at any time.
+<% else %>
+The time slot has been released and is now available for other bookings.
+<% end %>
+
+View your dashboard: <%= dashboard_url %>
+
+---
+© <%= Time.current.year %> WellnessConnect. All rights reserved.
+Questions? Contact us at support@wellnessconnect.com
