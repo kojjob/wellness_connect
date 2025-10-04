@@ -52,17 +52,18 @@ class AuthenticationTest < ApplicationSystemTestCase
 
   test "signing up with valid information" do
     visit new_user_registration_path
-    
+
     fill_in "First Name", with: "Jane"
     fill_in "Last Name", with: "Smith"
     fill_in "Email Address", with: "jane.smith@example.com"
     fill_in "user_password", with: "SecurePassword123!"
     fill_in "Confirm Password", with: "SecurePassword123!"
-    choose "user_role_patient"
+    # Patient is already selected by default, but we can click to be explicit
+    find("label", text: "Client").click
     check "terms"
-    
+
     click_button "Create Account"
-    
+
     assert_text "Welcome! You have signed up successfully"
   end
 
@@ -162,9 +163,10 @@ class AuthenticationTest < ApplicationSystemTestCase
 
   test "can select provider role during sign up" do
     visit new_user_registration_path
-    
-    choose "user_role_provider"
-    
+
+    # Click the label since the radio button is visually hidden (sr-only)
+    find("label", text: "Provider").click
+
     assert find("input[value='provider']").checked?
   end
 
@@ -247,4 +249,3 @@ class AuthenticationTest < ApplicationSystemTestCase
     assert terms_checkbox[:required]
   end
 end
-
