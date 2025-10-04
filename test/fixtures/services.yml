@@ -7,3 +7,11 @@ service_one:
   duration_minutes: 60
   price: 150.00
   is_active: true
+
+service_two:
+  provider_profile: provider_profile_two
+  name: Business Strategy Session
+  description: One-hour strategy consultation for startups
+  duration_minutes: 60
+  price: 200.00
+  is_active: true
