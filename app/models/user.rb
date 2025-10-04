@@ -10,7 +10,7 @@ class User < ApplicationRecord
   # Associations
   has_one :provider_profile, dependent: :destroy
   has_one :patient_profile, dependent: :destroy
-  has_many :appointments_as_patient, class_name: 'Appointment', foreign_key: 'patient_id', dependent: :destroy
-  has_many :appointments_as_provider, class_name: 'Appointment', foreign_key: 'provider_id', dependent: :destroy
-  has_many :payments_made, class_name: 'Payment', foreign_key: 'payer_id', dependent: :destroy
+  has_many :appointments_as_patient, class_name: "Appointment", foreign_key: "patient_id", dependent: :destroy
+  has_many :appointments_as_provider, class_name: "Appointment", foreign_key: "provider_id", dependent: :destroy
+  has_many :payments_made, class_name: "Payment", foreign_key: "payer_id", dependent: :destroy
 end
