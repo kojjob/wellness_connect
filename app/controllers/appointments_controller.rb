@@ -3,67 +3,84 @@ class AppointmentsController < ApplicationController
   before_action :set_appointment, only: [ :show, :cancel ]
 
   def index
-    @appointments = current_user.appointments_as_patient.order(start_time: :asc)
+    @appointments = if current_user.patient?
+      current_user.appointments_as_patient.order(start_time: :asc)
+    else
+      current_user.appointments_as_provider.order(start_time: :asc)
+    end
   end
 
   def new
     @availability = Availability.find(params[:availability_id])
     @provider_profile = @availability.provider_profile
-    @appointment = Appointment.new
     @services = @provider_profile.services.where(is_active: true)
+    @appointment = Appointment.new(
+      patient: current_user,
+      provider: @provider_profile.user,
+      start_time: @availability.start_time,
+      end_time: @availability.end_time
+    )
   end
 
   def create
-    @availability = Availability.find(params[:availability_id])
-    @service = Service.find(params[:appointment][:service_id])
+    @appointment = Appointment.new(appointment_params)
+    @appointment.patient = current_user
+    @appointment.status = :scheduled
 
-    @appointment = Appointment.new(
-      patient: current_user,
-      provider: @availability.provider_profile.user,
-      service: @service,
-      start_time: @availability.start_time,
-      end_time: @availability.end_time,
-      status: :scheduled
-    )
+    # Get availability and mark as booked
+    availability = Availability.find(params[:availability_id])
 
-    if @appointment.save
-      # Mark availability as booked
-      @availability.update!(is_booked: true)
-
-      redirect_to dashboard_path, notice: "Appointment successfully booked."
-    else
-      @provider_profile = @availability.provider_profile
-      @services = @provider_profile.services.where(is_active: true)
-      render :new, status: :unprocessable_entity
+    ActiveRecord::Base.transaction do
+      if @appointment.save
+        availability.update!(is_booked: true)
+        redirect_to dashboard_path, notice: "Appointment successfully booked!"
+      else
+        @availability = availability
+        @provider_profile = availability.provider_profile
+        @services = @provider_profile.services.where(is_active: true)
+        render :new, status: :unprocessable_entity
+      end
     end
+  rescue ActiveRecord::RecordInvalid => e
+    @availability = availability
+    @provider_profile = availability.provider_profile
+    @services = @provider_profile.services.where(is_active: true)
+    flash.now[:alert] = "Failed to book appointment: #{e.message}"
+    render :new, status: :unprocessable_entity
   end
 
   def show
-    @appointment = Appointment.find(params[:id])
+    authorize @appointment
   end
 
   def cancel
+    authorize @appointment
+
     if @appointment.update(
-      status: :cancelled_by_patient,
+      status: current_user.patient? ? :cancelled_by_patient : :cancelled_by_provider,
       cancellation_reason: params[:cancellation_reason]
     )
-      # Release the availability slot
+      # Release availability slot
       availability = Availability.find_by(
-        provider_profile: @appointment.provider.provider_profile,
+        provider_profile: @appointment.service.provider_profile,
         start_time: @appointment.start_time,
         end_time: @appointment.end_time
       )
-      availability&.update!(is_booked: false)
+      availability&.update(is_booked: false)
 
-      redirect_to dashboard_path, notice: "Appointment cancelled successfully."
+      redirect_to dashboard_path, notice: "Appointment cancelled successfully"
     else
-      redirect_to dashboard_path, alert: "Failed to cancel appointment."
+      redirect_to dashboard_path, alert: "Failed to cancel appointment"
     end
   end
 
   private
 
   def set_appointment
-    @appointment = current_user.appointments_as_patient.find(params[:id])
+    @appointment = Appointment.find(params[:id])
+  end
+
+  def appointment_params
+    params.require(:appointment).permit(:service_id, :provider_id, :start_time, :end_time)
   end
 end
