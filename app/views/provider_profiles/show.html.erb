@@ -1,37 +1,94 @@
 <div class="container mx-auto px-4 py-8">
-  <div class="bg-white shadow rounded-lg p-6">
+  <!-- Provider Header -->
+  <div class="bg-white shadow rounded-lg p-6 mb-6">
     <h1 class="text-3xl font-bold mb-4"><%= @provider_profile.user.first_name %> <%= @provider_profile.user.last_name %></h1>
 
-    <div class="mb-4">
-      <h2 class="text-xl font-semibold text-gray-700">Specialty</h2>
-      <p class="text-gray-600"><%= @provider_profile.specialty %></p>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <h2 class="text-xl font-semibold text-gray-700 mb-2">Specialty</h2>
+        <p class="text-gray-600"><%= @provider_profile.specialty %></p>
+      </div>
+
+      <div>
+        <h2 class="text-xl font-semibold text-gray-700 mb-2">Credentials</h2>
+        <p class="text-gray-600"><%= @provider_profile.credentials %></p>
+      </div>
     </div>
 
-    <div class="mb-4">
-      <h2 class="text-xl font-semibold text-gray-700">Credentials</h2>
-      <p class="text-gray-600"><%= @provider_profile.credentials %></p>
-    </div>
-
-    <div class="mb-4">
-      <h2 class="text-xl font-semibold text-gray-700">Bio</h2>
+    <div class="mt-4">
+      <h2 class="text-xl font-semibold text-gray-700 mb-2">Bio</h2>
       <p class="text-gray-600"><%= @provider_profile.bio %></p>
     </div>
 
-    <div class="mb-4">
-      <h2 class="text-xl font-semibold text-gray-700">Consultation Rate</h2>
-      <p class="text-gray-600">$<%= @provider_profile.consultation_rate %> per session</p>
+    <div class="mt-4">
+      <h2 class="text-xl font-semibold text-gray-700 mb-2">Consultation Rate</h2>
+      <p class="text-2xl font-bold text-blue-600">$<%= number_with_precision(@provider_profile.consultation_rate, precision: 2) %> <span class="text-sm text-gray-600">per session</span></p>
     </div>
+  </div>
 
-    <div class="mt-6 flex gap-2">
-      <% if policy(@provider_profile).edit? %>
-        <%= link_to "Edit", edit_provider_profile_path(@provider_profile), class: "bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" %>
+  <!-- Services Section -->
+  <div class="bg-white shadow rounded-lg p-6 mb-6">
+    <h2 class="text-2xl font-bold text-gray-900 mb-4">Services Offered</h2>
+
+    <% if @provider_profile.services.any? %>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <% @provider_profile.services.where(is_active: true).each do |service| %>
+          <div class="border border-gray-200 rounded-lg p-4 hover:border-blue-500 transition duration-200">
+            <h3 class="text-lg font-semibold text-gray-900 mb-2"><%= service.name %></h3>
+            <p class="text-gray-600 text-sm mb-3"><%= service.description %></p>
+            <div class="flex justify-between items-center">
+              <span class="text-blue-600 font-bold">$<%= number_with_precision(service.price, precision: 2) %></span>
+              <span class="text-gray-500 text-sm"><%= service.duration_minutes %> minutes</span>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="text-gray-500">No services available at this time.</p>
+    <% end %>
+  </div>
+
+  <!-- Availability Section -->
+  <div class="bg-white shadow rounded-lg p-6 mb-6">
+    <h2 class="text-2xl font-bold text-gray-900 mb-4">Available Time Slots</h2>
+
+    <% available_slots = @provider_profile.availabilities.where(is_booked: false).where("start_time >= ?", Time.current).order(start_time: :asc).limit(10) %>
+
+    <% if available_slots.any? %>
+      <div class="space-y-3">
+        <% available_slots.each do |availability| %>
+          <div class="flex justify-between items-center p-4 border border-gray-200 rounded-lg">
+            <div>
+              <p class="font-semibold text-gray-900">
+                <%= availability.start_time.strftime("%B %d, %Y") %>
+              </p>
+              <p class="text-gray-600 text-sm">
+                <%= availability.start_time.strftime("%I:%M %p") %> - <%= availability.end_time.strftime("%I:%M %p") %>
+              </p>
+            </div>
+            <span class="px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full">Available</span>
+          </div>
+        <% end %>
+      </div>
+
+      <% if @provider_profile.availabilities.where(is_booked: false).where("start_time >= ?", Time.current).count > 10 %>
+        <p class="mt-4 text-gray-600 text-sm">Showing first 10 available slots</p>
       <% end %>
+    <% else %>
+      <p class="text-gray-500">No available time slots at this time.</p>
+    <% end %>
+  </div>
 
-      <%= link_to "Back to Providers", provider_profiles_path, class: "bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600" %>
+  <!-- Action Buttons -->
+  <div class="mt-6 flex gap-2">
+    <% if user_signed_in? && policy(@provider_profile).edit? %>
+      <%= link_to "Edit", edit_provider_profile_path(@provider_profile), class: "bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" %>
+    <% end %>
 
-      <% if policy(@provider_profile).destroy? %>
-        <%= button_to "Delete", provider_profile_path(@provider_profile), method: :delete, form: { data: { turbo_confirm: "Are you sure?" } }, class: "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600" %>
-      <% end %>
-    </div>
+    <%= link_to "Back to Providers", providers_path, class: "bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600" %>
+
+    <% if user_signed_in? && policy(@provider_profile).destroy? %>
+      <%= button_to "Delete", provider_profile_path(@provider_profile), method: :delete, form: { data: { turbo_confirm: "Are you sure?" } }, class: "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600" %>
+    <% end %>
   </div>
 </div>
