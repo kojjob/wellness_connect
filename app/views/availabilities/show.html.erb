@@ -1,0 +1,74 @@
+<div class="max-w-4xl mx-auto px-4 py-8">
+  <div class="bg-white shadow-md rounded-lg overflow-hidden">
+    <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+      <h1 class="text-2xl font-bold text-gray-900">Availability Details</h1>
+    </div>
+
+    <div class="px-6 py-6">
+      <dl class="grid grid-cols-1 gap-6">
+        <div>
+          <dt class="text-sm font-medium text-gray-500">Provider</dt>
+          <dd class="mt-1 text-sm text-gray-900">
+            <%= @provider_profile.user.first_name %> <%= @provider_profile.user.last_name %>
+          </dd>
+        </div>
+
+        <div>
+          <dt class="text-sm font-medium text-gray-500">Date</dt>
+          <dd class="mt-1 text-sm text-gray-900">
+            <%= @availability.start_time.strftime("%B %d, %Y") %>
+          </dd>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <dt class="text-sm font-medium text-gray-500">Start Time</dt>
+            <dd class="mt-1 text-sm text-gray-900">
+              <%= @availability.start_time.strftime("%I:%M %p") %>
+            </dd>
+          </div>
+
+          <div>
+            <dt class="text-sm font-medium text-gray-500">End Time</dt>
+            <dd class="mt-1 text-sm text-gray-900">
+              <%= @availability.end_time.strftime("%I:%M %p") %>
+            </dd>
+          </div>
+        </div>
+
+        <div>
+          <dt class="text-sm font-medium text-gray-500">Duration</dt>
+          <dd class="mt-1 text-sm text-gray-900">
+            <%= (((@availability.end_time - @availability.start_time) / 60).to_i) %> minutes
+          </dd>
+        </div>
+
+        <div>
+          <dt class="text-sm font-medium text-gray-500">Status</dt>
+          <dd class="mt-1">
+            <% if @availability.is_booked %>
+              <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                Booked
+              </span>
+            <% else %>
+              <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                Available
+              </span>
+            <% end %>
+          </dd>
+        </div>
+      </dl>
+    </div>
+
+    <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-between">
+      <%= link_to "← Back to Availabilities", provider_profile_availabilities_path(@provider_profile), class: "text-blue-600 hover:text-blue-800" %>
+
+      <% if user_signed_in? && current_user == @provider_profile.user %>
+        <div class="space-x-4">
+          <%= link_to "Edit", edit_provider_profile_availability_path(@provider_profile, @availability), class: "text-blue-600 hover:text-blue-800" %>
+          <%= link_to "Delete", provider_profile_availability_path(@provider_profile, @availability), data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "text-red-600 hover:text-red-800" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
