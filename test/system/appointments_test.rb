@@ -34,39 +34,52 @@ class AppointmentsTest < ApplicationSystemTestCase
     assert_text "Confirm Appointment"
     assert_current_path new_appointment_path(availability_id: @availability.id)
 
-    # Wait for form to be ready
-    assert_selector "select#appointment_service_id"
-
-    # Select service and confirm
+    # Select service
     select @service.name, from: "appointment_service_id"
 
-    # Wait for the form to be fully rendered before submitting
-    sleep 0.5
+    # Submit form
+    click_button "Confirm Booking"
 
-    assert_difference "Appointment.count", 1 do
-      click_button "Confirm Booking"
-    end
-
-    assert_text "Appointment successfully booked"
+    # Verify success message and redirect
+    assert_text "Appointment successfully booked", wait: 5
     assert_current_path dashboard_path
+
+    # Verify appointment appears on dashboard (use page content verification for system tests)
+    assert_text @service.name
+    assert_text @provider.full_name
+    assert_text "Scheduled"
   end
 
   test "appointment creation marks availability as booked" do
     sign_in @patient
     visit provider_profile_path(@provider_profile)
 
-    assert_not @availability.is_booked
+    # Note the time slot that is available
+    slot_time = @availability.start_time.strftime("%b %d")
 
     # Click Book link from booking widget
     within "#booking" do
+      assert_text slot_time
       first(:link, "Book").click
     end
 
     select @service.name, from: "appointment_service_id"
     click_button "Confirm Booking"
 
-    @availability.reload
-    assert @availability.is_booked
+    # Wait for redirect to dashboard and success
+    assert_current_path dashboard_path, wait: 5
+    assert_text "Appointment successfully booked"
+
+    # Verify the slot is no longer available by visiting provider profile
+    visit provider_profile_path(@provider_profile)
+
+    # The booked slot should not appear in available slots anymore
+    # If this was the only slot, we should see "No available slots" message
+    # Otherwise, the specific slot time should not be in the booking widget
+    within "#booking" do
+      # This test fixture only has one availability, so after booking it should show no slots
+      assert_text "No available slots at this time"
+    end
   end
 
   test "booked availability slots are not shown as bookable" do
@@ -169,16 +182,27 @@ class AppointmentsTest < ApplicationSystemTestCase
     sign_in @patient
     visit dashboard_path
 
-    assert @availability.is_booked
-
     within "#appointment-#{appointment.id}" do
       click_button "Cancel Appointment"
     end
 
+    # Accept confirmation dialog
     page.driver.browser.switch_to.alert.accept
 
-    @availability.reload
-    assert_not @availability.is_booked
+    # Wait for page to reload and show success message
+    assert_current_path dashboard_path, wait: 5
+
+    # Verify cancellation through UI - should show cancelled status
+    within "#appointment-#{appointment.id}" do
+      assert_text "Cancelled"
+    end
+
+    # Check availability was released by visiting provider profile and seeing the slot available again
+    visit provider_profile_path(@provider_profile)
+    within "#booking" do
+      assert_text "Next Available Slots"
+      assert_text @availability.start_time.strftime("%b %d")
+    end
   end
 
   test "appointment times are displayed in user timezone" do
