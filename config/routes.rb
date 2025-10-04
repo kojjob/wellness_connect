@@ -7,6 +7,9 @@ Rails.application.routes.draw do
   # Provider dashboard
   get "dashboard", to: "dashboard#index", as: :dashboard
 
+  # Public provider browsing
+  get "providers", to: "provider_profiles#index", as: :providers
+
   # Static pages
   get "become-a-provider", to: "pages#become_provider", as: :become_provider
   get "about", to: "pages#about", as: :about

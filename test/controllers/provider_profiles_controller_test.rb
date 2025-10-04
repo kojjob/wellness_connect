@@ -16,7 +16,7 @@ class ProviderProfilesControllerTest < ActionDispatch::IntegrationTest
 
   test "should get index without authentication" do
     get provider_profiles_url
-    assert_redirected_to new_user_session_path
+    assert_response :success
   end
 
   # Show tests
@@ -26,9 +26,9 @@ class ProviderProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test "should not show provider_profile without authentication" do
+  test "should show provider_profile without authentication" do
     get provider_profile_url(@provider_profile)
-    assert_redirected_to new_user_session_path
+    assert_response :success
   end
 
   # New tests
