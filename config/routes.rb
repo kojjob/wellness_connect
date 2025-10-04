@@ -13,6 +13,7 @@ Rails.application.routes.draw do
   # Static pages
   get "become-a-provider", to: "pages#become_provider", as: :become_provider
   get "about", to: "pages#about", as: :about
+  get "contact", to: "pages#contact", as: :contact
 
   resources :provider_profiles do
     resources :services
