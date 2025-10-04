@@ -1,0 +1,66 @@
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="sm:flex sm:items-center sm:justify-between mb-6">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900">Services</h1>
+      <p class="mt-2 text-sm text-gray-700">
+        <%= link_to "← Back to Profile", provider_profile_path(@provider_profile), class: "text-blue-600 hover:text-blue-800" %>
+      </p>
+    </div>
+    <% if policy(Service.new(provider_profile: @provider_profile)).new? %>
+      <div class="mt-4 sm:mt-0">
+        <%= link_to "New Service", new_provider_profile_service_path(@provider_profile), class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="bg-white shadow overflow-hidden sm:rounded-md">
+    <ul role="list" class="divide-y divide-gray-200">
+      <% @services.each do |service| %>
+        <li>
+          <div class="px-4 py-4 sm:px-6 hover:bg-gray-50">
+            <div class="flex items-center justify-between">
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center">
+                  <h3 class="text-lg font-medium text-gray-900 truncate">
+                    <%= link_to service.name, provider_profile_service_path(@provider_profile, service), class: "hover:text-blue-600" %>
+                  </h3>
+                  <% if service.is_active %>
+                    <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      Active
+                    </span>
+                  <% else %>
+                    <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                      Inactive
+                    </span>
+                  <% end %>
+                </div>
+                <p class="mt-1 text-sm text-gray-600"><%= service.description %></p>
+                <div class="mt-2 flex items-center text-sm text-gray-500">
+                  <span><%= service.duration_minutes %> minutes</span>
+                  <span class="mx-2">•</span>
+                  <span class="font-semibold text-gray-900"><%= number_to_currency(service.price) %></span>
+                </div>
+              </div>
+              <% if policy(service).edit? %>
+                <div class="ml-4 flex-shrink-0 flex space-x-2">
+                  <%= link_to "Edit", edit_provider_profile_service_path(@provider_profile, service), class: "text-blue-600 hover:text-blue-800 text-sm font-medium" %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </li>
+      <% end %>
+
+      <% if @services.empty? %>
+        <li class="px-4 py-8 text-center text-gray-500">
+          <p>No services yet.</p>
+          <% if policy(Service.new(provider_profile: @provider_profile)).new? %>
+            <p class="mt-2">
+              <%= link_to "Create your first service", new_provider_profile_service_path(@provider_profile), class: "text-blue-600 hover:text-blue-800 font-medium" %>
+            </p>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+</div>

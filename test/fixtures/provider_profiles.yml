@@ -6,3 +6,10 @@ provider_profile_one:
   bio: Licensed therapist with 10 years of experience specializing in anxiety and depression.
   credentials: LMHC, MA in Psychology
   consultation_rate: 150.00
+
+provider_profile_two:
+  user: provider_user_two
+  specialty: Business Consulting
+  bio: MBA with 15 years of experience helping startups scale.
+  credentials: MBA, Certified Business Coach
+  consultation_rate: 200.00

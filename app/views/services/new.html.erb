@@ -1,0 +1,14 @@
+<div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="mb-6">
+    <h1 class="text-3xl font-bold text-gray-900">New Service</h1>
+    <p class="mt-2 text-sm text-gray-600">
+      <%= link_to "← Back to Services", provider_profile_services_path(@provider_profile), class: "text-blue-600 hover:text-blue-800" %>
+    </p>
+  </div>
+
+  <div class="bg-white shadow sm:rounded-lg">
+    <div class="px-4 py-5 sm:p-6">
+      <%= render "form", service: @service %>
+    </div>
+  </div>
+</div>
