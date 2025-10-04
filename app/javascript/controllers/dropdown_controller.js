@@ -30,7 +30,13 @@ export default class extends Controller {
     this.menuTarget.classList.remove("hidden")
     this.menuTarget.classList.add("block")
     this.buttonTarget.setAttribute("aria-expanded", "true")
-    
+
+    // Trigger animation
+    requestAnimationFrame(() => {
+      this.menuTarget.style.opacity = "1"
+      this.menuTarget.style.transform = "scale(1)"
+    })
+
     // Add event listeners after a small delay to prevent immediate closing
     setTimeout(() => {
       document.addEventListener("click", this.boundHandleClickOutside)
@@ -40,10 +46,19 @@ export default class extends Controller {
 
   close() {
     this.openValue = false
-    this.menuTarget.classList.add("hidden")
-    this.menuTarget.classList.remove("block")
+
+    // Trigger close animation
+    this.menuTarget.style.opacity = "0"
+    this.menuTarget.style.transform = "scale(0.95)"
+
+    // Wait for animation to complete before hiding
+    setTimeout(() => {
+      this.menuTarget.classList.add("hidden")
+      this.menuTarget.classList.remove("block")
+    }, 200)
+
     this.buttonTarget.setAttribute("aria-expanded", "false")
-    
+
     // Remove event listeners
     document.removeEventListener("click", this.boundHandleClickOutside)
     document.removeEventListener("keydown", this.boundHandleEscape)
@@ -68,4 +83,3 @@ export default class extends Controller {
     document.removeEventListener("keydown", this.boundHandleEscape)
   }
 }
-
