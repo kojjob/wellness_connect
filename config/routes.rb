@@ -26,6 +26,26 @@ Rails.application.routes.draw do
     end
   end
 
+  # Notifications
+  resources :notifications, only: [ :index, :destroy ] do
+    member do
+      post :mark_as_read
+    end
+    collection do
+      post :mark_all_as_read
+    end
+  end
+
+  # Payments
+  resources :payments, only: [ :create ] do
+    member do
+      patch :confirm
+    end
+  end
+
+  # Stripe webhooks
+  post "stripe/webhooks", to: "stripe_webhooks#create", as: :stripe_webhooks
+
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check

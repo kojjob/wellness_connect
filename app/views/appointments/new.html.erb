@@ -1,5 +1,11 @@
+<!-- Load Stripe.js -->
+<script src="https://js.stripe.com/v3/"></script>
+
 <%= turbo_frame_tag "appointment_booking" do %>
-  <div class="bg-white shadow rounded-lg p-6 mt-4">
+  <div class="bg-white shadow rounded-lg p-6 mt-4"
+       data-controller="payment"
+       data-payment-publishable-key-value="<%= Rails.configuration.stripe[:publishable_key] %>"
+       data-payment-availability-id-value="<%= @availability.id %>">
     <h3 class="text-xl font-semibold text-gray-900 mb-4">Confirm Appointment</h3>
 
     <div class="mb-4 p-4 bg-blue-50 rounded-lg">
@@ -18,23 +24,69 @@
       </p>
     </div>
 
-    <%= form_with(model: @appointment, url: appointments_path(availability_id: @availability.id), data: { turbo_frame: "_top" }) do |form| %>
+    <%= form_with(model: @appointment,
+                  url: appointments_path(availability_id: @availability.id),
+                  data: {
+                    turbo: false,
+                    payment_target: "form",
+                    action: "submit->payment#submit"
+                  }) do |form| %>
       <%= form.hidden_field :provider_id, value: @provider_profile.user.id %>
       <%= form.hidden_field :start_time, value: @availability.start_time %>
       <%= form.hidden_field :end_time, value: @availability.end_time %>
 
       <div class="mb-4">
         <%= form.label :service_id, "Select Service", class: "block text-sm font-medium text-gray-700 mb-2" %>
-        <%= form.select :service_id,
-                        options_from_collection_for_select(@services, :id, :name),
-                        { prompt: "Choose a service" },
-                        class: "mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md" %>
+        <select name="appointment[service_id]"
+                id="appointment_service_id"
+                class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+                data-payment-target="serviceSelect"
+                data-action="change->payment#serviceChanged">
+          <option value="">Choose a service</option>
+          <% @services.each do |service| %>
+            <option value="<%= service.id %>"
+                    data-price="<%= service.price %>"
+                    data-description="<%= service.description %>"
+                    data-duration="<%= service.duration_minutes %>">
+              <%= service.name %>
+            </option>
+          <% end %>
+        </select>
       </div>
 
       <div id="selected-service-details" class="hidden mb-4 p-4 bg-gray-50 rounded-lg">
         <p id="service-description" class="text-sm text-gray-600 mb-2"></p>
-        <p id="service-price" class="text-sm font-semibold text-blue-600"></p>
+        <p class="text-sm font-semibold text-blue-600">
+          Price: <span id="service-price" data-payment-target="amount">$0.00</span>
+        </p>
         <p id="service-duration" class="text-sm text-gray-600"></p>
+      </div>
+
+      <!-- Payment Section -->
+      <div class="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+        <h4 class="font-semibold text-gray-900 mb-3">Payment Information</h4>
+
+        <!-- Card Element Container -->
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            Card Details
+          </label>
+          <div class="p-3 border border-gray-300 rounded-md bg-white" data-payment-target="cardElement">
+            <!-- Stripe Card Element will be mounted here -->
+          </div>
+        </div>
+
+        <!-- Card Errors -->
+        <div class="hidden p-3 mb-4 bg-red-50 border border-red-200 rounded-md" data-payment-target="cardErrors" role="alert">
+          <p class="text-sm text-red-800"></p>
+        </div>
+
+        <p class="text-xs text-gray-500">
+          <svg class="inline-block w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+          </svg>
+          Your payment information is secure and encrypted
+        </p>
       </div>
 
       <div class="flex justify-end space-x-3">
@@ -43,28 +95,25 @@
                     class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500",
                     data: { turbo_frame: "_top" } %>
         <%= form.submit "Confirm Booking",
-                        class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+                        class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed",
+                        data: { payment_target: "submitButton" } %>
       </div>
     <% end %>
   </div>
 
   <script>
+    // Service selection display logic (non-payment related)
     document.addEventListener('turbo:load', function() {
       const serviceSelect = document.querySelector('select[name="appointment[service_id]"]');
       const serviceDetails = document.getElementById('selected-service-details');
 
       if (serviceSelect) {
-        // Get service data from select options
-        const services = <%= raw @services.to_json(only: [:id, :name, :description, :price, :duration_minutes]) %>;
-
         serviceSelect.addEventListener('change', function() {
-          const selectedServiceId = this.value;
-          const service = services.find(s => s.id == selectedServiceId);
+          const selectedOption = this.options[this.selectedIndex];
 
-          if (service) {
-            document.getElementById('service-description').textContent = service.description;
-            document.getElementById('service-price').textContent = `$${parseFloat(service.price).toFixed(2)}`;
-            document.getElementById('service-duration').textContent = `Duration: ${service.duration_minutes} minutes`;
+          if (selectedOption.value) {
+            document.getElementById('service-description').textContent = selectedOption.dataset.description;
+            document.getElementById('service-duration').textContent = `Duration: ${selectedOption.dataset.duration} minutes`;
             serviceDetails.classList.remove('hidden');
           } else {
             serviceDetails.classList.add('hidden');

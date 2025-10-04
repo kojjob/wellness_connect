@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_10_04_171925) do
+ActiveRecord::Schema[8.1].define(version: 2025_10_04_202217) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -74,6 +74,18 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_04_171925) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["appointment_id"], name: "index_consultation_notes_on_appointment_id"
+  end
+
+  create_table "notifications", force: :cascade do |t|
+    t.string "action_url"
+    t.datetime "created_at", null: false
+    t.text "message"
+    t.string "notification_type"
+    t.datetime "read_at"
+    t.string "title"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id"], name: "index_notifications_on_user_id"
   end
 
   create_table "patient_profiles", force: :cascade do |t|
@@ -160,6 +172,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_04_171925) do
   add_foreign_key "appointments", "users", column: "provider_id"
   add_foreign_key "availabilities", "provider_profiles"
   add_foreign_key "consultation_notes", "appointments"
+  add_foreign_key "notifications", "users"
   add_foreign_key "patient_profiles", "users"
   add_foreign_key "payments", "appointments"
   add_foreign_key "payments", "users", column: "payer_id"
