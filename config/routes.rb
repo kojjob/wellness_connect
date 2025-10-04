@@ -10,6 +10,7 @@ Rails.application.routes.draw do
 
   resources :provider_profiles do
     resources :services
+    resources :availabilities
   end
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
