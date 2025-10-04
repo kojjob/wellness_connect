@@ -1,5 +1,5 @@
 class Payment < ApplicationRecord
-  belongs_to :payer, class_name: 'User'
+  belongs_to :payer, class_name: "User"
   belongs_to :appointment, optional: true
 
   enum :status, {

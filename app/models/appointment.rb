@@ -1,6 +1,6 @@
 class Appointment < ApplicationRecord
-  belongs_to :patient, class_name: 'User'
-  belongs_to :provider, class_name: 'User'
+  belongs_to :patient, class_name: "User"
+  belongs_to :provider, class_name: "User"
   belongs_to :service
 
   has_one :payment, dependent: :destroy
