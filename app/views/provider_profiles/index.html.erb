@@ -108,3 +108,196 @@
         </div>
       <% end %>
     </div>
+
+    <!-- Results Count and Sorting -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+      <div>
+        <% if params[:search].present? || params[:specialty].present? %>
+          <h2 class="text-2xl font-bold text-gray-900">
+            <%= pluralize(@provider_profiles.count, 'Provider') %> Found
+          </h2>
+          <p class="text-gray-600 mt-1">
+            <% if params[:search].present? %>
+              Searching for "<%= params[:search] %>"
+            <% end %>
+            <% if params[:specialty].present? %>
+              in <%= params[:specialty] %>
+            <% end %>
+          </p>
+        <% else %>
+          <h2 class="text-2xl font-bold text-gray-900">
+            All Providers (<%= @provider_profiles.count %>)
+          </h2>
+          <p class="text-gray-600 mt-1">Browse our verified wellness professionals</p>
+        <% end %>
+      </div>
+
+      <!-- Sort Options (Future Enhancement) -->
+      <div class="flex gap-2">
+        <button class="px-4 py-2 bg-white border-2 border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:border-indigo-500 transition">
+          <svg class="w-4 h-4 inline mr-1" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+          </svg>
+          Highest Rated
+        </button>
+      </div>
+    </div>
+
+    <!-- Provider Cards Grid -->
+    <% if @provider_profiles.any? %>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <% @provider_profiles.each do |provider_profile| %>
+          <%= link_to provider_profile_path(provider_profile), class: "block group" do %>
+            <div class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden h-full transform group-hover:-translate-y-1">
+              <!-- Provider Header with Avatar -->
+              <div class="relative bg-gradient-to-br from-indigo-500 to-purple-600 p-6 pb-16">
+                <div class="absolute top-4 right-4">
+                  <div class="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-white text-xs font-medium">
+                    Verified
+                  </div>
+                </div>
+
+                <div class="flex items-center space-x-4">
+                  <div class="relative">
+                    <% if provider_profile.avatar.attached? %>
+                      <%= image_tag provider_profile.avatar,
+                          alt: provider_profile.full_name,
+                          class: "w-20 h-20 rounded-full object-cover border-4 border-white shadow-lg" %>
+                    <% else %>
+                      <div class="w-20 h-20 rounded-full bg-white/20 backdrop-blur-sm border-4 border-white shadow-lg flex items-center justify-center">
+                        <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                        </svg>
+                      </div>
+                    <% end %>
+                    <div class="absolute -bottom-1 -right-1 bg-green-500 rounded-full p-1 border-2 border-white">
+                      <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                      </svg>
+                    </div>
+                  </div>
+
+                  <div class="flex-1 min-w-0">
+                    <h3 class="text-xl font-bold text-white truncate">
+                      <%= provider_profile.full_name %>
+                    </h3>
+                    <p class="text-indigo-100 text-sm truncate">
+                      <%= provider_profile.credentials %>
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Provider Info -->
+              <div class="p-6 -mt-10 relative">
+                <!-- Specialty Badge -->
+                <div class="mb-4">
+                  <span class="inline-flex items-center px-4 py-2 bg-indigo-100 text-indigo-800 rounded-full text-sm font-medium">
+                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
+                    </svg>
+                    <%= provider_profile.specialty %>
+                  </span>
+                </div>
+
+                <!-- Bio Preview -->
+                <p class="text-gray-700 mb-4 line-clamp-3">
+                  <%= truncate(provider_profile.bio, length: 150) %>
+                </p>
+
+                <!-- Stats Row -->
+                <div class="flex items-center justify-between mb-4 pb-4 border-b border-gray-200">
+                  <div class="flex items-center space-x-4 text-sm">
+                    <!-- Rating -->
+                    <div class="flex items-center">
+                      <svg class="w-5 h-5 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                      </svg>
+                      <span class="font-semibold text-gray-900"><%= provider_profile.display_rating %></span>
+                      <span class="text-gray-500 ml-1">(<%= provider_profile.total_reviews || 0 %>)</span>
+                    </div>
+
+                    <!-- Experience -->
+                    <% if provider_profile.years_of_experience.present? %>
+                      <div class="flex items-center text-gray-600">
+                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+                        </svg>
+                        <%= provider_profile.years_of_experience %>+ yrs
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+
+                <!-- Price and CTA -->
+                <div class="flex items-center justify-between">
+                  <div>
+                    <p class="text-sm text-gray-600">Starting from</p>
+                    <p class="text-2xl font-bold text-indigo-600">
+                      $<%= number_with_precision(provider_profile.consultation_rate, precision: 0) %>
+                      <span class="text-sm text-gray-500 font-normal">/session</span>
+                    </p>
+                  </div>
+
+                  <div class="flex items-center text-indigo-600 font-semibold group-hover:text-indigo-700">
+                    View Profile
+                    <svg class="w-5 h-5 ml-1 transform group-hover:translate-x-1 transition" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    <% else %>
+      <!-- Empty State -->
+      <div class="text-center py-16">
+        <div class="max-w-md mx-auto">
+          <div class="bg-gradient-to-br from-indigo-100 to-purple-100 rounded-full w-32 h-32 flex items-center justify-center mx-auto mb-6">
+            <svg class="w-16 h-16 text-indigo-600" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+            </svg>
+          </div>
+
+          <h3 class="text-2xl font-bold text-gray-900 mb-3">
+            <% if params[:search].present? || params[:specialty].present? %>
+              No Providers Found
+            <% else %>
+              No Provider Profiles Yet
+            <% end %>
+          </h3>
+
+          <p class="text-gray-600 mb-6">
+            <% if params[:search].present? || params[:specialty].present? %>
+              We couldn't find any providers matching your search criteria. Try adjusting your filters or search terms.
+            <% else %>
+              Be the first to create a provider profile and start connecting with clients.
+            <% end %>
+          </p>
+
+          <div class="flex flex-col sm:flex-row gap-3 justify-center">
+            <% if params[:search].present? || params[:specialty].present? %>
+              <%= link_to providers_path,
+                  class: "inline-flex items-center justify-center px-6 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition shadow-md" do %>
+                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                </svg>
+                Clear Filters
+              <% end %>
+            <% elsif user_signed_in? && current_user.provider? %>
+              <%= link_to new_provider_profile_path,
+                  class: "inline-flex items-center justify-center px-6 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition shadow-md" do %>
+                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                </svg>
+                Create Your Profile
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

@@ -32,9 +32,16 @@ class AppointmentsTest < ApplicationSystemTestCase
 
     # Should navigate to appointment booking page
     assert_text "Confirm Appointment"
+    assert_current_path new_appointment_path(availability_id: @availability.id)
+
+    # Wait for form to be ready
+    assert_selector "select#appointment_service_id"
 
     # Select service and confirm
     select @service.name, from: "appointment_service_id"
+
+    # Wait for the form to be fully rendered before submitting
+    sleep 0.5
 
     assert_difference "Appointment.count", 1 do
       click_button "Confirm Booking"
