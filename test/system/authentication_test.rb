@@ -69,9 +69,12 @@ class AuthenticationTest < ApplicationSystemTestCase
   test "signing up with invalid email" do
     visit new_user_registration_path
 
+    # Remove HTML5 email validation to test server-side validation
+    page.execute_script("document.querySelector('input[type=email]').type = 'text'")
+
     fill_in "First Name", with: "Jane"
     fill_in "Last Name", with: "Smith"
-    fill_in "Email Address", with: "invalid@email" # Invalid format but bypasses HTML5 validation
+    fill_in "Email Address", with: "invalid" # Invalid - no @ symbol
     fill_in "user_password", with: "SecurePassword123!"
     fill_in "Confirm Password", with: "SecurePassword123!"
     check "terms"
@@ -139,7 +142,8 @@ class AuthenticationTest < ApplicationSystemTestCase
     fill_in "Email Address", with: @user.email
     click_button "Send Reset Instructions"
 
-    assert_text "You will receive an email with instructions"
+    # Paranoid mode shows generic message
+    assert_text "If your email address exists in our database, you will receive a password recovery link"
   end
 
   test "requesting password reset with invalid email" do
@@ -148,8 +152,8 @@ class AuthenticationTest < ApplicationSystemTestCase
     fill_in "Email Address", with: "nonexistent@example.com"
     click_button "Send Reset Instructions"
 
-    # Devise shows the same message for security reasons
-    assert_text "You will receive an email with instructions"
+    # Devise paranoid mode shows the same message for security reasons
+    assert_text "If your email address exists in our database, you will receive a password recovery link"
   end
 
   test "sign up page displays role selection" do
