@@ -1,0 +1,38 @@
+SESSION REMINDER - Tomorrow!
+
+Hello <%= @provider.first_name %>,
+
+This is a reminder that you have a session scheduled with a client tomorrow.
+
+===== SESSION DETAILS =====
+
+Service: <%= @service.name %>
+Client: <%= @patient.full_name %>
+Date & Time: <%= @appointment_time.strftime("%A, %B %d, %Y at %I:%M %p") %>
+Duration: <%= @service.duration_minutes %> minutes
+
+<% if @appointment.video_session_id.present? %>
+Session Link: Available in your provider dashboard before the appointment
+<% end %>
+
+===== CLIENT INFORMATION =====
+
+Name: <%= @patient.full_name %>
+Email: <%= @patient.email %>
+<% if @patient.patient_profile&.health_goals.present? %>
+Goals: <%= @patient.patient_profile.health_goals %>
+<% end %>
+
+===== SESSION PREPARATION =====
+
+- Review any previous session notes
+- Prepare materials or resources you might need
+- Test your equipment and connection a few minutes early
+- Have consultation note template ready for documentation
+
+Need to reschedule? Please contact the client as soon as possible through the platform.
+
+---
+WellnessConnect Provider Portal
+
+Manage your appointments through your provider dashboard.
