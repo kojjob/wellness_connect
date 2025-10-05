@@ -1,6 +1,8 @@
 class StripeWebhooksController < ApplicationController
   # Skip CSRF verification for Stripe webhooks
   skip_before_action :verify_authenticity_token
+  # Skip authentication for Stripe webhooks (external service)
+  skip_before_action :authenticate_user!
 
   def create
     payload = request.body.read
@@ -24,6 +26,8 @@ class StripeWebhooksController < ApplicationController
         handle_payment_succeeded(event[:data][:object])
       when "payment_intent.payment_failed"
         handle_payment_failed(event[:data][:object])
+      when "charge.refunded"
+        handle_charge_refunded(event[:data][:object])
       else
         Rails.logger.info "Unhandled Stripe event type: #{event[:type]}"
       end
@@ -125,6 +129,43 @@ class StripeWebhooksController < ApplicationController
       Rails.logger.info "Payment #{payment.id} failed for appointment #{payment.appointment_id}"
     else
       Rails.logger.warn "Payment not found for payment intent: #{payment_intent[:id]}"
+    end
+  end
+
+  def handle_charge_refunded(charge)
+    # Extract payment_intent from charge object
+    payment_intent_id = charge[:payment_intent]
+    payment = Payment.find_by(stripe_payment_intent_id: payment_intent_id)
+
+    if payment
+      # Skip if payment already refunded (prevent duplicate notifications)
+      if payment.refunded?
+        Rails.logger.info "Payment #{payment.id} already refunded, skipping duplicate webhook"
+        return
+      end
+
+      ActiveRecord::Base.transaction do
+        # Update payment status to refunded
+        payment.update!(
+          status: :refunded,
+          refunded_at: Time.current
+        )
+
+        # Determine refund type based on amount refunded
+        amount_refunded_dollars = charge[:amount_refunded] / 100.0
+        refund_type = if amount_refunded_dollars >= payment.amount
+          "full"
+        else
+          "partial"
+        end
+
+        # Send refund confirmation notification
+        NotificationService.notify_refund_processed(payment, refund_type, amount_refunded_dollars)
+
+        Rails.logger.info "Payment #{payment.id} marked as refunded: #{refund_type} refund of $#{amount_refunded_dollars}"
+      end
+    else
+      Rails.logger.warn "Payment not found for payment intent: #{payment_intent_id}"
     end
   end
 end

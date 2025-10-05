@@ -13,6 +13,8 @@ class Notification < ApplicationRecord
     appointment_reminder
     payment_received
     payment_failed
+    refund_processed
+    no_refund
     profile_approved
     new_review
     system_announcement

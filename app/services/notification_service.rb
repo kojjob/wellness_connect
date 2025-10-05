@@ -116,5 +116,29 @@ class NotificationService
       notify_system_announcement(user, title, message)
     end
   end
+
+  # Create a notification for refund processed
+  def self.notify_refund_processed(payment, refund_type, refund_amount)
+    refund_type_label = refund_type == "full" ? "full" : "partial (50%)"
+
+    Notification.create!(
+      user: payment.payer,
+      title: "Refund Processed",
+      message: "Your #{refund_type_label} refund of $#{refund_amount.round(2)} has been processed and will appear in your account within 5-10 business days.",
+      notification_type: "refund_processed",
+      action_url: Rails.application.routes.url_helpers.payments_path
+    )
+  end
+
+  # Create a notification for no refund policy
+  def self.notify_no_refund_policy(payment)
+    Notification.create!(
+      user: payment.payer,
+      title: "Cancellation Policy Applied",
+      message: "Your appointment was cancelled less than 24 hours before the scheduled time. Per our cancellation policy, no refund is available.",
+      notification_type: "no_refund",
+      action_url: Rails.application.routes.url_helpers.appointments_path
+    )
+  end
 end
 
