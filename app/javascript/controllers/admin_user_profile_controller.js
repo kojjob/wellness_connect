@@ -174,7 +174,7 @@ export default class extends Controller {
     // Update tab buttons
     this.tabButtonTargets.forEach(button => {
       const isActive = button.dataset.tab === tabName
-      
+
       if (isActive) {
         button.classList.add('border-teal-600', 'text-teal-600')
         button.classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300')
@@ -240,4 +240,3 @@ export default class extends Controller {
     window.print()
   }
 }
-
