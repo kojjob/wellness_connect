@@ -1,68 +1,437 @@
-<div class="container mx-auto px-4 py-8">
-  <div class="flex justify-between items-center mb-6">
-    <h1 class="text-3xl font-bold">Browse Service Providers</h1>
-    <% if user_signed_in? && current_user.provider? %>
-      <%= link_to "New Provider Profile", new_provider_profile_path, class: "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600" %>
-    <% end %>
-  </div>
-
-  <!-- Search and Filter Section -->
-  <div class="bg-white shadow rounded-lg p-6 mb-8">
-    <%= form_with url: providers_path, method: :get, class: "space-y-4 md:space-y-0 md:flex md:gap-4" do |form| %>
-      <div class="flex-1">
-        <%= form.text_field :search,
-            value: params[:search],
-            placeholder: "Search by provider name...",
-            class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" %>
-      </div>
-
-      <div class="flex-1">
-        <%= form.select :specialty,
-            options_for_select(ProviderProfile.distinct.pluck(:specialty).compact, params[:specialty]),
-            { include_blank: "All Specialties" },
-            class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" %>
-      </div>
-
-      <div>
-        <%= form.submit "Search", class: "w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg transition duration-200" %>
-      </div>
-
-      <% if params[:search].present? || params[:specialty].present? %>
-        <div>
-          <%= link_to "Clear", providers_path, class: "w-full md:w-auto block text-center bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold px-6 py-2 rounded-lg transition duration-200" %>
-        </div>
-      <% end %>
-    <% end %>
-  </div>
-
-  <!-- Results Count -->
-  <% if params[:search].present? || params[:specialty].present? %>
-    <div class="mb-4">
-      <p class="text-gray-600">Found <%= pluralize(@provider_profiles.count, 'provider') %></p>
+<div class="min-h-screen bg-gray-50" data-controller="filter view-toggle">
+  <!-- Compact Hero Section -->
+  <section class="relative bg-gradient-to-br from-indigo-600 via-purple-600 to-indigo-800 text-white overflow-hidden">
+    <!-- Decorative background elements -->
+    <div class="absolute inset-0 opacity-10">
+      <div class="absolute top-0 left-0 w-96 h-96 bg-white rounded-full filter blur-3xl"></div>
+      <div class="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full filter blur-3xl"></div>
     </div>
-  <% end %>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    <% @provider_profiles.each do |provider_profile| %>
-      <div class="bg-white shadow rounded-lg p-6">
-        <h2 class="text-xl font-bold mb-2"><%= provider_profile.user.first_name %> <%= provider_profile.user.last_name %></h2>
-        <p class="text-gray-600 mb-2"><%= provider_profile.specialty %></p>
-        <p class="text-sm text-gray-500 mb-4"><%= provider_profile.credentials %></p>
-        <p class="text-gray-700 mb-4"><%= truncate(provider_profile.bio, length: 100) %></p>
-        <div class="flex justify-between items-center">
-          <span class="text-lg font-semibold text-green-600">$<%= provider_profile.consultation_rate %>/session</span>
-          <%= link_to "View Profile", provider_profile_path(provider_profile), class: "bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" %>
-        </div>
+    <div class="relative container mx-auto px-4 py-12">
+      <div class="max-w-6xl mx-auto">
+        <h1 class="text-3xl lg:text-5xl font-bold mb-4">
+          Find Your Perfect Wellness Provider
+        </h1>
+        <p class="text-lg lg:text-xl text-indigo-100 mb-6">
+          Connect with verified professionals who can help you achieve your wellness goals
+        </p>
+
+        <!-- Quick Search Bar -->
+        <%= form_with url: providers_path, method: :get, class: "max-w-4xl", local: true do |form| %>
+          <div class="flex flex-col md:flex-row gap-3">
+            <div class="flex-1 relative">
+              <!-- Search Icon -->
+              <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
+                <svg class="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                </svg>
+              </div>
+              <%= form.text_field :search,
+                  value: params[:search],
+                  placeholder: "Search by name, specialty, or keyword...",
+                  class: "w-full pl-12 pr-4 py-4 rounded-xl text-gray-900 bg-white placeholder-gray-400 border-0 focus:ring-4 focus:ring-white/50 focus:outline-none shadow-xl font-medium",
+                  style: "background-color: white !important;" %>
+            </div>
+            <button type="submit"
+                    class="px-8 py-4 bg-white text-indigo-600 rounded-xl font-bold hover:bg-indigo-50 hover:shadow-2xl transition-all shadow-xl cursor-pointer flex items-center justify-center gap-2 whitespace-nowrap">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+              </svg>
+              Search
+            </button>
+          </div>
+        <% end %>
       </div>
-    <% end %>
-  </div>
-
-  <% if @provider_profiles.empty? %>
-    <div class="text-center py-12">
-      <p class="text-gray-500 text-lg">No provider profiles yet.</p>
-      <% if user_signed_in? && current_user.provider? %>
-        <%= link_to "Create your profile", new_provider_profile_path, class: "mt-4 inline-block bg-green-500 text-white px-6 py-3 rounded hover:bg-green-600" %>
-      <% end %>
     </div>
-  <% end %>
+
+    <!-- Wave divider -->
+    <div class="absolute bottom-0 left-0 right-0">
+      <svg viewBox="0 0 1440 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto">
+        <path d="M0 0L60 10C120 20 240 40 360 46.7C480 53 600 47 720 43.3C840 40 960 40 1080 46.7C1200 53 1320 67 1380 73.3L1440 80V80H1380C1320 80 1200 80 1080 80C960 80 840 80 720 80C600 80 480 80 360 80C240 80 120 80 60 80H0V0Z"
+              fill="#F9FAFB"/>
+      </svg>
+    </div>
+  </section>
+
+  <div class="container mx-auto px-4 py-8">
+    <div class="flex flex-col lg:flex-row gap-6">
+      <!-- Sidebar Filters -->
+      <aside class="lg:w-80 flex-shrink-0">
+        <!-- Mobile Filter Toggle -->
+        <button data-action="click->filter#toggleSidebar"
+                data-filter-target="mobileToggle"
+                class="lg:hidden w-full mb-4 px-6 py-3 bg-indigo-600 text-white rounded-xl font-semibold flex items-center justify-center shadow-md hover:bg-indigo-700 transition">
+          <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/>
+          </svg>
+          Filters & Sorting
+        </button>
+
+        <!-- Filter Sidebar -->
+        <div data-filter-target="sidebar"
+             class="hidden lg:block fixed lg:static inset-0 z-50 lg:z-auto bg-black/50 lg:bg-transparent">
+          <div class="absolute lg:relative right-0 top-0 bottom-0 w-80 lg:w-full bg-white lg:rounded-2xl shadow-xl lg:shadow-lg overflow-y-auto">
+            <!-- Mobile Close Button -->
+            <div class="lg:hidden flex items-center justify-between p-4 border-b border-gray-200">
+              <h3 class="text-lg font-bold text-gray-900">Filters</h3>
+              <button data-action="click->filter#closeSidebar"
+                      class="p-2 hover:bg-gray-100 rounded-lg transition">
+                <svg class="w-6 h-6 text-gray-600" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                </svg>
+              </button>
+            </div>
+
+            <%= form_with url: providers_path, method: :get, data: { filter_target: "form" }, class: "p-6 space-y-6" do |form| %>
+              <!-- Filter Header -->
+              <div class="flex items-center justify-between pb-4 border-b border-gray-200">
+                <h3 class="text-lg font-bold text-gray-900">Filter Results</h3>
+                <%= link_to providers_path,
+                    data: { filter_target: "clearButton", action: "click->filter#clearFilters" },
+                    class: "text-sm text-indigo-600 hover:text-indigo-700 font-medium hidden" do %>
+                  Clear All
+                <% end %>
+              </div>
+
+              <!-- Specialty Filter -->
+              <div>
+                <label class="block text-sm font-semibold text-gray-900 mb-3">
+                  <svg class="w-4 h-4 inline mr-1 text-indigo-600" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
+                  </svg>
+                  Specialty
+                </label>
+                <%= form.select :specialty,
+                    options_for_select(@specialties, params[:specialty]),
+                    { include_blank: "All Specialties" },
+                    class: "w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition",
+                    data: { action: "change->filter#submitForm" } %>
+              </div>
+
+              <!-- Price Range Filter -->
+              <div>
+                <label class="block text-sm font-semibold text-gray-900 mb-3">
+                  <svg class="w-4 h-4 inline mr-1 text-indigo-600" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
+                  </svg>
+                  Price Range
+                </label>
+                <div class="space-y-4">
+                  <!-- Price Display -->
+                  <div class="flex items-center justify-between">
+                    <div class="text-sm font-medium text-gray-700">
+                      <span data-filter-target="priceDisplay">$0 - $500+</span>
+                    </div>
+                    <button type="button"
+                            class="text-xs text-indigo-600 hover:text-indigo-700 font-medium"
+                            onclick="document.querySelector('[name=price_min]').value=''; document.querySelector('[name=price_max]').value=''; this.closest('form').querySelector('[data-filter-target=priceDisplay]').textContent='$0 - $500+';">
+                      Reset
+                    </button>
+                  </div>
+
+                  <!-- Price Input Fields -->
+                  <div class="grid grid-cols-2 gap-3">
+                    <div>
+                      <label class="block text-xs text-gray-600 mb-1">Min Price</label>
+                      <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500 text-sm">$</span>
+                        <%= form.number_field :price_min,
+                            value: params[:price_min],
+                            placeholder: "0",
+                            min: 0,
+                            step: 10,
+                            class: "w-full pl-7 pr-3 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition text-sm",
+                            data: { filter_target: "priceMin", action: "input->filter#updatePriceDisplay" } %>
+                      </div>
+                    </div>
+                    <div>
+                      <label class="block text-xs text-gray-600 mb-1">Max Price</label>
+                      <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500 text-sm">$</span>
+                        <%= form.number_field :price_max,
+                            value: params[:price_max],
+                            placeholder: "500",
+                            min: 0,
+                            step: 10,
+                            class: "w-full pl-7 pr-3 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition text-sm",
+                            data: { filter_target: "priceMax", action: "input->filter#updatePriceDisplay" } %>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Quick Price Filters -->
+                  <div class="flex flex-wrap gap-2">
+                    <button type="button"
+                            onclick="document.querySelector('[name=price_min]').value=''; document.querySelector('[name=price_max]').value='100'; document.querySelector('[data-filter-target=priceDisplay]').textContent='$0 - $100';"
+                            class="px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 hover:bg-indigo-100 hover:text-indigo-700 rounded-lg transition">
+                      Under $100
+                    </button>
+                    <button type="button"
+                            onclick="document.querySelector('[name=price_min]').value='100'; document.querySelector('[name=price_max]').value='200'; document.querySelector('[data-filter-target=priceDisplay]').textContent='$100 - $200';"
+                            class="px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 hover:bg-indigo-100 hover:text-indigo-700 rounded-lg transition">
+                      $100 - $200
+                    </button>
+                    <button type="button"
+                            onclick="document.querySelector('[name=price_min]').value='200'; document.querySelector('[name=price_max]').value=''; document.querySelector('[data-filter-target=priceDisplay]').textContent='$200+';"
+                            class="px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 hover:bg-indigo-100 hover:text-indigo-700 rounded-lg transition">
+                      $200+
+                    </button>
+                  </div>
+
+                  <!-- Apply Price Filter Button -->
+                  <button type="button"
+                          data-action="click->filter#submitForm"
+                          class="w-full px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-medium rounded-lg transition text-sm">
+                    Apply Price Filter
+                  </button>
+                </div>
+              </div>
+
+              <!-- Rating Filter -->
+              <div>
+                <label class="block text-sm font-semibold text-gray-900 mb-3">
+                  <svg class="w-4 h-4 inline mr-1 text-indigo-600" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                  </svg>
+                  Minimum Rating
+                </label>
+                <%= form.select :min_rating,
+                    options_for_select([["Any Rating", ""], ["4+ Stars", "4"], ["4.5+ Stars", "4.5"], ["5 Stars", "5"]], params[:min_rating]),
+                    {},
+                    class: "w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition",
+                    data: { action: "change->filter#submitForm" } %>
+              </div>
+
+              <!-- Experience Filter -->
+              <div>
+                <label class="block text-sm font-semibold text-gray-900 mb-3">
+                  <svg class="w-4 h-4 inline mr-1 text-indigo-600" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+                  </svg>
+                  Years of Experience
+                </label>
+                <%= form.select :min_experience,
+                    options_for_select([["Any Experience", ""], ["1+ Years", "1"], ["3+ Years", "3"], ["5+ Years", "5"], ["10+ Years", "10"]], params[:min_experience]),
+                    {},
+                    class: "w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition",
+                    data: { action: "change->filter#submitForm" } %>
+              </div>
+
+              <!-- Language Filter -->
+              <% if @languages.any? %>
+                <div>
+                  <label class="block text-sm font-semibold text-gray-900 mb-3">
+                    <svg class="w-4 h-4 inline mr-1 text-indigo-600" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95c-.32-1.25-.78-2.45-1.38-3.56 1.84.63 3.37 1.91 4.33 3.56zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14C4.1 13.36 4 12.69 4 12s.1-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2s.06 1.34.14 2H4.26zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56-1.84-.63-3.37-1.9-4.33-3.56zm2.95-8H5.08c.96-1.66 2.49-2.93 4.33-3.56C8.81 5.55 8.35 6.75 8.03 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM14.34 14H9.66c-.09-.66-.16-1.32-.16-2s.07-1.35.16-2h4.68c.09.65.16 1.32.16 2s-.07 1.34-.16 2zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95c-.96 1.65-2.49 2.93-4.33 3.56zM16.36 14c.08-.66.14-1.32.14-2s-.06-1.34-.14-2h3.38c.16.64.26 1.31.26 2s-.1 1.36-.26 2h-3.38z"/>
+                    </svg>
+                    Language
+                  </label>
+                  <%= form.select :language,
+                      options_for_select(@languages, params[:language]),
+                      { include_blank: "All Languages" },
+                      class: "w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition",
+                      data: { action: "change->filter#submitForm" } %>
+                </div>
+              <% end %>
+
+              <!-- Session Format Filter -->
+              <% if @session_formats.any? %>
+                <div>
+                  <label class="block text-sm font-semibold text-gray-900 mb-3">
+                    <svg class="w-4 h-4 inline mr-1 text-indigo-600" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-5 14H4v-4h11v4zm0-5H4V9h11v4zm5 5h-4V9h4v9z"/>
+                    </svg>
+                    Session Format
+                  </label>
+                  <%= form.select :session_format,
+                      options_for_select(@session_formats, params[:session_format]),
+                      { include_blank: "All Formats" },
+                      class: "w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition",
+                      data: { action: "change->filter#submitForm" } %>
+                </div>
+              <% end %>
+
+              <!-- Apply Filters Button (Mobile) -->
+              <div class="lg:hidden pt-4 border-t border-gray-200">
+                <%= form.submit "Apply Filters",
+                    class: "w-full px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition shadow-md" %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Content Area -->
+      <main class="flex-1 min-w-0">
+        <!-- Results Header with View Toggle and Sort -->
+        <div class="bg-white rounded-xl shadow-md p-4 mb-6">
+          <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <!-- Results Count -->
+            <div>
+              <h2 class="text-xl font-bold text-gray-900">
+                <%= pluralize(@provider_profiles.is_a?(Array) ? @provider_profiles.length : @provider_profiles.count, 'Provider') %> Found
+              </h2>
+              <% if params[:search].present? || params[:specialty].present? %>
+                <p class="text-sm text-gray-600 mt-1">
+                  <% if params[:search].present? %>
+                    Searching for "<%= params[:search] %>"
+                  <% end %>
+                  <% if params[:specialty].present? %>
+                    <%= "in #{params[:specialty]}" %>
+                  <% end %>
+                </p>
+              <% end %>
+            </div>
+
+            <!-- View Toggle and Sort -->
+            <div class="flex items-center gap-3">
+              <!-- View Toggle -->
+              <div class="flex items-center bg-gray-100 rounded-lg p-1">
+                <button type="button"
+                        data-view-toggle-target="gridButton"
+                        data-action="click->view-toggle#showGrid"
+                        class="px-4 py-2 rounded-lg font-medium text-sm transition bg-indigo-600 text-white"
+                        aria-label="Grid View">
+                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M3 3h8v8H3V3zm10 0h8v8h-8V3zM3 13h8v8H3v-8zm10 0h8v8h-8v-8z"/>
+                  </svg>
+                </button>
+                <button type="button"
+                        data-view-toggle-target="listButton"
+                        data-action="click->view-toggle#showList"
+                        class="px-4 py-2 rounded-lg font-medium text-sm transition bg-white text-gray-700 border-gray-300"
+                        aria-label="List View">
+                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/>
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Sort Dropdown -->
+              <div class="relative" data-controller="sort">
+                <button type="button"
+                        data-action="click->sort#toggle"
+                        data-sort-target="button"
+                        class="px-4 py-2 bg-white border-2 border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:border-indigo-500 transition flex items-center gap-2">
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M3 18h6v-2H3v2zM3 6v2h18V6H3zm0 7h12v-2H3v2z"/>
+                  </svg>
+                  <span data-sort-target="selectedText">Sort By</span>
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M7 10l5 5 5-5z"/>
+                  </svg>
+                </button>
+
+                <!-- Dropdown Menu -->
+                <div data-sort-target="dropdown"
+                     class="hidden absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-200 z-10">
+                  <div class="py-2">
+                    <a href="#" data-action="click->sort#select" data-sort-value="rating_desc" data-sort-label="Highest Rated"
+                       class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition">
+                      <svg class="w-4 h-4 inline mr-2" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                      </svg>
+                      Highest Rated
+                    </a>
+                    <a href="#" data-action="click->sort#select" data-sort-value="price_asc" data-sort-label="Price: Low to High"
+                       class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition">
+                      <svg class="w-4 h-4 inline mr-2" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M7 14l5-5 5 5z"/>
+                      </svg>
+                      Price: Low to High
+                    </a>
+                    <a href="#" data-action="click->sort#select" data-sort-value="price_desc" data-sort-label="Price: High to Low"
+                       class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition">
+                      <svg class="w-4 h-4 inline mr-2" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M7 10l5 5 5-5z"/>
+                      </svg>
+                      Price: High to Low
+                    </a>
+                    <a href="#" data-action="click->sort#select" data-sort-value="experience_desc" data-sort-label="Most Experienced"
+                       class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition">
+                      <svg class="w-4 h-4 inline mr-2" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+                      </svg>
+                      Most Experienced
+                    </a>
+                    <a href="#" data-action="click->sort#select" data-sort-value="newest" data-sort-label="Newest First"
+                       class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition">
+                      <svg class="w-4 h-4 inline mr-2" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                      </svg>
+                      Newest First
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Provider Cards Grid View -->
+        <% if @provider_profiles.any? %>
+          <!-- Grid View -->
+          <div data-view-toggle-target="gridView" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            <% @provider_profiles.each do |provider_profile| %>
+              <%= render "provider_card_grid", provider_profile: provider_profile %>
+            <% end %>
+          </div>
+
+          <!-- List View -->
+          <div data-view-toggle-target="listView" class="hidden space-y-4">
+            <% @provider_profiles.each do |provider_profile| %>
+              <%= render "provider_card_list", provider_profile: provider_profile %>
+            <% end %>
+          </div>
+        <% else %>
+          <!-- Empty State -->
+          <div class="bg-white rounded-xl shadow-md p-12 text-center">
+            <div class="max-w-md mx-auto">
+              <div class="bg-gradient-to-br from-indigo-100 to-purple-100 rounded-full w-32 h-32 flex items-center justify-center mx-auto mb-6">
+                <svg class="w-16 h-16 text-indigo-600" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+                </svg>
+              </div>
+
+              <h3 class="text-2xl font-bold text-gray-900 mb-3">
+                <% if params.except(:controller, :action).any? %>
+                  No Providers Found
+                <% else %>
+                  No Provider Profiles Yet
+                <% end %>
+              </h3>
+
+              <p class="text-gray-600 mb-6">
+                <% if params.except(:controller, :action).any? %>
+                  We couldn't find any providers matching your search criteria. Try adjusting your filters or search terms.
+                <% else %>
+                  Be the first to create a provider profile and start connecting with clients.
+                <% end %>
+              </p>
+
+              <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                <% if params.except(:controller, :action).any? %>
+                  <%= link_to providers_path,
+                      class: "inline-flex items-center justify-center px-6 py-3 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-700 transition shadow-md" do %>
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                    </svg>
+                    Clear All Filters
+                  <% end %>
+                <% elsif user_signed_in? && current_user.provider? && !current_user.provider_profile.present? %>
+                  <%= link_to new_provider_profile_path,
+                      class: "inline-flex items-center justify-center px-6 py-3 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-700 transition shadow-md" do %>
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                    </svg>
+                    Create Your Profile
+                  <% end %>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </main>
+    </div>
+  </div>
 </div>
