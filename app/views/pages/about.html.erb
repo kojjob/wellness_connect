@@ -283,9 +283,9 @@
 </section>
 
 <!-- Contact Section -->
-<section class="py-24 bg-gray-50">
+<section class="py-24 bg-gray-50" data-controller="scroll-reveal">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="text-center max-w-3xl mx-auto mb-16">
+    <div class="text-center max-w-3xl mx-auto mb-16 scroll-reveal" data-scroll-reveal-target="element">
       <div class="inline-flex items-center px-4 py-2 rounded-full bg-teal-100 text-teal-800 font-semibold mb-6">
         <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
           <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
@@ -294,13 +294,17 @@
         Get in Touch
       </div>
 
-      <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-        We'd Love to Hear From You
+      <h2 class="text-4xl md:text-5xl font-bold mb-6">
+        <span class="gradient-text">We'd Love to Hear</span>
+        <span class="block text-gray-900">From You</span>
       </h2>
 
       <p class="text-xl text-gray-600 leading-relaxed">
         Have questions, feedback, or just want to say hello? Reach out to us using the form below or through any of our contact channels.
       </p>
+
+      <!-- Decorative divider -->
+      <div class="decorative-divider"></div>
     </div>
 
     <div class="grid lg:grid-cols-3 gap-12">
