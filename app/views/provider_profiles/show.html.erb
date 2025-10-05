@@ -74,7 +74,8 @@
               <% end %>
             </div>
             <span class="text-2xl font-bold"><%= @provider_profile.display_rating %></span>
-            <span class="text-indigo-100">(<%= @provider_profile.total_reviews || 0 %> reviews)</span>
+            <%# TODO: Uncomment when Review model is implemented %>
+            <%# <span class="text-indigo-100">(<%= @provider_profile.total_reviews || 0 %> reviews)</span> %>
           </div>
 
           <!-- Quick Action Buttons -->
