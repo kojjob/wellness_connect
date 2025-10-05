@@ -1,40 +1,216 @@
-<%= form_with(model: provider_profile, class: "bg-white shadow rounded-lg p-6") do |form| %>
+<%= form_with(model: provider_profile, class: "space-y-8") do |form| %>
   <% if provider_profile.errors.any? %>
-    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-      <h2 class="font-bold"><%= pluralize(provider_profile.errors.count, "error") %> prohibited this provider profile from being saved:</h2>
-      <ul class="list-disc list-inside">
-        <% provider_profile.errors.each do |error| %>
-          <li><%= error.full_message %></li>
-        <% end %>
-      </ul>
+    <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg">
+      <div class="flex items-start">
+        <svg class="w-6 h-6 text-red-500 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+        </svg>
+        <div>
+          <h3 class="font-bold text-red-800 mb-2"><%= pluralize(provider_profile.errors.count, "error") %> prohibited this profile from being saved:</h3>
+          <ul class="list-disc list-inside text-red-700 text-sm">
+            <% provider_profile.errors.each do |error| %>
+              <li><%= error.full_message %></li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
     </div>
   <% end %>
 
-  <div class="mb-4">
-    <%= form.label :specialty, class: "block text-gray-700 font-bold mb-2" %>
-    <%= form.text_field :specialty, class: "w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" %>
-  </div>
+  <!-- Profile Photo Section -->
+  <div class="bg-white rounded-2xl shadow-lg p-8">
+    <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+      <svg class="w-6 h-6 mr-2 text-indigo-600" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+      </svg>
+      Profile Photo
+    </h2>
 
-  <div class="mb-4">
-    <%= form.label :credentials, class: "block text-gray-700 font-bold mb-2" %>
-    <%= form.text_field :credentials, class: "w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" %>
-  </div>
-
-  <div class="mb-4">
-    <%= form.label :bio, class: "block text-gray-700 font-bold mb-2" %>
-    <%= form.text_area :bio, rows: 5, class: "w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" %>
-  </div>
-
-  <div class="mb-6">
-    <%= form.label :consultation_rate, class: "block text-gray-700 font-bold mb-2" %>
-    <div class="flex items-center">
-      <span class="text-gray-700 mr-2">$</span>
-      <%= form.number_field :consultation_rate, step: 0.01, class: "flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+    <div class="flex items-start gap-6">
+      <div class="flex-shrink-0">
+        <% if provider_profile.avatar.attached? %>
+          <%= image_tag provider_profile.avatar, class: "w-32 h-32 rounded-full object-cover border-4 border-indigo-100" %>
+        <% else %>
+          <div class="w-32 h-32 rounded-full bg-gray-200 flex items-center justify-center border-4 border-indigo-100">
+            <svg class="w-16 h-16 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+            </svg>
+          </div>
+        <% end %>
+      </div>
+      <div class="flex-1">
+        <%= form.label :avatar, "Upload Profile Photo", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+        <%= form.file_field :avatar, accept: "image/*", class: "block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" %>
+        <p class="mt-2 text-xs text-gray-500">JPG, PNG or WebP. Max size 5MB.</p>
+      </div>
     </div>
   </div>
 
-  <div class="flex gap-2">
-    <%= form.submit class: "bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 cursor-pointer" %>
-    <%= link_to "Cancel", provider_profiles_path, class: "bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600" %>
+  <!-- Basic Information Section -->
+  <div class="bg-white rounded-2xl shadow-lg p-8">
+    <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+      <svg class="w-6 h-6 mr-2 text-indigo-600" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
+      </svg>
+      Basic Information
+    </h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <%= form.label :specialty, class: "block text-sm font-semibold text-gray-700 mb-2" %>
+        <%= form.text_field :specialty, placeholder: "e.g., Clinical Psychologist", class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" %>
+      </div>
+
+      <div>
+        <%= form.label :credentials, "Credentials (comma-separated)", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+        <%= form.text_field :credentials, placeholder: "e.g., PhD, LMFT, LCSW", class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" %>
+      </div>
+
+      <div>
+        <%= form.label :years_of_experience, "Years of Experience", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+        <%= form.number_field :years_of_experience, min: 0, placeholder: "e.g., 10", class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" %>
+      </div>
+
+      <div>
+        <%= form.label :consultation_rate, "Consultation Rate ($)", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+        <div class="relative">
+          <span class="absolute left-4 top-3.5 text-gray-500">$</span>
+          <%= form.number_field :consultation_rate, step: 0.01, min: 0, placeholder: "150.00", class: "w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" %>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-6">
+      <%= form.label :bio, "Professional Bio", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+      <%= form.text_area :bio, rows: 6, placeholder: "Tell potential clients about your background, approach, and what makes you unique...", class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" %>
+      <p class="mt-2 text-xs text-gray-500">Minimum 50 characters, maximum 2000 characters.</p>
+    </div>
+
+    <div class="mt-6">
+      <%= form.label :languages, "Languages Spoken (comma-separated)", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+      <%= form.text_field :languages, placeholder: "e.g., English, Spanish, French", class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" %>
+    </div>
+  </div>
+
+  <!-- Education & Certifications Section -->
+  <div class="bg-white rounded-2xl shadow-lg p-8">
+    <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+      <svg class="w-6 h-6 mr-2 text-indigo-600" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/>
+      </svg>
+      Education & Certifications
+    </h2>
+
+    <div class="space-y-6">
+      <div>
+        <%= form.label :education, class: "block text-sm font-semibold text-gray-700 mb-2" %>
+        <%= form.text_area :education, rows: 4, placeholder: "List your degrees, institutions, and graduation years...", class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" %>
+      </div>
+
+      <div>
+        <%= form.label :certifications, class: "block text-sm font-semibold text-gray-700 mb-2" %>
+        <%= form.text_area :certifications, rows: 4, placeholder: "List your professional certifications and licenses...", class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" %>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Contact Information Section -->
+  <div class="bg-white rounded-2xl shadow-lg p-8">
+    <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+      <svg class="w-6 h-6 mr-2 text-indigo-600" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+      </svg>
+      Contact Information
+    </h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <%= form.label :phone, "Phone Number", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+        <%= form.telephone_field :phone, placeholder: "+1 (555) 123-4567", class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" %>
+      </div>
+
+      <div>
+        <%= form.label :website, "Website URL", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+        <%= form.url_field :website, placeholder: "https://www.example.com", class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" %>
+      </div>
+    </div>
+
+    <div class="mt-6">
+      <%= form.label :office_address, "Office Address", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+      <%= form.text_area :office_address, rows: 3, placeholder: "123 Main Street, Suite 100, City, State ZIP", class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" %>
+    </div>
+  </div>
+
+  <!-- Social Media Section -->
+  <div class="bg-white rounded-2xl shadow-lg p-8">
+    <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+      <svg class="w-6 h-6 mr-2 text-indigo-600" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/>
+      </svg>
+      Social Media Links
+    </h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <%= form.label :linkedin_url, "LinkedIn Profile", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+        <div class="relative">
+          <span class="absolute left-4 top-3.5 text-gray-400">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/>
+            </svg>
+          </span>
+          <%= form.url_field :linkedin_url, placeholder: "https://linkedin.com/in/yourprofile", class: "w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" %>
+        </div>
+      </div>
+
+      <div>
+        <%= form.label :twitter_url, "Twitter/X Profile", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+        <div class="relative">
+          <span class="absolute left-4 top-3.5 text-gray-400">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M22.46 6c-.85.38-1.78.64-2.75.76 1-.6 1.76-1.55 2.12-2.68-.93.55-1.96.95-3.06 1.17-.88-.94-2.13-1.53-3.51-1.53-2.66 0-4.81 2.16-4.81 4.81 0 .38.04.75.13 1.1-4-.2-7.54-2.12-9.91-5.04-.42.72-.66 1.55-.66 2.44 0 1.67.85 3.14 2.14 4-.79-.03-1.53-.24-2.18-.6v.06c0 2.33 1.66 4.28 3.86 4.72-.4.11-.83.17-1.27.17-.31 0-.62-.03-.92-.08.62 1.94 2.42 3.35 4.55 3.39-1.67 1.31-3.77 2.09-6.05 2.09-.39 0-.78-.02-1.17-.07 2.18 1.4 4.77 2.21 7.55 2.21 9.06 0 14.01-7.5 14.01-14.01 0-.21 0-.42-.02-.63.96-.69 1.8-1.56 2.46-2.55z"/>
+            </svg>
+          </span>
+          <%= form.url_field :twitter_url, placeholder: "https://twitter.com/yourhandle", class: "w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" %>
+        </div>
+      </div>
+
+      <div>
+        <%= form.label :facebook_url, "Facebook Page", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+        <div class="relative">
+          <span class="absolute left-4 top-3.5 text-gray-400">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2.04c-5.5 0-10 4.49-10 10.02 0 5 3.66 9.15 8.44 9.9v-7H7.9v-2.9h2.54V9.85c0-2.51 1.49-3.89 3.78-3.89 1.09 0 2.23.19 2.23.19v2.47h-1.26c-1.24 0-1.63.77-1.63 1.56v1.88h2.78l-.45 2.9h-2.33v7a10 10 0 0 0 8.44-9.9c0-5.53-4.5-10.02-10-10.02z"/>
+            </svg>
+          </span>
+          <%= form.url_field :facebook_url, placeholder: "https://facebook.com/yourpage", class: "w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" %>
+        </div>
+      </div>
+
+      <div>
+        <%= form.label :instagram_url, "Instagram Profile", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+        <div class="relative">
+          <span class="absolute left-4 top-3.5 text-gray-400">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2m-.2 2A3.6 3.6 0 0 0 4 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6m9.65 1.5a1.25 1.25 0 0 1 1.25 1.25A1.25 1.25 0 0 1 17.25 8 1.25 1.25 0 0 1 16 6.75a1.25 1.25 0 0 1 1.25-1.25M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3z"/>
+            </svg>
+          </span>
+          <%= form.url_field :instagram_url, placeholder: "https://instagram.com/yourprofile", class: "w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form Actions -->
+  <div class="flex items-center justify-between bg-white rounded-2xl shadow-lg p-8">
+    <div class="flex gap-4">
+      <%= form.submit "Save Profile", class: "px-8 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition shadow-md cursor-pointer" %>
+      <%= link_to "Cancel", provider_profile.persisted? ? provider_profile_path(provider_profile) : provider_profiles_path, class: "px-8 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition" %>
+    </div>
+
+    <% if provider_profile.persisted? %>
+      <%= button_to "Delete Profile", provider_profile_path(provider_profile), method: :delete, form: { data: { turbo_confirm: "Are you sure you want to delete your provider profile? This action cannot be undone." } }, class: "px-6 py-3 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition" %>
+    <% end %>
   </div>
 <% end %>
