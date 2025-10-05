@@ -1,0 +1,192 @@
+<% content_for :admin_page_title, "Payment Details" %>
+
+<!-- Back Button -->
+<div class="mb-6">
+  <%= link_to admin_payments_path, class: "inline-flex items-center text-gray-600 hover:text-gray-900" do %>
+    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+    </svg>
+    Back to Payments
+  <% end %>
+</div>
+
+<!-- Payment Header -->
+<div class="bg-white rounded-lg shadow overflow-hidden mb-6">
+  <div class="px-6 py-4 bg-gradient-to-r from-green-500 to-emerald-600">
+    <div class="flex items-center justify-between">
+      <div class="text-white">
+        <h2 class="text-3xl font-bold">Payment #<%= @payment.id %></h2>
+        <p class="text-lg text-green-100 mt-1">$<%= number_with_precision(@payment.amount, precision: 2) %> <%= @payment.currency.upcase %></p>
+      </div>
+      <div>
+        <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium
+          <%= case @payment.status
+              when 'succeeded' then 'bg-white text-green-700'
+              when 'pending' then 'bg-white text-yellow-700'
+              when 'failed' then 'bg-white text-red-700'
+              else 'bg-white text-gray-700'
+              end %>">
+          <%= @payment.status.humanize %>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment Information -->
+  <div class="px-6 py-6 border-b border-gray-200">
+    <h3 class="text-lg font-semibold text-gray-900 mb-4">Payment Information</h3>
+    <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+      <div>
+        <dt class="text-sm font-medium text-gray-500">Amount</dt>
+        <dd class="mt-1 text-2xl font-bold text-gray-900">$<%= number_with_precision(@payment.amount, precision: 2) %></dd>
+      </div>
+      <div>
+        <dt class="text-sm font-medium text-gray-500">Currency</dt>
+        <dd class="mt-1 text-sm text-gray-900"><%= @payment.currency.upcase %></dd>
+      </div>
+      <div>
+        <dt class="text-sm font-medium text-gray-500">Status</dt>
+        <dd class="mt-1 text-sm">
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+            <%= case @payment.status
+                when 'succeeded' then 'bg-green-100 text-green-800'
+                when 'pending' then 'bg-yellow-100 text-yellow-800'
+                when 'failed' then 'bg-red-100 text-red-800'
+                else 'bg-gray-100 text-gray-800'
+                end %>">
+            <%= @payment.status.humanize %>
+          </span>
+        </dd>
+      </div>
+      <div>
+        <dt class="text-sm font-medium text-gray-500">Paid At</dt>
+        <dd class="mt-1 text-sm text-gray-900"><%= @payment.paid_at ? @payment.paid_at.strftime("%B %d, %Y at %I:%M %p") : "Not paid yet" %></dd>
+      </div>
+      <div>
+        <dt class="text-sm font-medium text-gray-500">Created At</dt>
+        <dd class="mt-1 text-sm text-gray-900"><%= @payment.created_at.strftime("%B %d, %Y at %I:%M %p") %></dd>
+      </div>
+      <div>
+        <dt class="text-sm font-medium text-gray-500">Last Updated</dt>
+        <dd class="mt-1 text-sm text-gray-900"><%= @payment.updated_at.strftime("%B %d, %Y at %I:%M %p") %></dd>
+      </div>
+    </dl>
+  </div>
+
+  <!-- Stripe Information -->
+  <div class="px-6 py-6 border-b border-gray-200">
+    <h3 class="text-lg font-semibold text-gray-900 mb-4">Stripe Information</h3>
+    <dl class="grid grid-cols-1 gap-y-4">
+      <div>
+        <dt class="text-sm font-medium text-gray-500">Stripe Payment Intent ID</dt>
+        <dd class="mt-1 text-sm text-gray-900 font-mono bg-gray-50 px-3 py-2 rounded">
+          <%= @payment.stripe_payment_intent_id || "Not available" %>
+        </dd>
+      </div>
+      <% if @payment.stripe_payment_intent_id %>
+        <div>
+          <dt class="text-sm font-medium text-gray-500">Stripe Dashboard Link</dt>
+          <dd class="mt-1 text-sm">
+            <a href="https://dashboard.stripe.com/test/payments/<%= @payment.stripe_payment_intent_id %>"
+               target="_blank"
+               rel="noopener noreferrer"
+               class="text-indigo-600 hover:text-indigo-900 inline-flex items-center">
+              View in Stripe Dashboard
+              <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+              </svg>
+            </a>
+          </dd>
+        </div>
+      <% end %>
+    </dl>
+  </div>
+
+  <!-- Payer Information -->
+  <div class="px-6 py-6 border-b border-gray-200">
+    <h3 class="text-lg font-semibold text-gray-900 mb-4">Payer Information</h3>
+    <div class="flex items-start">
+      <div class="w-16 h-16 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-2xl font-bold mr-4">
+        <%= @payment.payer.first_name.first.upcase %>
+      </div>
+      <div class="flex-1">
+        <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+          <div>
+            <dt class="text-sm font-medium text-gray-500">Full Name</dt>
+            <dd class="mt-1 text-sm text-gray-900"><%= @payment.payer.full_name %></dd>
+          </div>
+          <div>
+            <dt class="text-sm font-medium text-gray-500">Email</dt>
+            <dd class="mt-1 text-sm text-gray-900"><%= @payment.payer.email %></dd>
+          </div>
+          <div>
+            <dt class="text-sm font-medium text-gray-500">Role</dt>
+            <dd class="mt-1 text-sm text-gray-900">
+              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                <%= @payment.payer.role.capitalize %>
+              </span>
+            </dd>
+          </div>
+          <div>
+            <dt class="text-sm font-medium text-gray-500">View User</dt>
+            <dd class="mt-1 text-sm">
+              <%= link_to "View User Profile", admin_user_path(@payment.payer), class: "text-indigo-600 hover:text-indigo-900" %>
+            </dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+  </div>
+
+  <!-- Associated Appointment -->
+  <div class="px-6 py-6">
+    <h3 class="text-lg font-semibold text-gray-900 mb-4">Associated Appointment</h3>
+    <% if @payment.appointment %>
+      <div class="bg-gray-50 rounded-lg p-4">
+        <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+          <div>
+            <dt class="text-sm font-medium text-gray-500">Appointment ID</dt>
+            <dd class="mt-1 text-sm text-gray-900">#<%= @payment.appointment.id %></dd>
+          </div>
+          <div>
+            <dt class="text-sm font-medium text-gray-500">Patient</dt>
+            <dd class="mt-1 text-sm text-gray-900"><%= @payment.appointment.patient.full_name %></dd>
+          </div>
+          <div>
+            <dt class="text-sm font-medium text-gray-500">Provider</dt>
+            <dd class="mt-1 text-sm text-gray-900"><%= @payment.appointment.provider.full_name %></dd>
+          </div>
+          <div>
+            <dt class="text-sm font-medium text-gray-500">Service</dt>
+            <dd class="mt-1 text-sm text-gray-900"><%= @payment.appointment.service.name %></dd>
+          </div>
+          <div>
+            <dt class="text-sm font-medium text-gray-500">Appointment Time</dt>
+            <dd class="mt-1 text-sm text-gray-900">
+              <%= @payment.appointment.start_time.strftime("%B %d, %Y at %I:%M %p") %>
+            </dd>
+          </div>
+          <div>
+            <dt class="text-sm font-medium text-gray-500">Appointment Status</dt>
+            <dd class="mt-1 text-sm">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                <%= case @payment.appointment.status
+                    when 'scheduled' then 'bg-blue-100 text-blue-800'
+                    when 'completed' then 'bg-green-100 text-green-800'
+                    when 'cancelled_by_patient', 'cancelled_by_provider' then 'bg-red-100 text-red-800'
+                    else 'bg-gray-100 text-gray-800'
+                    end %>">
+                <%= @payment.appointment.status.humanize %>
+              </span>
+            </dd>
+          </div>
+        </dl>
+        <div class="mt-4">
+          <%= link_to "View Full Appointment Details", admin_appointment_path(@payment.appointment), class: "inline-flex items-center text-indigo-600 hover:text-indigo-900" %>
+        </div>
+      </div>
+    <% else %>
+      <p class="text-sm text-gray-500">No appointment associated with this payment</p>
+    <% end %>
+  </div>
+</div>

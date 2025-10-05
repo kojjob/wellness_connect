@@ -1,149 +1,158 @@
-<nav class="bg-white shadow-lg fixed w-full top-0 z-50" data-controller="navbar">
+<nav class="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm shadow-sm border-b border-gray-200 z-50" data-controller="navbar">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex justify-between h-16">
-      <!-- Left Section: Logo & Main Navigation -->
+    <div class="flex justify-between items-center h-16">
+      <!-- Logo and brand -->
       <div class="flex items-center">
-        <!-- Logo -->
-        <%= link_to root_path, class: "flex items-center space-x-2 mr-8" do %>
-          <svg class="w-8 h-8 text-indigo-600" fill="currentColor" viewBox="0 0 24 24">
+        <%= link_to root_path, class: "flex items-center space-x-2 group" do %>
+          <svg class="h-8 w-8 text-indigo-600 group-hover:text-indigo-700 transition" fill="currentColor" viewBox="0 0 24 24">
             <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
           </svg>
-          <span class="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent hidden sm:block">WellnessConnect</span>
+          <span class="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">WellnessConnect</span>
         <% end %>
-
-        <!-- Desktop Navigation -->
-        <div class="hidden md:flex items-center space-x-1">
-          <!-- Home Link -->
-          <%= link_to "Home", root_path, class: "px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 transition" %>
-
-          <!-- Services Dropdown -->
-          <div class="relative" data-controller="dropdown">
-            <button type="button"
-                    data-action="click->dropdown#toggle"
-                    class="px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 transition inline-flex items-center"
-                    aria-expanded="false"
-                    aria-haspopup="true">
-              Services
-              <svg class="ml-1 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
-              </svg>
-            </button>
-            <div data-dropdown-target="menu"
-                 class="hidden absolute left-0 mt-2 w-56 rounded-xl shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100">
-              <div class="py-1">
-                <%= link_to "#", class: "group flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition" do %>
-                  <svg class="mr-3 h-5 w-5 text-gray-400 group-hover:text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3z"/>
-                  </svg>
-                  Browse All Services
-                <% end %>
-                <%= link_to "#", class: "group flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition" do %>
-                  <svg class="mr-3 h-5 w-5 text-gray-400 group-hover:text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
-                  </svg>
-                  Find Providers
-                <% end %>
-                <%= link_to "#", class: "group flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition" do %>
-                  <svg class="mr-3 h-5 w-5 text-gray-400 group-hover:text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
-                  </svg>
-                  Book Appointment
-                <% end %>
-              </div>
-            </div>
-          </div>
-
-          <!-- Providers Link -->
-          <%= link_to "Providers", "#", class: "px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 transition" %>
-
-          <!-- About Dropdown -->
-          <div class="relative" data-controller="dropdown">
-            <button type="button"
-                    data-action="click->dropdown#toggle"
-                    class="px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 transition inline-flex items-center"
-                    aria-expanded="false"
-                    aria-haspopup="true">
-              About
-              <svg class="ml-1 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
-              </svg>
-            </button>
-            <div data-dropdown-target="menu"
-                 class="hidden absolute left-0 mt-2 w-56 rounded-xl shadow-lg bg-white ring-1 ring-black ring-opacity-5">
-              <div class="py-1">
-                <%= link_to "#", class: "block px-4 py-3 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition" do %>
-                  About Us
-                <% end %>
-                <%= link_to "#", class: "block px-4 py-3 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition" do %>
-                  How It Works
-                <% end %>
-                <%= link_to "#", class: "block px-4 py-3 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition" do %>
-                  Contact Us
-                <% end %>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
 
-      <!-- Right Section: Notifications, User Profile, Auth Buttons -->
-      <div class="flex items-center space-x-4">
+      <!-- Desktop Navigation -->
+      <div class="hidden md:flex md:items-center md:space-x-1">
+        <%= link_to "Browse Providers", providers_path,
+            class: "text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 px-3 py-2 rounded-md text-sm font-medium transition" %>
+
+        <%= link_to "About", about_path,
+            class: "text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 px-3 py-2 rounded-md text-sm font-medium transition" %>
+
+        <%= link_to "Become a Provider", become_provider_path,
+            class: "text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 px-3 py-2 rounded-md text-sm font-medium transition" %>
+      </div>
+
+      <!-- Right side navigation -->
+      <div class="hidden md:flex md:items-center md:space-x-3">
         <% if user_signed_in? %>
           <!-- Notifications Dropdown -->
           <div class="relative" data-controller="dropdown">
             <button type="button"
+                    data-dropdown-target="button"
                     data-action="click->dropdown#toggle"
-                    class="relative p-2 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition"
-                    aria-label="Notifications">
-              <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    class="relative p-2 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-all duration-200 group"
+                    aria-label="View notifications"
+                    aria-haspopup="true"
+                    aria-expanded="false">
+              <svg class="h-6 w-6 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
               </svg>
-              <!-- Notification Badge -->
-              <span class="absolute top-1 right-1 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>
+              <% if current_user.notifications.unread.any? %>
+                <span class="absolute top-0 right-0 flex h-5 w-5">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-5 w-5 bg-gradient-to-br from-red-500 to-pink-500 items-center justify-center text-white text-xs font-bold shadow-lg">
+                    <%= [current_user.notifications.unread.count, 9].min %>
+                  </span>
+                </span>
+              <% end %>
             </button>
+
+            <!-- Notifications Dropdown Menu -->
             <div data-dropdown-target="menu"
-                 class="hidden absolute right-0 mt-2 w-80 rounded-xl shadow-lg bg-white ring-1 ring-black ring-opacity-5">
-              <div class="p-4 border-b border-gray-200">
-                <h3 class="text-sm font-semibold text-gray-900">Notifications</h3>
-              </div>
-              <div class="max-h-96 overflow-y-auto">
-                <!-- Notification Items -->
-                <a href="#" class="block px-4 py-3 hover:bg-gray-50 transition">
-                  <div class="flex items-start">
-                    <div class="flex-shrink-0">
-                      <div class="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
-                        <svg class="h-5 w-5 text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
-                          <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                 class="hidden absolute right-0 mt-3 w-96 rounded-xl shadow-2xl bg-white ring-1 ring-gray-200 z-50 overflow-hidden"
+                 style="opacity: 0; transform: scale(0.95); transition: opacity 0.2s ease-out, transform 0.2s ease-out;"
+                 role="menu">
+              <div class="py-1">
+                <!-- Header with gradient -->
+                <div class="px-5 py-4 bg-gradient-to-r from-indigo-500 to-purple-600">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                      <div class="h-8 w-8 rounded-lg bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                        <svg class="h-5 w-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"/>
                         </svg>
                       </div>
+                      <h3 class="text-base font-bold text-white">Notifications</h3>
                     </div>
-                    <div class="ml-3 flex-1">
-                      <p class="text-sm font-medium text-gray-900">Appointment Confirmed</p>
-                      <p class="text-xs text-gray-500 mt-1">Your session with Dr. Smith is confirmed for tomorrow at 2 PM</p>
-                      <p class="text-xs text-gray-400 mt-1">2 hours ago</p>
-                    </div>
+                    <% if current_user.notifications.unread.any? %>
+                      <%= link_to "Mark all read", mark_all_as_read_notifications_path,
+                          data: { turbo_method: :post },
+                          class: "text-xs text-white/90 hover:text-white font-medium px-3 py-1.5 rounded-lg bg-white/20 hover:bg-white/30 transition-all duration-200" %>
+                    <% end %>
                   </div>
-                </a>
-                <a href="#" class="block px-4 py-3 hover:bg-gray-50 transition">
-                  <div class="flex items-start">
-                    <div class="flex-shrink-0">
-                      <div class="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
-                        <svg class="h-5 w-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                </div>
+
+                <div class="max-h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+                  <% if current_user.notifications.recent.any? %>
+                    <% current_user.notifications.recent.each do |notification| %>
+                      <%= link_to mark_as_read_notification_path(notification),
+                          data: { turbo_method: :post },
+                          class: "block px-5 py-4 hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 transition-all duration-200 border-b border-gray-100 last:border-0 #{notification.unread? ? 'bg-gradient-to-r from-indigo-50/50 to-purple-50/50' : ''}" do %>
+                        <div class="flex items-start">
+                          <div class="flex-shrink-0">
+                            <% case notification.notification_type %>
+                            <% when 'appointment_booked', 'appointment_reminder' %>
+                              <div class="h-10 w-10 rounded-xl bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center shadow-lg shadow-green-500/30">
+                                <svg class="h-6 w-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                                </svg>
+                              </div>
+                            <% when 'appointment_cancelled' %>
+                              <div class="h-10 w-10 rounded-xl bg-gradient-to-br from-red-400 to-rose-500 flex items-center justify-center shadow-lg shadow-red-500/30">
+                                <svg class="h-6 w-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                                </svg>
+                              </div>
+                            <% when 'payment_received' %>
+                              <div class="h-10 w-10 rounded-xl bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center shadow-lg shadow-blue-500/30">
+                                <svg class="h-6 w-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                  <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"/>
+                                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd"/>
+                                </svg>
+                              </div>
+                            <% else %>
+                              <div class="h-10 w-10 rounded-xl bg-gradient-to-br from-gray-400 to-gray-500 flex items-center justify-center shadow-lg shadow-gray-500/30">
+                                <svg class="h-6 w-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                </svg>
+                              </div>
+                            <% end %>
+                          </div>
+                          <div class="ml-4 flex-1 min-w-0">
+                            <p class="text-sm font-semibold text-gray-900 truncate"><%= notification.title %></p>
+                            <p class="text-xs text-gray-600 mt-1 line-clamp-2"><%= notification.message %></p>
+                            <div class="flex items-center mt-2 space-x-2">
+                              <svg class="h-3 w-3 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                              </svg>
+                              <p class="text-xs text-gray-400 font-medium"><%= time_ago_in_words(notification.created_at) %> ago</p>
+                            </div>
+                          </div>
+                          <% if notification.unread? %>
+                            <div class="ml-3 flex-shrink-0">
+                              <span class="flex h-3 w-3">
+                                <span class="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-indigo-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-3 w-3 bg-gradient-to-br from-indigo-500 to-purple-600"></span>
+                              </span>
+                            </div>
+                          <% end %>
+                        </div>
+                      <% end %>
+                    <% end %>
+                  <% else %>
+                    <div class="px-6 py-12 text-center">
+                      <div class="mx-auto h-16 w-16 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center mb-4">
+                        <svg class="h-8 w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
                         </svg>
                       </div>
+                      <p class="text-sm font-semibold text-gray-900 mb-1">All caught up!</p>
+                      <p class="text-xs text-gray-500">You have no new notifications</p>
                     </div>
-                    <div class="ml-3 flex-1">
-                      <p class="text-sm font-medium text-gray-900">Payment Successful</p>
-                      <p class="text-xs text-gray-500 mt-1">Your payment of $150 has been processed</p>
-                      <p class="text-xs text-gray-400 mt-1">1 day ago</p>
-                    </div>
+                  <% end %>
+                </div>
+
+                <% if current_user.notifications.any? %>
+                  <div class="border-t border-gray-200 bg-gray-50">
+                    <%= link_to notifications_path,
+                        class: "group flex items-center justify-center px-5 py-3 text-center text-sm text-indigo-600 hover:text-indigo-700 font-semibold transition-all duration-200" do %>
+                      <span>View all notifications</span>
+                      <svg class="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                      </svg>
+                    <% end %>
                   </div>
-                </a>
-              </div>
-              <div class="p-3 border-t border-gray-200">
-                <%= link_to "#", class: "block text-center text-sm font-medium text-indigo-600 hover:text-indigo-500" do %>
-                  View all notifications
                 <% end %>
               </div>
             </div>
@@ -152,103 +161,204 @@
           <!-- User Profile Dropdown -->
           <div class="relative" data-controller="dropdown">
             <button type="button"
+                    data-dropdown-target="button"
                     data-action="click->dropdown#toggle"
-                    class="flex items-center space-x-2 p-1 rounded-lg hover:bg-gray-100 transition"
-                    aria-expanded="false"
+                    class="flex items-center space-x-2 text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 hover:opacity-90 transition-all duration-200 group"
                     aria-haspopup="true"
+                    aria-expanded="false"
                     aria-label="User menu">
-              <!-- User Avatar -->
-              <div class="h-8 w-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm">
-                <%= current_user.first_name&.first&.upcase || current_user.email.first.upcase %>
+              <div class="h-9 w-9 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center text-white font-bold shadow-lg ring-2 ring-white group-hover:scale-105 transition-transform duration-200">
+                <%= current_user.email[0].upcase %>
               </div>
-              <span class="hidden md:block text-sm font-medium text-gray-700"><%= current_user.first_name || "User" %></span>
-              <svg class="hidden md:block h-4 w-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+              <svg class="h-4 w-4 text-gray-400 group-hover:text-gray-600 transition-colors" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
               </svg>
             </button>
+
             <div data-dropdown-target="menu"
-                 class="hidden absolute right-0 mt-2 w-56 rounded-xl shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100">
-              <div class="px-4 py-3">
-                <p class="text-sm font-medium text-gray-900"><%= current_user.first_name %> <%= current_user.last_name %></p>
-                <p class="text-xs text-gray-500 truncate"><%= current_user.email %></p>
-                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-100 text-indigo-800 mt-2">
-                  <%= current_user.role.titleize %>
-                </span>
+                 class="hidden absolute right-0 mt-3 w-72 rounded-xl shadow-2xl bg-white ring-1 ring-gray-200 divide-y divide-gray-100 z-50 overflow-hidden"
+                 style="opacity: 0; transform: scale(0.95); transition: opacity 0.2s ease-out, transform 0.2s ease-out;"
+                 role="menu">
+              <!-- User info with gradient background -->
+              <div class="px-5 py-4 bg-gradient-to-r from-indigo-500 to-purple-600">
+                <div class="flex items-center space-x-3">
+                  <div class="h-12 w-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white font-bold text-lg ring-2 ring-white/30">
+                    <%= current_user.email[0].upcase %>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-sm font-semibold text-white truncate"><%= current_user.email %></p>
+                    <div class="flex items-center mt-1">
+                      <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-white/20 text-white backdrop-blur-sm">
+                        <svg class="mr-1 h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                        </svg>
+                        <%= current_user.provider? ? "Provider" : "Patient" %>
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div class="py-1">
-                <%= link_to "#", class: "group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition" do %>
-                  <svg class="mr-3 h-5 w-5 text-gray-400 group-hover:text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
-                  </svg>
-                  My Profile
-                <% end %>
-                <%= link_to "#", class: "group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition" do %>
-                  <svg class="mr-3 h-5 w-5 text-gray-400 group-hover:text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
-                  </svg>
-                  My Appointments
-                <% end %>
-                <%= link_to "#", class: "group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition" do %>
-                  <svg class="mr-3 h-5 w-5 text-gray-400 group-hover:text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z"/>
-                    <path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd"/>
-                  </svg>
-                  Billing
-                <% end %>
-                <%= link_to "#", class: "group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition" do %>
-                  <svg class="mr-3 h-5 w-5 text-gray-400 group-hover:text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
-                  </svg>
-                  Settings
+
+              <!-- Menu items -->
+              <div class="py-2">
+                <% if current_user.provider? && current_user.provider_profile.present? %>
+                  <%= link_to provider_profile_path(current_user.provider_profile),
+                      class: "group flex items-center px-5 py-3 text-sm font-medium text-gray-700 hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 hover:text-indigo-600 transition-all duration-200",
+                      role: "menuitem" do %>
+                    <div class="mr-3 h-8 w-8 rounded-lg bg-indigo-100 group-hover:bg-indigo-200 flex items-center justify-center transition-colors">
+                      <svg class="h-5 w-5 text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+                      </svg>
+                    </div>
+                    <span>My Dashboard</span>
+                    <svg class="ml-auto h-4 w-4 text-gray-400 group-hover:text-indigo-600 transition-transform group-hover:translate-x-1" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                  <% end %>
+                <% elsif current_user.provider? %>
+                  <%= link_to new_provider_profile_path,
+                      class: "group flex items-center px-5 py-3 text-sm font-medium text-gray-700 hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 hover:text-indigo-600 transition-all duration-200",
+                      role: "menuitem" do %>
+                    <div class="mr-3 h-8 w-8 rounded-lg bg-green-100 group-hover:bg-green-200 flex items-center justify-center transition-colors">
+                      <svg class="h-5 w-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z"/>
+                      </svg>
+                    </div>
+                    <span>Create Profile</span>
+                    <svg class="ml-auto h-4 w-4 text-gray-400 group-hover:text-indigo-600 transition-transform group-hover:translate-x-1" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                  <% end %>
+                <% else %>
+                  <%= link_to dashboard_path,
+                      class: "group flex items-center px-5 py-3 text-sm font-medium text-gray-700 hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 hover:text-indigo-600 transition-all duration-200",
+                      role: "menuitem" do %>
+                    <div class="mr-3 h-8 w-8 rounded-lg bg-indigo-100 group-hover:bg-indigo-200 flex items-center justify-center transition-colors">
+                      <svg class="h-5 w-5 text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+                      </svg>
+                    </div>
+                    <span>My Dashboard</span>
+                    <svg class="ml-auto h-4 w-4 text-gray-400 group-hover:text-indigo-600 transition-transform group-hover:translate-x-1" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                  <% end %>
                 <% end %>
               </div>
-              <div class="py-1">
-                <%= button_to destroy_user_session_path, method: :delete, class: "group flex items-center w-full px-4 py-2 text-sm text-red-700 hover:bg-red-50 transition" do %>
-                  <svg class="mr-3 h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"/>
+
+              <div class="py-2 bg-gray-50">
+                <%= button_to destroy_user_session_path,
+                    method: :delete,
+                    class: "group flex items-center w-full px-5 py-3 text-sm font-medium text-gray-700 hover:bg-gradient-to-r hover:from-red-50 hover:to-pink-50 hover:text-red-600 transition-all duration-200",
+                    role: "menuitem" do %>
+                  <div class="mr-3 h-8 w-8 rounded-lg bg-red-100 group-hover:bg-red-200 flex items-center justify-center transition-colors">
+                    <svg class="h-5 w-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"/>
+                    </svg>
+                  </div>
+                  <span>Sign Out</span>
+                  <svg class="ml-auto h-4 w-4 text-gray-400 group-hover:text-red-600 transition-transform group-hover:translate-x-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
                   </svg>
-                  Sign Out
                 <% end %>
               </div>
             </div>
           </div>
         <% else %>
-          <!-- Sign In Button -->
-          <%= link_to "Sign In", new_user_session_path, class: "hidden sm:inline-flex items-center px-4 py-2 border border-indigo-600 rounded-lg text-sm font-medium text-indigo-600 bg-white hover:bg-indigo-50 transition" %>
-          
-          <!-- Get Started Button -->
-          <%= link_to new_user_registration_path, class: "inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 transition" do %>
-            Get Started
-          <% end %>
+          <!-- Guest buttons -->
+          <%= link_to "Sign In", new_user_session_path,
+              class: "text-gray-700 hover:text-indigo-600 px-4 py-2 rounded-md text-sm font-medium transition" %>
+          <%= link_to "Get Started", new_user_registration_path,
+              class: "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-6 py-2 rounded-lg text-sm font-semibold transition shadow-md" %>
         <% end %>
+      </div>
 
-        <!-- Mobile Menu Button -->
+      <!-- Mobile menu button -->
+      <div class="md:hidden flex items-center">
         <button type="button"
-                data-action="click->navbar#toggleMobile"
-                class="md:hidden p-2 rounded-lg text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 transition"
-                aria-label="Toggle menu">
-          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                data-navbar-target="mobileMenuButton"
+                data-action="click->navbar#toggleMobileMenu"
+                class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
+                aria-controls="mobile-menu"
+                aria-expanded="false"
+                aria-label="Toggle navigation menu">
+          <svg data-navbar-target="mobileMenuIcon" class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+          <svg data-navbar-target="mobileMenuCloseIcon" class="hidden h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
           </svg>
         </button>
       </div>
     </div>
   </div>
 
-  <!-- Mobile Menu -->
-  <div data-navbar-target="mobileMenu" class="hidden md:hidden border-t border-gray-200">
+  <!-- Mobile menu -->
+  <div data-navbar-target="mobileMenu"
+       class="hidden md:hidden border-t border-gray-200 bg-white"
+       id="mobile-menu">
     <div class="px-2 pt-2 pb-3 space-y-1">
-      <%= link_to "Home", root_path, class: "block px-3 py-2 rounded-lg text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 transition" %>
-      <%= link_to "Services", "#", class: "block px-3 py-2 rounded-lg text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 transition" %>
-      <%= link_to "Providers", "#", class: "block px-3 py-2 rounded-lg text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 transition" %>
-      <%= link_to "About", "#", class: "block px-3 py-2 rounded-lg text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 transition" %>
-      <% unless user_signed_in? %>
-        <%= link_to "Sign In", new_user_session_path, class: "block px-3 py-2 rounded-lg text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 transition sm:hidden" %>
-      <% end %>
+      <%= link_to "Browse Providers", providers_path,
+          data: { action: "click->navbar#handleLinkClick" },
+          class: "block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 transition" %>
+
+      <%= link_to "About", about_path,
+          data: { action: "click->navbar#handleLinkClick" },
+          class: "block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 transition" %>
+
+      <%= link_to "Become a Provider", become_provider_path,
+          data: { action: "click->navbar#handleLinkClick" },
+          class: "block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 transition" %>
     </div>
+
+    <% if user_signed_in? %>
+      <div class="pt-4 pb-3 border-t border-gray-200">
+        <div class="flex items-center px-4">
+          <div class="flex-shrink-0">
+            <div class="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-semibold">
+              <%= current_user.email[0].upcase %>
+            </div>
+          </div>
+          <div class="ml-3">
+            <div class="text-base font-medium text-gray-800"><%= current_user.email %></div>
+            <div class="text-sm font-medium text-gray-500">
+              <%= current_user.provider? ? "Provider Account" : "Patient Account" %>
+            </div>
+          </div>
+        </div>
+        <div class="mt-3 px-2 space-y-1">
+          <%= link_to "Notifications #{current_user.notifications.unread.count > 0 ? "(#{current_user.notifications.unread.count})" : ''}", notifications_path,
+              data: { action: "click->navbar#handleLinkClick" },
+              class: "block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 transition" %>
+
+          <% if current_user.provider? && current_user.provider_profile.present? %>
+            <%= link_to "My Dashboard", provider_profile_path(current_user.provider_profile),
+                data: { action: "click->navbar#handleLinkClick" },
+                class: "block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 transition" %>
+          <% elsif current_user.provider? %>
+            <%= link_to "Create Profile", new_provider_profile_path,
+                data: { action: "click->navbar#handleLinkClick" },
+                class: "block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 transition" %>
+          <% else %>
+            <%= link_to "My Dashboard", dashboard_path,
+                data: { action: "click->navbar#handleLinkClick" },
+                class: "block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 transition" %>
+          <% end %>
+
+          <%= button_to "Sign Out", destroy_user_session_path,
+              method: :delete,
+              class: "block w-full text-left px-3 py-2 rounded-md text-base font-medium text-red-600 hover:bg-red-50 transition" %>
+        </div>
+      </div>
+    <% else %>
+      <div class="pt-4 pb-3 border-t border-gray-200 px-2 space-y-2">
+        <%= link_to "Sign In", new_user_session_path,
+            data: { action: "click->navbar#handleLinkClick" },
+            class: "block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 transition text-center" %>
+        <%= link_to "Get Started", new_user_registration_path,
+            data: { action: "click->navbar#handleLinkClick" },
+            class: "block px-3 py-2 rounded-md text-base font-semibold bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-700 hover:to-purple-700 transition text-center" %>
+      </div>
+    <% end %>
   </div>
 </nav>
-
-<!-- Spacer to prevent content from hiding under fixed navbar -->
-<div class="h-16"></div>
-

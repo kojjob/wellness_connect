@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "Admin Dashboard - Wellness Connect" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="bg-gray-50">
+    <%= render "layouts/admin/navigation" %>
+
+    <div class="flex">
+      <%= render "layouts/admin/sidebar" %>
+
+      <!-- Main Content Area -->
+      <main class="flex-1 ml-64 pt-16">
+        <!-- Flash Messages -->
+        <% if notice %>
+          <div class="mx-8 my-4 bg-green-50 border-l-4 border-green-500 p-4 rounded-md">
+            <p class="text-green-800"><%= notice %></p>
+          </div>
+        <% end %>
+
+        <% if alert %>
+          <div class="mx-8 my-4 bg-red-50 border-l-4 border-red-500 p-4 rounded-md">
+            <p class="text-red-800"><%= alert %></p>
+          </div>
+        <% end %>
+
+        <!-- Page Content -->
+        <div class="px-8 py-6">
+          <%= yield %>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

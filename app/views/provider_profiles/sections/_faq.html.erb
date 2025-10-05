@@ -1,0 +1,182 @@
+<section id="faq" class="bg-white rounded-2xl shadow-lg p-8">
+  <h2 class="text-3xl font-bold text-gray-900 mb-2 flex items-center">
+    <svg class="w-8 h-8 mr-3 text-indigo-600" fill="currentColor" viewBox="0 0 24 24">
+      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+    </svg>
+    Frequently Asked Questions
+  </h2>
+  <p class="text-gray-600 mb-8">Common questions about working with <%= @provider_profile.user.first_name %></p>
+
+  <div data-controller="accordion" class="space-y-4">
+    <!-- FAQ Item 1 -->
+    <div data-accordion-target="item" class="border border-gray-200 rounded-lg overflow-hidden">
+      <button data-accordion-target="button"
+              data-action="click->accordion#toggle keydown->accordion#handleKeydown"
+              class="w-full flex items-center justify-between p-5 text-left bg-white hover:bg-gray-50 transition focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+              aria-expanded="false">
+        <span class="font-semibold text-gray-900 pr-4">How do I book an appointment?</span>
+        <svg data-accordion-icon class="w-5 h-5 text-gray-500 transition-transform duration-300" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/>
+        </svg>
+      </button>
+      <div data-accordion-target="panel" 
+           class="overflow-hidden transition-all duration-300"
+           style="max-height: 0;"
+           aria-hidden="true">
+        <div class="p-5 pt-0 text-gray-700 leading-relaxed">
+          <p>You can book an appointment by clicking the "Book Appointment" button on this page or selecting a specific service package. You'll be guided through the booking process where you can choose your preferred date and time from available slots.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQ Item 2 -->
+    <div data-accordion-target="item" class="border border-gray-200 rounded-lg overflow-hidden">
+      <button data-accordion-target="button"
+              data-action="click->accordion#toggle keydown->accordion#handleKeydown"
+              class="w-full flex items-center justify-between p-5 text-left bg-white hover:bg-gray-50 transition focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+              aria-expanded="false">
+        <span class="font-semibold text-gray-900 pr-4">What is your cancellation policy?</span>
+        <svg data-accordion-icon class="w-5 h-5 text-gray-500 transition-transform duration-300" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/>
+        </svg>
+      </button>
+      <div data-accordion-target="panel" 
+           class="overflow-hidden transition-all duration-300"
+           style="max-height: 0;"
+           aria-hidden="true">
+        <div class="p-5 pt-0 text-gray-700 leading-relaxed">
+          <p>Appointments can be cancelled or rescheduled up to 24 hours before the scheduled time without any charge. Cancellations made less than 24 hours in advance may be subject to a cancellation fee. Please contact us as soon as possible if you need to make changes to your appointment.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQ Item 3 -->
+    <div data-accordion-target="item" class="border border-gray-200 rounded-lg overflow-hidden">
+      <button data-accordion-target="button"
+              data-action="click->accordion#toggle keydown->accordion#handleKeydown"
+              class="w-full flex items-center justify-between p-5 text-left bg-white hover:bg-gray-50 transition focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+              aria-expanded="false">
+        <span class="font-semibold text-gray-900 pr-4">Do you offer virtual sessions?</span>
+        <svg data-accordion-icon class="w-5 h-5 text-gray-500 transition-transform duration-300" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/>
+        </svg>
+      </button>
+      <div data-accordion-target="panel" 
+           class="overflow-hidden transition-all duration-300"
+           style="max-height: 0;"
+           aria-hidden="true">
+        <div class="p-5 pt-0 text-gray-700 leading-relaxed">
+          <p>Yes! I offer both in-person and virtual sessions via secure video conferencing. You can choose your preferred session format when booking your appointment. Virtual sessions provide the same quality of care and are a convenient option for those who prefer remote consultations.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQ Item 4 -->
+    <div data-accordion-target="item" class="border border-gray-200 rounded-lg overflow-hidden">
+      <button data-accordion-target="button"
+              data-action="click->accordion#toggle keydown->accordion#handleKeydown"
+              class="w-full flex items-center justify-between p-5 text-left bg-white hover:bg-gray-50 transition focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+              aria-expanded="false">
+        <span class="font-semibold text-gray-900 pr-4">What should I expect during my first session?</span>
+        <svg data-accordion-icon class="w-5 h-5 text-gray-500 transition-transform duration-300" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/>
+        </svg>
+      </button>
+      <div data-accordion-target="panel" 
+           class="overflow-hidden transition-all duration-300"
+           style="max-height: 0;"
+           aria-hidden="true">
+        <div class="p-5 pt-0 text-gray-700 leading-relaxed">
+          <p>Your first session is an opportunity for us to get to know each other and discuss your goals and needs. We'll review your background, current challenges, and what you hope to achieve. This helps me create a personalized plan tailored to your specific situation. Please come prepared with any questions you may have.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQ Item 5 -->
+    <div data-accordion-target="item" class="border border-gray-200 rounded-lg overflow-hidden">
+      <button data-accordion-target="button"
+              data-action="click->accordion#toggle keydown->accordion#handleKeydown"
+              class="w-full flex items-center justify-between p-5 text-left bg-white hover:bg-gray-50 transition focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+              aria-expanded="false">
+        <span class="font-semibold text-gray-900 pr-4">How long are sessions and how often should I book?</span>
+        <svg data-accordion-icon class="w-5 h-5 text-gray-500 transition-transform duration-300" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/>
+        </svg>
+      </button>
+      <div data-accordion-target="panel" 
+           class="overflow-hidden transition-all duration-300"
+           style="max-height: 0;"
+           aria-hidden="true">
+        <div class="p-5 pt-0 text-gray-700 leading-relaxed">
+          <p>Session lengths vary depending on the service package you choose, typically ranging from 30 to 90 minutes. The frequency of sessions depends on your individual needs and goals. Some clients benefit from weekly sessions, while others prefer bi-weekly or monthly appointments. We'll discuss the best schedule for you during our initial consultation.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQ Item 6 -->
+    <div data-accordion-target="item" class="border border-gray-200 rounded-lg overflow-hidden">
+      <button data-accordion-target="button"
+              data-action="click->accordion#toggle keydown->accordion#handleKeydown"
+              class="w-full flex items-center justify-between p-5 text-left bg-white hover:bg-gray-50 transition focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+              aria-expanded="false">
+        <span class="font-semibold text-gray-900 pr-4">What payment methods do you accept?</span>
+        <svg data-accordion-icon class="w-5 h-5 text-gray-500 transition-transform duration-300" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/>
+        </svg>
+      </button>
+      <div data-accordion-target="panel" 
+           class="overflow-hidden transition-all duration-300"
+           style="max-height: 0;"
+           aria-hidden="true">
+        <div class="p-5 pt-0 text-gray-700 leading-relaxed">
+          <p>I accept all major credit cards, debit cards, and secure online payments through our platform. Payment is typically required at the time of booking to confirm your appointment. If you have questions about payment plans or insurance coverage, please don't hesitate to reach out.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQ Item 7 -->
+    <div data-accordion-target="item" class="border border-gray-200 rounded-lg overflow-hidden">
+      <button data-accordion-target="button"
+              data-action="click->accordion#toggle keydown->accordion#handleKeydown"
+              class="w-full flex items-center justify-between p-5 text-left bg-white hover:bg-gray-50 transition focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+              aria-expanded="false">
+        <span class="font-semibold text-gray-900 pr-4">Is my information kept confidential?</span>
+        <svg data-accordion-icon class="w-5 h-5 text-gray-500 transition-transform duration-300" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/>
+        </svg>
+      </button>
+      <div data-accordion-target="panel" 
+           class="overflow-hidden transition-all duration-300"
+           style="max-height: 0;"
+           aria-hidden="true">
+        <div class="p-5 pt-0 text-gray-700 leading-relaxed">
+          <p>Absolutely. Your privacy and confidentiality are of utmost importance. All information shared during our sessions is kept strictly confidential in accordance with professional ethics and applicable privacy laws. Our platform uses industry-standard encryption to protect your data.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contact CTA -->
+  <div class="mt-8 p-6 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl border border-indigo-200">
+    <div class="flex items-start gap-4">
+      <div class="flex-shrink-0 w-12 h-12 bg-indigo-600 rounded-full flex items-center justify-center">
+        <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+        </svg>
+      </div>
+      <div class="flex-grow">
+        <h3 class="text-lg font-semibold text-gray-900 mb-1">Still have questions?</h3>
+        <p class="text-gray-700 mb-4">Can't find the answer you're looking for? Feel free to reach out directly.</p>
+        <% if @provider_profile.phone.present? %>
+          <a href="tel:<%= @provider_profile.phone %>" class="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-700 font-medium">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+            </svg>
+            Contact me directly
+          </a>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</section>
+

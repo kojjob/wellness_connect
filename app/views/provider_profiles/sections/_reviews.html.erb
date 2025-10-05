@@ -1,0 +1,159 @@
+<section id="reviews" class="bg-white rounded-2xl shadow-lg p-8">
+  <h2 class="text-3xl font-bold text-gray-900 mb-6 flex items-center">
+    <svg class="w-8 h-8 mr-3 text-indigo-600" fill="currentColor" viewBox="0 0 24 24">
+      <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+    </svg>
+    Client Reviews & Testimonials
+  </h2>
+
+  <%# TODO: This section will be populated when the Review model is implemented %>
+  <%# For now, showing a placeholder with sample testimonials %>
+
+  <!-- Rating Summary -->
+  <div class="mb-8 p-6 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl border border-indigo-200">
+    <div class="flex flex-col md:flex-row items-center gap-8">
+      <!-- Overall Rating -->
+      <div class="text-center">
+        <div class="text-6xl font-bold text-indigo-600 mb-2">
+          <%= @provider_profile.display_rating %>
+        </div>
+        <div class="flex items-center justify-center mb-2">
+          <% 5.times do |i| %>
+            <svg class="w-6 h-6 <%= i < @provider_profile.display_rating.floor ? 'text-yellow-400' : 'text-gray-300' %>"
+                 fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+            </svg>
+          <% end %>
+        </div>
+        <p class="text-sm text-gray-600">Based on client feedback</p>
+      </div>
+
+      <!-- Rating Breakdown (Placeholder) -->
+      <div class="flex-grow w-full">
+        <% [5, 4, 3, 2, 1].each do |stars| %>
+          <div class="flex items-center gap-3 mb-2">
+            <span class="text-sm font-medium text-gray-700 w-12"><%= stars %> star</span>
+            <div class="flex-grow bg-gray-200 rounded-full h-2 overflow-hidden">
+              <div class="bg-yellow-400 h-full rounded-full" style="width: <%= stars == 5 ? '100' : '0' %>%"></div>
+            </div>
+            <span class="text-sm text-gray-600 w-12 text-right"><%= stars == 5 ? '100' : '0' %>%</span>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sample Testimonials (Placeholder) -->
+  <div class="space-y-6">
+    <!-- Testimonial 1 -->
+    <div class="border border-gray-200 rounded-xl p-6 hover:shadow-lg transition">
+      <div class="flex items-start gap-4 mb-4">
+        <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
+          JD
+        </div>
+        <div class="flex-grow">
+          <div class="flex items-center justify-between mb-1">
+            <h4 class="font-semibold text-gray-900">Jane D.</h4>
+            <div class="flex items-center">
+              <% 5.times do %>
+                <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                </svg>
+              <% end %>
+            </div>
+          </div>
+          <p class="text-sm text-gray-500 mb-3">Verified Client • 2 months ago</p>
+          <p class="text-gray-700 leading-relaxed">
+            "Working with <%= @provider_profile.user.first_name %> has been transformative. Their professional approach and genuine care made me feel comfortable from the first session. I've seen significant improvements and couldn't be happier with the results."
+          </p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 text-sm text-gray-600">
+        <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+        </svg>
+        <span>Verified appointment</span>
+      </div>
+    </div>
+
+    <!-- Testimonial 2 -->
+    <div class="border border-gray-200 rounded-xl p-6 hover:shadow-lg transition">
+      <div class="flex items-start gap-4 mb-4">
+        <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
+          MS
+        </div>
+        <div class="flex-grow">
+          <div class="flex items-center justify-between mb-1">
+            <h4 class="font-semibold text-gray-900">Michael S.</h4>
+            <div class="flex items-center">
+              <% 5.times do %>
+                <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                </svg>
+              <% end %>
+            </div>
+          </div>
+          <p class="text-sm text-gray-500 mb-3">Verified Client • 3 months ago</p>
+          <p class="text-gray-700 leading-relaxed">
+            "Highly professional and knowledgeable. <%= @provider_profile.user.first_name %> provided practical strategies that I could implement immediately. The virtual sessions were convenient and just as effective as in-person meetings."
+          </p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 text-sm text-gray-600">
+        <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+        </svg>
+        <span>Verified appointment</span>
+      </div>
+    </div>
+
+    <!-- Testimonial 3 -->
+    <div class="border border-gray-200 rounded-xl p-6 hover:shadow-lg transition">
+      <div class="flex items-start gap-4 mb-4">
+        <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
+          AL
+        </div>
+        <div class="flex-grow">
+          <div class="flex items-center justify-between mb-1">
+            <h4 class="font-semibold text-gray-900">Amanda L.</h4>
+            <div class="flex items-center">
+              <% 5.times do %>
+                <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                </svg>
+              <% end %>
+            </div>
+          </div>
+          <p class="text-sm text-gray-500 mb-3">Verified Client • 4 months ago</p>
+          <p class="text-gray-700 leading-relaxed">
+            "I was hesitant at first, but <%= @provider_profile.user.first_name %> made the process so easy and comfortable. Their expertise and compassionate approach helped me achieve my goals faster than I expected. Highly recommend!"
+          </p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 text-sm text-gray-600">
+        <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+        </svg>
+        <span>Verified appointment</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Coming Soon Notice -->
+  <div class="mt-8 p-6 bg-blue-50 rounded-xl border border-blue-200">
+    <div class="flex items-start gap-4">
+      <div class="flex-shrink-0">
+        <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+        </svg>
+      </div>
+      <div>
+        <h3 class="text-lg font-semibold text-blue-900 mb-1">Review System Coming Soon</h3>
+        <p class="text-blue-800 text-sm">
+          We're currently developing a comprehensive review system. Soon, verified clients will be able to leave detailed reviews and ratings. The testimonials shown above are representative examples of the quality of service provided.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
