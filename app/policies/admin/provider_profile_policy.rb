@@ -17,6 +17,16 @@ module Admin
       admin_user?
     end
 
+    # Admins cannot create provider profiles
+    # Provider profiles are created by providers themselves when signing up
+    def create?
+      false
+    end
+
+    def new?
+      false
+    end
+
     # Admins cannot delete provider profiles (to maintain data integrity)
     # Instead, they should deactivate the associated user
     def destroy?
