@@ -10,6 +10,9 @@ class NotificationService
       action_url: Rails.application.routes.url_helpers.appointment_path(appointment)
     )
 
+    # Send email to provider
+    AppointmentMailer.booking_confirmation_to_provider(appointment).deliver_later
+
     # Notify patient
     Notification.create!(
       user: appointment.patient,
@@ -18,12 +21,15 @@ class NotificationService
       notification_type: "appointment_booked",
       action_url: Rails.application.routes.url_helpers.appointment_path(appointment)
     )
+
+    # Send email to patient
+    AppointmentMailer.booking_confirmation_to_patient(appointment).deliver_later
   end
 
   # Create a notification for appointment cancellation
   def self.notify_appointment_cancelled(appointment, cancelled_by)
     other_user = cancelled_by == appointment.patient ? appointment.provider : appointment.patient
-    
+
     Notification.create!(
       user: other_user,
       title: "Appointment Cancelled",
@@ -31,6 +37,10 @@ class NotificationService
       notification_type: "appointment_cancelled",
       action_url: Rails.application.routes.url_helpers.appointments_path
     )
+
+    # Send cancellation emails to both parties
+    AppointmentMailer.cancellation_to_patient(appointment).deliver_later
+    AppointmentMailer.cancellation_to_provider(appointment).deliver_later
   end
 
   # Create a notification for appointment reminder (24 hours before)
@@ -44,6 +54,9 @@ class NotificationService
       action_url: Rails.application.routes.url_helpers.appointment_path(appointment)
     )
 
+    # Send reminder email to patient
+    AppointmentMailer.reminder_to_patient(appointment).deliver_later
+
     # Notify provider
     Notification.create!(
       user: appointment.provider,
@@ -52,6 +65,9 @@ class NotificationService
       notification_type: "appointment_reminder",
       action_url: Rails.application.routes.url_helpers.appointment_path(appointment)
     )
+
+    # Send reminder email to provider
+    AppointmentMailer.reminder_to_provider(appointment).deliver_later
   end
 
   # Create a notification for payment received

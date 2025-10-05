@@ -19,12 +19,8 @@ class AppointmentReminderJob < ApplicationJob
     reminder_count = 0
 
     appointments_needing_reminder.find_each do |appointment|
-      # Send reminder to patient
-      AppointmentMailer.reminder_to_patient(appointment).deliver_later
-
-      # Send reminder to provider
-      AppointmentMailer.reminder_to_provider(appointment).deliver_later
-
+      # Use NotificationService to send both in-app notification and email
+      NotificationService.notify_appointment_reminder(appointment)
       reminder_count += 1
     end
 
