@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_10_05_044007) do
+ActiveRecord::Schema[8.1].define(version: 2025_10_05_045946) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -47,6 +47,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_05_044007) do
     t.text "cancellation_reason"
     t.datetime "created_at", null: false
     t.datetime "end_time"
+    t.text "notes"
     t.bigint "patient_id", null: false
     t.bigint "provider_id", null: false
     t.bigint "service_id", null: false

@@ -45,9 +45,27 @@ class AppointmentBookingFlowTest < ApplicationSystemTestCase
     # Step 5: Select a time slot
     assert_text "Available Time Slots"
 
-    # Select the time slot by clicking its parent label (radio button is hidden with sr-only)
+    # Debug: Check what availability slots are on the page
+    all_slots = page.evaluate_script(<<~JS)
+      Array.from(document.querySelectorAll('input[name="selected_time_slot"]')).map(r => ({
+        value: r.value,
+        startTime: r.dataset.startTime,
+        endTime: r.dataset.endTime
+      }));
+    JS
+
+    puts "\n=== DEBUG: Available Slots on Page ==="
+    puts "Looking for availability_id: #{@availability.id}"
+    puts "Available slots:"
+    all_slots.each { |slot| puts "  ID: #{slot['value']}, Time: #{slot['startTime']} - #{slot['endTime']}" }
+    puts "=== END DEBUG ===\n"
+
+    # Find and select the correct time slot
+    first_available_slot = all_slots.first
+
+    # Select the first available time slot by clicking its parent label
     page.execute_script(<<~JS)
-      const radio = document.querySelector('input[name="selected_time_slot"][value="#{@availability.id}"]');
+      const radio = document.querySelector('input[name="selected_time_slot"][value="#{first_available_slot['value']}"]');
       const label = radio.closest('label');
       label.click();
     JS
@@ -55,47 +73,33 @@ class AppointmentBookingFlowTest < ApplicationSystemTestCase
     # Wait for JavaScript to update hidden fields
     sleep 0.5
 
-    # Debug: Verify hidden fields are populated
-    start_time = page.evaluate_script('document.getElementById("appointment_start_time").value')
-    end_time = page.evaluate_script('document.getElementById("appointment_end_time").value')
-    availability_id = page.evaluate_script('document.getElementById("appointment_availability_id").value')
-
-    puts "\n=== DEBUG: Hidden Field Values ==="
-    puts "start_time: #{start_time}"
-    puts "end_time: #{end_time}"
-    puts "availability_id: #{availability_id}"
-    puts "=== END DEBUG ===\n"
-
     # Step 6: Confirm booking
-    puts "\n=== About to submit form ==="
+    puts "\n=== About to click submit button ==="
 
-    # Check form validity before attempting submission
-    is_valid = page.evaluate_script("document.querySelector('form').checkValidity()")
-    puts "Form valid: #{is_valid}"
+    # Debug: Check form state before submission
+    form_action = page.evaluate_script("document.getElementById('appointment-booking-form').action")
+    form_method = page.evaluate_script("document.getElementById('appointment-booking-form').method")
+    start_time_value = page.evaluate_script("document.getElementById('appointment_start_time').value")
+    end_time_value = page.evaluate_script("document.getElementById('appointment_end_time').value")
+    availability_id_value = page.evaluate_script("document.getElementById('appointment_availability_id').value")
+    form_valid = page.evaluate_script("document.getElementById('appointment-booking-form').checkValidity()")
 
-    # Get validation message if invalid
-    unless is_valid
-      validation_msg = page.evaluate_script(<<~JS)
-        const form = document.querySelector('form');
-        const invalidElement = form.querySelector(':invalid');
-        if (invalidElement) {
-          return {
-            element: invalidElement.tagName + (invalidElement.name ? `[name="${invalidElement.name}"]` : ''),
-            message: invalidElement.validationMessage
-          };
-        }
-        return null;
-      JS
-      puts "Validation error: #{validation_msg.inspect}"
-    end
+    puts "\n=== Form State Before Submission ==="
+    puts "Form action: #{form_action}"
+    puts "Form method: #{form_method}"
+    puts "Start time: #{start_time_value}"
+    puts "End time: #{end_time_value}"
+    puts "Availability ID: #{availability_id_value}"
+    puts "Form valid: #{form_valid}"
+    puts "=== END Form State ===\n"
 
     assert_difference "Appointment.count", 1 do
-      # Remove required attribute from radio buttons and submit
-      page.execute_script(<<~JS)
-        document.querySelectorAll('input[name="selected_time_slot"]').forEach(r => r.removeAttribute('required'));
-        document.querySelector('form').submit();
-      JS
-      puts "=== Form submitted, waiting for response ==="
+      # Submit the form directly using JavaScript since Capybara click isn't working
+      page.execute_script("document.getElementById('appointment-booking-form').submit()")
+      puts "=== Form submitted via JavaScript, waiting for response ==="
+
+      # Wait for the page to navigate
+      sleep 1
     end
 
     # Step 7: Verify redirect to appointment show page

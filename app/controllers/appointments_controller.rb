@@ -117,6 +117,6 @@ class AppointmentsController < ApplicationController
   end
 
   def appointment_params
-    params.require(:appointment).permit(:service_id, :provider_id, :start_time, :end_time, :availability_id, :notes)
+    params.require(:appointment).permit(:service_id, :provider_id, :start_time, :end_time, :availability_id)
   end
 end
