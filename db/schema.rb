@@ -10,9 +10,37 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_10_04_142336) do
+ActiveRecord::Schema[8.1].define(version: 2025_10_05_022750) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "active_storage_attachments", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.bigint "record_id", null: false
+    t.string "record_type", null: false
+    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
+    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
+  end
+
+  create_table "active_storage_blobs", force: :cascade do |t|
+    t.bigint "byte_size", null: false
+    t.string "checksum"
+    t.string "content_type"
+    t.datetime "created_at", null: false
+    t.string "filename", null: false
+    t.string "key", null: false
+    t.text "metadata"
+    t.string "service_name", null: false
+    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+  end
+
+  create_table "active_storage_variant_records", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.string "variation_digest", null: false
+    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
 
   create_table "appointments", force: :cascade do |t|
     t.text "cancellation_reason"
@@ -48,6 +76,18 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_04_142336) do
     t.index ["appointment_id"], name: "index_consultation_notes_on_appointment_id"
   end
 
+  create_table "notifications", force: :cascade do |t|
+    t.string "action_url"
+    t.datetime "created_at", null: false
+    t.text "message"
+    t.string "notification_type"
+    t.datetime "read_at"
+    t.string "title"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id"], name: "index_notifications_on_user_id"
+  end
+
   create_table "patient_profiles", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.date "date_of_birth"
@@ -74,14 +114,45 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_04_142336) do
   end
 
   create_table "provider_profiles", force: :cascade do |t|
+    t.text "areas_of_expertise"
+    t.decimal "average_rating"
     t.text "bio"
+    t.text "certifications"
     t.decimal "consultation_rate"
     t.datetime "created_at", null: false
     t.text "credentials"
+    t.text "education"
+    t.string "facebook_url"
+    t.text "industries_served"
+    t.string "instagram_url"
+    t.text "languages"
+    t.string "linkedin_url"
+    t.text "office_address"
+    t.text "philosophy"
+    t.string "phone"
+    t.text "session_formats"
     t.string "specialty"
+    t.integer "total_reviews"
+    t.text "treatment_modalities"
+    t.string "twitter_url"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
+    t.string "website"
+    t.integer "years_of_experience"
     t.index ["user_id"], name: "index_provider_profiles_on_user_id"
+  end
+
+  create_table "reviews", force: :cascade do |t|
+    t.text "comment"
+    t.datetime "created_at", null: false
+    t.bigint "provider_profile_id", null: false
+    t.integer "rating", null: false
+    t.bigint "reviewer_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_profile_id", "created_at"], name: "index_reviews_on_provider_and_date"
+    t.index ["provider_profile_id"], name: "index_reviews_on_provider_profile_id"
+    t.index ["reviewer_id"], name: "index_reviews_on_reviewer_id"
+    t.check_constraint "rating >= 1 AND rating <= 5", name: "rating_range_check"
   end
 
   create_table "services", force: :cascade do |t|
@@ -112,14 +183,19 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_04_142336) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "appointments", "services"
   add_foreign_key "appointments", "users", column: "patient_id"
   add_foreign_key "appointments", "users", column: "provider_id"
   add_foreign_key "availabilities", "provider_profiles"
   add_foreign_key "consultation_notes", "appointments"
+  add_foreign_key "notifications", "users"
   add_foreign_key "patient_profiles", "users"
   add_foreign_key "payments", "appointments"
   add_foreign_key "payments", "users", column: "payer_id"
   add_foreign_key "provider_profiles", "users"
+  add_foreign_key "reviews", "provider_profiles"
+  add_foreign_key "reviews", "users", column: "reviewer_id"
   add_foreign_key "services", "provider_profiles"
 end
