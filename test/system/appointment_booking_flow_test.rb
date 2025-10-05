@@ -31,13 +31,13 @@ class AppointmentBookingFlowTest < ApplicationSystemTestCase
     assert_text "Find Your Perfect Wellness Provider"
 
     # Step 3: View provider profile
-    click_link @provider.full_name
+    visit provider_profile_path(@provider_profile)
     assert_current_path provider_profile_path(@provider_profile)
     assert_text @provider.full_name
     assert_text @service.name
 
     # Step 4: Start booking process
-    click_link "Book Session"
+    click_link "Book Appointment", match: :first
     assert_current_path new_appointment_path(service_id: @service.id)
     assert_text "Book Your Appointment"
 
@@ -126,6 +126,8 @@ class AppointmentBookingFlowTest < ApplicationSystemTestCase
     fill_in "Email", with: @patient.email
     fill_in "Password", with: "password123"
     click_button "Sign In"
+
+    assert_text "Signed in successfully"
 
     # Visit appointment
     visit appointment_path(appointment)

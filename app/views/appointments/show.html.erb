@@ -105,8 +105,8 @@
               <% other_user = current_user.patient? ? @provider : @patient %>
               <div class="border border-gray-200 rounded-lg p-4">
                 <div class="flex items-center space-x-4">
-                  <% if other_user.profile_picture.present? %>
-                    <%= image_tag other_user.profile_picture,
+                  <% if other_user.avatar.attached? %>
+                    <%= image_tag other_user.avatar,
                         class: "w-16 h-16 rounded-full object-cover",
                         alt: other_user.full_name %>
                   <% else %>
@@ -121,7 +121,7 @@
                     <h4 class="text-lg font-semibold text-gray-900"><%= other_user.full_name %></h4>
                     <p class="text-sm text-gray-600"><%= other_user.email %></p>
                     <% if current_user.patient? && @provider.provider_profile.present? %>
-                      <p class="text-sm text-indigo-600 font-medium mt-1"><%= @provider.provider_profile.specialization %></p>
+                      <p class="text-sm text-indigo-600 font-medium mt-1"><%= @provider.provider_profile.specialty %></p>
                     <% end %>
                   </div>
                 </div>
@@ -149,11 +149,12 @@
             <% end %>
 
             <!-- Additional Notes (if present) -->
-            <% if @appointment.notes.present? %>
+            <%# TODO: Add notes field to appointments or use consultation_notes association %>
+            <% if false # @appointment.notes.present? %>
               <div>
                 <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Additional Notes</h3>
                 <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                  <p class="text-gray-700"><%= @appointment.notes %></p>
+                  <p class="text-gray-700"><%#= @appointment.notes %></p>
                 </div>
               </div>
             <% end %>
