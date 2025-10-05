@@ -1,8 +1,129 @@
 <!-- Reviews Section -->
-<section id="reviews" class="bg-white shadow rounded-lg p-6 scroll-mt-20">
-  <h2 class="text-2xl font-bold text-gray-900 mb-6">Reviews</h2>
-  
-  <div class="text-center py-8 text-gray-500">
-    <p>No reviews yet. Be the first to leave a review!</p>
+<section id="reviews" class="bg-white rounded-2xl shadow-lg p-8 scroll-mt-20">
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h2 class="text-2xl font-bold text-gray-900">Client Reviews</h2>
+      <p class="text-gray-600 mt-1">
+        <%= pluralize(provider_profile.total_reviews, 'review') %> •
+        <%= provider_profile.display_rating %> average rating
+      </p>
+    </div>
+
+    <!-- Write Review Button -->
+    <% if user_signed_in? && current_user.patient? %>
+      <% if policy(Review.new(provider_profile: provider_profile)).create? %>
+        <%= link_to "Write a Review",
+          new_provider_profile_review_path(provider_profile),
+          class: "inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition" %>
+      <% else %>
+        <button class="inline-flex items-center px-4 py-2 bg-gray-300 text-gray-500 rounded-lg font-semibold cursor-not-allowed"
+                disabled
+                title="You can only review providers after completing an appointment">
+          Write a Review
+        </button>
+      <% end %>
+    <% elsif !user_signed_in? %>
+      <%= link_to "Sign in to Review",
+        new_user_session_path,
+        class="inline-flex items-center px-4 py-2 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition" %>
+    <% end %>
+  </div>
+
+  <!-- Rating Summary -->
+  <div class="mb-8 p-6 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl">
+    <div class="flex items-center gap-6">
+      <div class="text-center">
+        <div class="text-5xl font-bold text-indigo-600"><%= provider_profile.display_rating %></div>
+        <div class="flex items-center justify-center mt-2">
+          <% 5.times do |i| %>
+            <svg class="w-5 h-5 <%= i < provider_profile.display_rating.floor ? 'text-yellow-400' : 'text-gray-300' %>"
+                 fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+            </svg>
+          <% end %>
+        </div>
+        <p class="text-sm text-gray-600 mt-1"><%= provider_profile.total_reviews %> reviews</p>
+      </div>
+
+      <div class="flex-1">
+        <% [5, 4, 3, 2, 1].each do |rating| %>
+          <% count = provider_profile.reviews.where(rating: rating).count %>
+          <% percentage = provider_profile.total_reviews > 0 ? (count.to_f / provider_profile.total_reviews * 100).round : 0 %>
+          <div class="flex items-center gap-2 mb-2">
+            <span class="text-sm font-medium text-gray-700 w-8"><%= rating %>★</span>
+            <div class="flex-1 bg-gray-200 rounded-full h-2">
+              <div class="bg-yellow-400 h-2 rounded-full" style="width: <%= percentage %>%"></div>
+            </div>
+            <span class="text-sm text-gray-600 w-12 text-right"><%= count %></span>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reviews List -->
+  <div class="space-y-6">
+    <% if provider_profile.reviews.any? %>
+      <% provider_profile.reviews.recent.each do |review| %>
+        <div class="border-b border-gray-200 last:border-0 pb-6 last:pb-0">
+          <div class="flex items-start justify-between mb-3">
+            <div class="flex items-center gap-3">
+              <!-- Reviewer Avatar -->
+              <div class="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0">
+                <span class="text-lg font-semibold text-indigo-600">
+                  <%= review.reviewer.first_name.first.upcase %>
+                </span>
+              </div>
+
+              <div>
+                <h4 class="font-semibold text-gray-900"><%= review.reviewer.first_name %></h4>
+                <div class="flex items-center gap-2 mt-1">
+                  <div class="flex">
+                    <% 5.times do |i| %>
+                      <svg class="w-4 h-4 <%= i < review.rating ? 'text-yellow-400' : 'text-gray-300' %>"
+                           fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                      </svg>
+                    <% end %>
+                  </div>
+                  <span class="text-sm text-gray-500">
+                    <%= time_ago_in_words(review.created_at) %> ago
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Edit/Delete for Review Owner -->
+            <% if user_signed_in? && current_user == review.reviewer %>
+              <div class="flex gap-2">
+                <%= link_to edit_provider_profile_review_path(provider_profile, review),
+                  class: "text-indigo-600 hover:text-indigo-800 transition",
+                  title: "Edit review" do %>
+                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                  </svg>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+
+          <!-- Review Comment -->
+          <% if review.comment.present? %>
+            <p class="text-gray-700 leading-relaxed pl-15">
+              <%= review.comment %>
+            </p>
+          <% end %>
+        </div>
+      <% end %>
+    <% else %>
+      <!-- No Reviews Yet -->
+      <div class="text-center py-12">
+        <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+        </svg>
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">No reviews yet</h3>
+        <p class="text-gray-600">Be the first to review <%= provider_profile.full_name %>!</p>
+      </div>
+    <% end %>
   </div>
 </section>
