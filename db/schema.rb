@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_10_05_040519) do
+ActiveRecord::Schema[8.1].define(version: 2025_10_05_044007) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -43,6 +43,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_05_040519) do
   end
 
   create_table "appointments", force: :cascade do |t|
+    t.bigint "availability_id"
     t.text "cancellation_reason"
     t.datetime "created_at", null: false
     t.datetime "end_time"
@@ -53,6 +54,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_05_040519) do
     t.integer "status"
     t.datetime "updated_at", null: false
     t.string "video_session_id"
+    t.index ["availability_id"], name: "index_appointments_on_availability_id"
     t.index ["patient_id"], name: "index_appointments_on_patient_id"
     t.index ["provider_id"], name: "index_appointments_on_provider_id"
     t.index ["service_id"], name: "index_appointments_on_service_id"
@@ -190,6 +192,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_05_040519) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "appointments", "availabilities"
   add_foreign_key "appointments", "services"
   add_foreign_key "appointments", "users", column: "patient_id"
   add_foreign_key "appointments", "users", column: "provider_id"
