@@ -17,6 +17,7 @@ class User < ApplicationRecord
   has_many :appointments_as_provider, class_name: "Appointment", foreign_key: "provider_id", dependent: :destroy
   has_many :payments_made, class_name: "Payment", foreign_key: "payer_id", dependent: :destroy
   has_many :notifications, dependent: :destroy
+  has_many :reviews, foreign_key: "reviewer_id", dependent: :destroy
 
   # Active Storage
   has_one_attached :avatar
