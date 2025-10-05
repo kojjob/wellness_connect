@@ -15,8 +15,11 @@ class User < ApplicationRecord
   has_many :payments_made, class_name: "Payment", foreign_key: "payer_id", dependent: :destroy
   has_many :notifications, dependent: :destroy
 
+  # Active Storage
+  has_one_attached :avatar
+
   # Instance methods
   def full_name
-    "#{first_name} #{last_name}"
+    "#{first_name} #{last_name}".strip.presence || email
   end
 end
