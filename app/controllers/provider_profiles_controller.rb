@@ -3,19 +3,26 @@ class ProviderProfilesController < ApplicationController
   before_action :set_provider_profile, only: [ :show, :edit, :update, :destroy ]
 
   def index
-    @provider_profiles = ProviderProfile.includes(:user, :services, :availabilities).all
+    # Cache key includes filter parameters to cache different search results separately
+    cache_key = [ "provider_profiles_index", params[:specialty], params[:search] ].compact.join("/")
 
-    # Filter by specialty if provided
-    if params[:specialty].present?
-      @provider_profiles = @provider_profiles.where(specialty: params[:specialty])
-    end
+    @provider_profiles = Rails.cache.fetch(cache_key, expires_in: 15.minutes) do
+      profiles = ProviderProfile.includes(:user, :services, :availabilities).all
 
-    # Search by provider name if provided
-    if params[:search].present?
-      search_term = "%#{params[:search]}%"
-      @provider_profiles = @provider_profiles.joins(:user)
-                                             .where("users.first_name ILIKE ? OR users.last_name ILIKE ?",
-                                                    search_term, search_term)
+      # Filter by specialty if provided
+      if params[:specialty].present?
+        profiles = profiles.where(specialty: params[:specialty])
+      end
+
+      # Search by provider name if provided
+      if params[:search].present?
+        search_term = "%#{params[:search]}%"
+        profiles = profiles.joins(:user)
+                          .where("users.first_name ILIKE ? OR users.last_name ILIKE ?",
+                                 search_term, search_term)
+      end
+
+      profiles.to_a # Force query execution and cache the result array
     end
 
     # Don't require authorization for public browsing
@@ -23,6 +30,20 @@ class ProviderProfilesController < ApplicationController
   end
 
   def show
+    # Cache provider's services and availabilities separately since they change at different rates
+    @services = Rails.cache.fetch([ "provider_services", @provider_profile ], expires_in: 1.hour) do
+      @provider_profile.services.order(created_at: :desc).to_a
+    end
+
+    @availabilities = Rails.cache.fetch([ "provider_availabilities", @provider_profile, Date.current ], expires_in: 5.minutes) do
+      @provider_profile.availabilities
+                       .where("start_time >= ?", Time.current)
+                       .where(is_booked: false)
+                       .order(start_time: :asc)
+                       .limit(20)
+                       .to_a
+    end
+
     # Don't require authorization for public viewing
     authorize @provider_profile if user_signed_in?
   end

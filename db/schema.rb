@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_10_05_061900) do
+ActiveRecord::Schema[8.1].define(version: 2025_10_05_062451) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -134,6 +134,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_05_061900) do
     t.string "currency", default: "USD"
     t.datetime "paid_at"
     t.bigint "payer_id", null: false
+    t.datetime "refunded_at"
     t.integer "status"
     t.string "stripe_payment_intent_id"
     t.datetime "updated_at", null: false

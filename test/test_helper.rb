@@ -17,4 +17,10 @@ end
 # Devise test helpers
 class ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
+  include Pundit::Authorization
+
+  # Helper to handle Pundit authorization errors in tests
+  def pundit_user
+    current_user
+  end
 end
