@@ -1,0 +1,44 @@
+📅 APPOINTMENT CANCELLED
+
+Hi <%= @provider.first_name %>,
+
+<% if @cancelled_by_patient %>
+Your client <%= @patient.full_name %> has cancelled their appointment.
+<% else %>
+The appointment cancellation you initiated has been confirmed.
+<% end %>
+
+CANCELLED APPOINTMENT
+=====================
+
+Client: <%= @patient.full_name %>
+Service: <%= @service.name %>
+Original Date & Time: <%= @appointment.start_time.in_time_zone(@provider.time_zone).strftime("%A, %B %d, %Y at %I:%M %p %Z") %>
+
+<% if @appointment.cancellation_reason.present? %>
+Reason: <%= @appointment.cancellation_reason %>
+<% end %>
+
+📌 TIME SLOT AVAILABLE
+
+This time slot is now available for new bookings.
+
+NEXT STEPS
+==========
+
+• The cancelled time slot has been released and is available for rebooking
+• Review your upcoming appointments on your dashboard
+<% if @cancelled_by_patient %>
+• The client has been automatically refunded if applicable
+<% end %>
+
+View your schedule: <%= dashboard_url %>
+
+Thank you for your understanding.
+
+Best regards,
+The WellnessConnect Team
+
+---
+This email was sent regarding your appointment on WellnessConnect
+Need help? Contact us at support@wellnessconnect.com

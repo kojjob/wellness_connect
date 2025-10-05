@@ -1,0 +1,45 @@
+⏰ REMINDER: YOUR APPOINTMENT IS TOMORROW!
+
+Hi <%= @patient.first_name %>,
+
+📅 Your appointment with <%= @provider_profile.full_name %> is in 24 hours!
+
+APPOINTMENT DETAILS
+===================
+
+Provider: <%= @provider_profile.full_name %> (<%= @provider_profile.specialty %>)
+Service: <%= @service.name %>
+Tomorrow at: <%= @appointment.start_time.in_time_zone(@patient.time_zone).strftime("%I:%M %p %Z") %>
+Duration: <%= @service.duration_minutes %> minutes
+
+<% if @appointment.video_session_id.present? %>
+Video Link: <%= appointment_url(@appointment) %>
+<% end %>
+
+📋 PREPARATION CHECKLIST
+========================
+
+• Review any materials or notes you want to discuss
+• Prepare questions or topics you'd like to cover
+<% if @appointment.video_session_id.present? %>
+• Test your video and audio connection
+• Find a quiet, comfortable space for the session
+<% else %>
+• Note the appointment location and plan your travel time
+<% end %>
+• Have a notepad handy to take notes during the session
+
+⚠️ NEED TO CANCEL?
+
+If you need to cancel, please do so as soon as possible. Cancellations made less than 24 hours before the appointment may not be eligible for a refund.
+
+View appointment details: <%= appointment_url(@appointment) %>
+
+We look forward to your session!
+
+Best regards,
+The WellnessConnect Team
+
+---
+This reminder was sent regarding your appointment on WellnessConnect
+Need help? Contact us at support@wellnessconnect.com

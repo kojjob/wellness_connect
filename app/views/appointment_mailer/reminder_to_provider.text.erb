@@ -1,0 +1,51 @@
+⏰ REMINDER: APPOINTMENT TOMORROW!
+
+Hi <%= @provider.first_name %>,
+
+📅 Your session with <%= @patient.full_name %> is in 24 hours!
+
+APPOINTMENT DETAILS
+===================
+
+Client: <%= @patient.full_name %>
+Service: <%= @service.name %>
+Tomorrow at: <%= @appointment.start_time.in_time_zone(@provider.time_zone).strftime("%I:%M %p %Z") %>
+Duration: <%= @service.duration_minutes %> minutes
+
+<% if @appointment.video_session_id.present? %>
+Video Link: <%= appointment_url(@appointment) %>
+<% end %>
+
+📋 SESSION PREPARATION
+======================
+
+• Review the client's profile and service details
+• Prepare your session agenda and materials
+<% if @appointment.video_session_id.present? %>
+• Test your video and audio setup
+• Ensure you're in a quiet, professional environment
+• Check your internet connection stability
+<% else %>
+• Confirm the meeting location details
+• Prepare any physical materials needed
+<% end %>
+• Review any previous session notes if applicable
+• Set aside time for post-session notes
+
+💡 PRO TIPS
+===========
+
+• Arrive 5-10 minutes early to get settled
+• Have backup technical solutions ready (phone, alternative platform)
+• Prepare follow-up resources or homework for the client
+
+View appointment details: <%= appointment_url(@appointment) %>
+
+Wishing you a successful and productive session!
+
+Best regards,
+The WellnessConnect Team
+
+---
+This reminder was sent regarding your appointment on WellnessConnect
+Need help? Contact us at support@wellnessconnect.com
