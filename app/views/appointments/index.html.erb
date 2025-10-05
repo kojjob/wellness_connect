@@ -1,0 +1,234 @@
+<div class="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">
+        <% if current_user.patient? %>
+          My Appointments
+        <% elsif current_user.provider? %>
+          Client Appointments
+        <% else %>
+          All Appointments
+        <% end %>
+      </h1>
+      <p class="text-gray-600">
+        <% if current_user.patient? %>
+          View and manage your upcoming and past appointments
+        <% elsif current_user.provider? %>
+          View and manage your client sessions
+        <% end %>
+      </p>
+    </div>
+
+    <!-- Filters -->
+    <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
+      <div class="flex flex-wrap gap-3">
+        <%= link_to "All",
+            appointments_path,
+            class: "px-4 py-2 rounded-lg font-medium transition #{params[:status].blank? ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}" %>
+
+        <%= link_to "Scheduled",
+            appointments_path(status: 'scheduled'),
+            class: "px-4 py-2 rounded-lg font-medium transition #{params[:status] == 'scheduled' ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}" %>
+
+        <%= link_to "Completed",
+            appointments_path(status: 'completed'),
+            class: "px-4 py-2 rounded-lg font-medium transition #{params[:status] == 'completed' ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}" %>
+
+        <%= link_to "Cancelled",
+            appointments_path(status: ['cancelled_by_patient', 'cancelled_by_provider']),
+            class: "px-4 py-2 rounded-lg font-medium transition #{['cancelled_by_patient', 'cancelled_by_provider'].include?(params[:status]) ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}" %>
+      </div>
+    </div>
+
+    <!-- Appointments List -->
+    <% if @appointments.any? %>
+      <div class="space-y-4">
+        <% @appointments.each do |appointment| %>
+          <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
+            <div class="p-6">
+              <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                <!-- Appointment Details -->
+                <div class="flex-1 mb-4 lg:mb-0">
+                  <div class="flex items-start justify-between mb-3">
+                    <div class="flex items-center space-x-3">
+                      <!-- Profile Picture -->
+                      <% other_user = current_user.patient? ? appointment.provider : appointment.patient %>
+                      <% if other_user.profile_picture.present? %>
+                        <%= image_tag other_user.profile_picture,
+                            class: "w-12 h-12 rounded-full object-cover",
+                            alt: other_user.full_name %>
+                      <% else %>
+                        <div class="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center">
+                          <span class="text-indigo-600 font-semibold text-lg">
+                            <%= other_user.full_name.first %>
+                          </span>
+                        </div>
+                      <% end %>
+
+                      <!-- Name and Service -->
+                      <div>
+                        <h3 class="text-lg font-semibold text-gray-900">
+                          <% if current_user.patient? %>
+                            <%= appointment.provider.full_name %>
+                          <% else %>
+                            <%= appointment.patient.full_name %>
+                          <% end %>
+                        </h3>
+                        <p class="text-sm text-gray-600"><%= appointment.service.name %></p>
+                      </div>
+                    </div>
+
+                    <!-- Status Badge -->
+                    <span class="<%= case appointment.status
+                      when 'scheduled' then 'bg-green-100 text-green-800'
+                      when 'completed' then 'bg-blue-100 text-blue-800'
+                      when 'cancelled_by_patient', 'cancelled_by_provider' then 'bg-red-100 text-red-800'
+                      when 'no_show' then 'bg-gray-100 text-gray-800'
+                      else 'bg-gray-100 text-gray-800'
+                    end %> px-3 py-1 rounded-full text-xs font-semibold">
+                      <%= appointment.status.humanize %>
+                    </span>
+                  </div>
+
+                  <!-- Date and Time -->
+                  <div class="flex flex-wrap items-center gap-4 text-sm text-gray-600">
+                    <div class="flex items-center">
+                      <svg class="w-4 h-4 mr-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                      </svg>
+                      <span class="font-medium"><%= appointment.start_time.strftime("%B %d, %Y") %></span>
+                    </div>
+
+                    <div class="flex items-center">
+                      <svg class="w-4 h-4 mr-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                      </svg>
+                      <span><%= appointment.start_time.strftime("%I:%M %p") %> - <%= appointment.end_time.strftime("%I:%M %p") %></span>
+                    </div>
+
+                    <div class="flex items-center">
+                      <svg class="w-4 h-4 mr-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"/>
+                        <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"/>
+                      </svg>
+                      <span><%= appointment.service.duration_minutes %> minutes</span>
+                    </div>
+
+                    <div class="flex items-center">
+                      <svg class="w-4 h-4 mr-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"/>
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd"/>
+                      </svg>
+                      <span class="font-semibold text-indigo-600">$<%= number_with_precision(appointment.service.price, precision: 2) %></span>
+                    </div>
+                  </div>
+
+                  <!-- Cancellation Reason (if cancelled) -->
+                  <% if appointment.cancellation_reason.present? %>
+                    <div class="mt-3 p-3 bg-amber-50 rounded-lg">
+                      <p class="text-sm text-amber-900">
+                        <span class="font-semibold">Cancellation Reason:</span> <%= appointment.cancellation_reason %>
+                      </p>
+                    </div>
+                  <% end %>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex flex-col sm:flex-row gap-2 lg:ml-6">
+                  <%= link_to "View Details",
+                      appointment_path(appointment),
+                      class: "inline-flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition" %>
+
+                  <% if appointment.status == 'scheduled' %>
+                    <% if policy(appointment).cancel? %>
+                      <%= button_to "Cancel",
+                          cancel_appointment_path(appointment),
+                          method: :patch,
+                          form: { data: { turbo_confirm: "Are you sure you want to cancel this appointment?" } },
+                          params: { cancellation_reason: "Cancelled by #{current_user.role}" },
+                          class: "inline-flex items-center justify-center px-4 py-2 border border-red-300 rounded-lg text-sm font-medium text-red-700 bg-white hover:bg-red-50 transition" %>
+                    <% else %>
+                      <div class="text-xs text-gray-500 text-center">
+                        Cannot cancel<br/>(< 24h notice)
+                      </div>
+                    <% end %>
+                  <% end %>
+
+                  <% if current_user.provider? && appointment.status == 'completed' %>
+                    <%= link_to "View Notes",
+                        "#",
+                        class: "inline-flex items-center justify-center px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition" %>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+
+            <!-- Time Until Appointment (for scheduled) -->
+            <% if appointment.status == 'scheduled' && appointment.start_time > Time.current %>
+              <%
+                time_diff = appointment.start_time - Time.current
+                days = (time_diff / 1.day).floor
+                hours = ((time_diff % 1.day) / 1.hour).floor
+                minutes = ((time_diff % 1.hour) / 1.minute).floor
+              %>
+              <div class="px-6 py-3 bg-indigo-50 border-t border-indigo-100 rounded-b-lg">
+                <div class="flex items-center text-sm text-indigo-900">
+                  <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                  </svg>
+                  <span>
+                    <% if days > 0 %>
+                      Appointment in <%= pluralize(days, 'day') %> and <%= pluralize(hours, 'hour') %>
+                    <% elsif hours > 0 %>
+                      Appointment in <%= pluralize(hours, 'hour') %> and <%= pluralize(minutes, 'minute') %>
+                    <% else %>
+                      Appointment in <%= pluralize(minutes, 'minute') %>
+                    <% end %>
+                  </span>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <!-- Empty State -->
+      <div class="bg-white rounded-lg shadow-md p-12 text-center">
+        <svg class="mx-auto h-16 w-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+        </svg>
+
+        <h3 class="mt-4 text-lg font-medium text-gray-900">
+          <% if params[:status].present? %>
+            No <%= params[:status].humanize.downcase %> appointments
+          <% else %>
+            No appointments yet
+          <% end %>
+        </h3>
+
+        <p class="mt-2 text-sm text-gray-500">
+          <% if current_user.patient? %>
+            <% if params[:status].present? %>
+              You don't have any <%= params[:status].humanize.downcase %> appointments.
+            <% else %>
+              Get started by booking your first appointment with a service provider.
+            <% end %>
+          <% elsif current_user.provider? %>
+            <% if params[:status].present? %>
+              You don't have any <%= params[:status].humanize.downcase %> appointments.
+            <% else %>
+              Appointments from clients will appear here once they book your services.
+            <% end %>
+          <% end %>
+        </p>
+
+        <% if current_user.patient? && params[:status].blank? %>
+          <%= link_to "Browse Providers",
+              providers_path,
+              class: "mt-6 inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 transition shadow-md" %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>

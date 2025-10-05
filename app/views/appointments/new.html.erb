@@ -1,0 +1,260 @@
+<div class="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">Book Your Appointment</h1>
+      <p class="text-gray-600">Select an available time slot to schedule your appointment</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Main Booking Form -->
+      <div class="lg:col-span-2">
+        <div class="bg-white rounded-lg shadow-md p-6">
+          <%= form_with(model: @appointment, url: appointments_path, local: true, class: "space-y-6") do |form| %>
+
+            <!-- Hidden Fields -->
+            <%= form.hidden_field :service_id, value: @service&.id %>
+            <%= form.hidden_field :provider_id, value: @provider&.id %>
+            <%= form.hidden_field :start_time, id: "appointment_start_time" %>
+            <%= form.hidden_field :end_time, id: "appointment_end_time" %>
+            <%= hidden_field_tag "appointment[availability_id]", @availability&.id, id: "appointment_availability_id" %>
+
+            <!-- Service Selection (if not pre-selected) -->
+            <% unless @service.present? %>
+              <div class="form-group">
+                <%= form.label :service_id, "Select Service", class: "block text-sm font-medium text-gray-700 mb-2" %>
+                <%= form.collection_select :service_id,
+                    Service.where(is_active: true),
+                    :id,
+                    :name,
+                    { prompt: "Choose a service..." },
+                    { class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500",
+                      required: true,
+                      data: { action: "change->appointments#loadAvailability" } } %>
+              </div>
+            <% end %>
+
+            <!-- Available Time Slots -->
+            <% if @service.present? %>
+              <div class="form-group">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Available Time Slots</h3>
+
+                <%
+                  # Get available time slots for the next 30 days
+                  availabilities = @service.provider_profile.availabilities
+                    .where(is_booked: false)
+                    .where("start_time >= ?", Time.current)
+                    .where("start_time <= ?", 30.days.from_now)
+                    .order(:start_time)
+
+                  # Group by date
+                  grouped_availabilities = availabilities.group_by { |a| a.start_time.to_date }
+                %>
+
+                <% if grouped_availabilities.any? %>
+                  <div class="space-y-6">
+                    <% grouped_availabilities.each do |date, slots| %>
+                      <div class="border-b border-gray-200 pb-4">
+                        <h4 class="text-md font-semibold text-gray-800 mb-3">
+                          <%= date.strftime("%A, %B %d, %Y") %>
+                        </h4>
+
+                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                          <% slots.each do |availability| %>
+                            <label class="relative flex items-center justify-center p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-indigo-500 transition-all group">
+                              <input
+                                type="radio"
+                                name="selected_time_slot"
+                                value="<%= availability.id %>"
+                                data-start-time="<%= availability.start_time.iso8601 %>"
+                                data-end-time="<%= availability.end_time.iso8601 %>"
+                                class="sr-only peer"
+                                required
+                                <%= "checked" if @availability&.id == availability.id %>
+                              />
+
+                              <div class="text-center peer-checked:text-indigo-600">
+                                <div class="font-semibold text-sm">
+                                  <%= availability.start_time.strftime("%I:%M %p") %>
+                                </div>
+                                <div class="text-xs text-gray-500 group-hover:text-indigo-500">
+                                  <%= ((availability.end_time - availability.start_time) / 60).to_i %> min
+                                </div>
+                              </div>
+
+                              <div class="absolute inset-0 border-2 border-transparent peer-checked:border-indigo-600 peer-checked:bg-indigo-50 rounded-lg pointer-events-none"></div>
+                            </label>
+                          <% end %>
+                        </div>
+                      </div>
+                    <% end %>
+                  </div>
+                <% else %>
+                  <div class="text-center py-12 bg-gray-50 rounded-lg">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <h3 class="mt-2 text-sm font-medium text-gray-900">No availability</h3>
+                    <p class="mt-1 text-sm text-gray-500">This provider has no available time slots in the next 30 days.</p>
+                    <%= link_to "Browse Other Providers", providers_path, class: "mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200" %>
+                  </div>
+                <% end %>
+              </div>
+
+              <!-- Additional Notes (Optional) -->
+              <div class="form-group">
+                <%= form.label :notes, "Additional Notes (Optional)", class: "block text-sm font-medium text-gray-700 mb-2" %>
+                <%= form.text_area :notes,
+                    rows: 3,
+                    placeholder: "Any specific concerns or information the provider should know?",
+                    class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+              </div>
+
+              <!-- Actions -->
+              <div class="flex items-center justify-between pt-4 border-t border-gray-200">
+                <%= link_to "Cancel", :back, class: "px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900" %>
+
+                <%= form.submit "Confirm Booking",
+                    class: "px-6 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition shadow-md disabled:opacity-50 disabled:cursor-not-allowed",
+                    data: { disable_with: "Booking..." } %>
+              </div>
+            <% end %>
+
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Sidebar - Booking Summary -->
+      <div class="lg:col-span-1">
+        <div class="bg-white rounded-lg shadow-md p-6 sticky top-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Booking Summary</h3>
+
+          <% if @service.present? %>
+            <!-- Provider Info -->
+            <div class="mb-6 pb-6 border-b border-gray-200">
+              <div class="flex items-center space-x-3">
+                <% if @service.provider_profile.user.profile_picture.present? %>
+                  <%= image_tag @service.provider_profile.user.profile_picture,
+                      class: "w-12 h-12 rounded-full object-cover",
+                      alt: "#{@service.provider_profile.user.full_name}" %>
+                <% else %>
+                  <div class="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center">
+                    <span class="text-indigo-600 font-semibold text-lg">
+                      <%= @service.provider_profile.user.full_name.first %>
+                    </span>
+                  </div>
+                <% end %>
+
+                <div>
+                  <h4 class="font-semibold text-gray-900"><%= @service.provider_profile.user.full_name %></h4>
+                  <p class="text-sm text-gray-500"><%= @service.provider_profile.specialization %></p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Service Details -->
+            <div class="mb-6 pb-6 border-b border-gray-200">
+              <h4 class="text-sm font-semibold text-gray-700 mb-3">Service</h4>
+              <p class="text-gray-900 font-medium mb-2"><%= @service.name %></p>
+              <p class="text-sm text-gray-600 mb-3"><%= @service.description %></p>
+
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-600">Duration</span>
+                <span class="font-semibold text-gray-900"><%= @service.duration_minutes %> minutes</span>
+              </div>
+
+              <div class="flex items-center justify-between text-sm mt-2">
+                <span class="text-gray-600">Price</span>
+                <span class="font-semibold text-indigo-600">$<%= number_with_precision(@service.price, precision: 2) %></span>
+              </div>
+            </div>
+
+            <!-- Selected Time Slot -->
+            <div class="mb-6 pb-6 border-b border-gray-200" id="selected-time-display">
+              <h4 class="text-sm font-semibold text-gray-700 mb-3">Selected Time</h4>
+              <div id="time-slot-info" class="text-sm text-gray-500">
+                <% if @availability.present? %>
+                  <div class="bg-indigo-50 rounded-lg p-3">
+                    <div class="flex items-center text-indigo-900 mb-1">
+                      <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                      </svg>
+                      <span class="font-semibold"><%= @availability.start_time.strftime("%A, %B %d, %Y") %></span>
+                    </div>
+                    <div class="flex items-center text-indigo-700">
+                      <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                      </svg>
+                      <span class="font-medium"><%= @availability.start_time.strftime("%I:%M %p") %> - <%= @availability.end_time.strftime("%I:%M %p") %></span>
+                    </div>
+                  </div>
+                <% else %>
+                  <p class="text-gray-400 italic">Select a time slot above</p>
+                <% end %>
+              </div>
+            </div>
+
+            <!-- Important Information -->
+            <div class="bg-amber-50 rounded-lg p-4">
+              <h4 class="text-sm font-semibold text-amber-900 mb-2 flex items-center">
+                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                </svg>
+                Important Information
+              </h4>
+              <ul class="text-xs text-amber-800 space-y-1">
+                <li>• Cancellations must be made at least 24 hours in advance</li>
+                <li>• Payment will be processed after booking confirmation</li>
+                <li>• You will receive email confirmation and reminders</li>
+                <li>• Please arrive 5-10 minutes early for your appointment</li>
+              </ul>
+            </div>
+          <% else %>
+            <p class="text-sm text-gray-500 italic">Select a service to view details</p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Update hidden fields when time slot is selected
+    const timeSlotRadios = document.querySelectorAll('input[name="selected_time_slot"]');
+
+    timeSlotRadios.forEach(radio => {
+      radio.addEventListener('change', function() {
+        if (this.checked) {
+          // Update hidden fields
+          document.getElementById('appointment_start_time').value = this.dataset.startTime;
+          document.getElementById('appointment_end_time').value = this.dataset.endTime;
+          document.getElementById('appointment_availability_id').value = this.value;
+
+          // Update sidebar display
+          const startTime = new Date(this.dataset.startTime);
+          const endTime = new Date(this.dataset.endTime);
+
+          const displayHtml = `
+            <div class="bg-indigo-50 rounded-lg p-3">
+              <div class="flex items-center text-indigo-900 mb-1">
+                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                </svg>
+                <span class="font-semibold">${startTime.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+              </div>
+              <div class="flex items-center text-indigo-700">
+                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                </svg>
+                <span class="font-medium">${startTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })} - ${endTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}</span>
+              </div>
+            </div>
+          `;
+
+          document.getElementById('time-slot-info').innerHTML = displayHtml;
+        }
+      });
+    });
+  });
+</script>
