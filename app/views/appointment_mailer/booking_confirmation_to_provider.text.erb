@@ -1,0 +1,37 @@
+📅 NEW BOOKING!
+
+Hi <%= @provider.first_name %>,
+
+You have a new appointment scheduled.
+
+APPOINTMENT DETAILS
+===================
+
+Client: <%= @patient.full_name %>
+Service: <%= @service.name %>
+Date & Time: <%= @appointment.start_time.in_time_zone(@provider.time_zone).strftime("%A, %B %d, %Y at %I:%M %p %Z") %>
+Duration: <%= @service.duration_minutes %> minutes
+Price: $<%= number_with_precision(@service.price, precision: 2) %>
+
+<% if @appointment.video_session_id.present? %>
+Video Link: <%= appointment_url(@appointment) %>
+<% end %>
+
+PREPARATION TIPS
+===============
+
+• Review the client's profile and service details
+• Prepare any materials or agenda for the session
+• Test your video connection before the appointment
+• You'll receive a reminder email 24 hours before the session
+
+View your appointments: <%= dashboard_url %>
+
+Looking forward to a successful session!
+
+Best regards,
+The WellnessConnect Team
+
+---
+This email was sent regarding your appointment on WellnessConnect
+Need help? Contact us at support@wellnessconnect.com

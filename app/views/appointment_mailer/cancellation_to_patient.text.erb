@@ -1,0 +1,48 @@
+❌ APPOINTMENT CANCELLED
+
+Hi <%= @patient.first_name %>,
+
+<% if @cancelled_by_provider %>
+**NOTICE:** This appointment was cancelled by the service provider.
+
+We're sorry to inform you that your appointment has been cancelled by <%= @provider_profile.full_name %>.
+<% else %>
+Your appointment cancellation has been confirmed.
+<% end %>
+
+CANCELLED APPOINTMENT
+=====================
+
+Service: <%= @service.name %>
+Provider: <%= @provider_profile.full_name %>
+Original Date & Time: <%= @appointment.start_time.in_time_zone(@patient.time_zone).strftime("%A, %B %d, %Y at %I:%M %p %Z") %>
+
+<% if @appointment.cancellation_reason.present? %>
+Reason: <%= @appointment.cancellation_reason %>
+<% end %>
+
+<% if @appointment.payment&.refunded? %>
+✅ REFUND PROCESSED
+
+A full refund of $<%= number_with_precision(@service.price, precision: 2) %> has been processed to your original payment method. Please allow 5-10 business days for the refund to appear.
+<% end %>
+
+WHAT'S NEXT?
+============
+
+• Browse other available providers and services
+• Book a new appointment at your convenience
+<% if @cancelled_by_provider %>
+• Contact support if you have any concerns about this cancellation
+<% end %>
+
+Find another provider: <%= provider_profiles_url %>
+
+We apologize for any inconvenience and hope to serve you again soon.
+
+Best regards,
+The WellnessConnect Team
+
+---
+This email was sent regarding your appointment on WellnessConnect
+Need help? Contact us at support@wellnessconnect.com

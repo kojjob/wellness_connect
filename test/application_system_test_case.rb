@@ -16,6 +16,7 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
     ConsultationNote.delete_all if defined?(ConsultationNote)
     Payment.delete_all if defined?(Payment)
     Appointment.delete_all
+    Notification.delete_all if defined?(Notification)  # Must delete before Users
     Availability.delete_all
     Service.delete_all
     ProviderProfile.delete_all

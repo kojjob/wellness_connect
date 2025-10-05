@@ -1,0 +1,36 @@
+✅ BOOKING CONFIRMED!
+
+Hi <%= @patient.first_name %>,
+
+Great news! Your appointment has been successfully booked.
+
+APPOINTMENT DETAILS
+===================
+
+Service: <%= @service.name %>
+Provider: <%= @provider_profile.full_name %> (<%= @provider_profile.specialty %>)
+Date & Time: <%= @appointment.start_time.in_time_zone(@patient.time_zone).strftime("%A, %B %d, %Y at %I:%M %p %Z") %>
+Duration: <%= @service.duration_minutes %> minutes
+Price: $<%= number_with_precision(@service.price, precision: 2) %>
+
+<% if @appointment.video_session_id.present? %>
+Video Link: <%= appointment_url(@appointment) %>
+<% end %>
+
+WHAT'S NEXT?
+============
+
+• You'll receive a reminder email 24 hours before your appointment
+• Please arrive on time or join the video session at the scheduled time
+• If you need to cancel, please do so at least 24 hours in advance for a full refund
+
+View your appointments: <%= dashboard_url %>
+
+If you have any questions, feel free to reach out!
+
+Best regards,
+The WellnessConnect Team
+
+---
+This email was sent regarding your appointment on WellnessConnect
+Need help? Contact us at support@wellnessconnect.com
