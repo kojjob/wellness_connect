@@ -7,10 +7,6 @@ Rails.application.routes.draw do
   # Admin dashboard (admin-only access)
   namespace :admin do
     root to: "dashboard#index" # /admin
-    resources :users, only: [ :index, :show, :edit, :update ]
-    resources :provider_profiles, only: [ :index, :show, :edit, :update ]
-    resources :appointments, only: [ :index, :show ]
-    resources :payments, only: [ :index, :show ]
   end
 
   # Provider dashboard
@@ -57,7 +53,7 @@ Rails.application.routes.draw do
   # Stripe webhooks
   post "stripe/webhooks", to: "stripe_webhooks#create", as: :stripe_webhooks
 
-  # Admin namespace
+  # Admin namespace - full admin resources
   namespace :admin do
     resources :users do
       member do
@@ -67,6 +63,9 @@ Rails.application.routes.draw do
         post :unblock
       end
     end
+    resources :provider_profiles, only: [ :index, :show, :edit, :update ]
+    resources :appointments, only: [ :index, :show ]
+    resources :payments, only: [ :index, :show ]
   end
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

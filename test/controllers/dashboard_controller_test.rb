@@ -14,16 +14,16 @@ class DashboardControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to new_user_session_url
   end
 
-  test "should redirect to root when patient tries to access dashboard" do
+  test "should show patient dashboard when patient is authenticated" do
     sign_in @patient
     get dashboard_url
-    assert_redirected_to root_url
+    assert_response :success
   end
 
-  test "should redirect to root when admin tries to access dashboard" do
+  test "should redirect to admin panel when admin tries to access dashboard" do
     sign_in @admin
     get dashboard_url
-    assert_redirected_to root_url
+    assert_redirected_to admin_users_path
   end
 
   test "should get dashboard when provider is authenticated" do

@@ -21,6 +21,16 @@
 
         <%= link_to "Become a Provider", become_provider_path,
             class: "text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 px-3 py-2 rounded-md text-sm font-medium transition" %>
+
+        <% if user_signed_in? && current_user.admin? %>
+          <%= link_to admin_users_path,
+              class: "text-red-700 hover:text-red-600 hover:bg-red-50 px-3 py-2 rounded-md text-sm font-semibold transition flex items-center" do %>
+            <svg class="h-4 w-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+            </svg>
+            Admin
+          <% end %>
+        <% end %>
       </div>
 
       <!-- Right side navigation -->
@@ -190,9 +200,13 @@
                     <div class="flex items-center mt-1">
                       <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-white/20 text-white backdrop-blur-sm">
                         <svg class="mr-1 h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
-                          <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                          <% if current_user.admin? %>
+                            <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                          <% else %>
+                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                          <% end %>
                         </svg>
-                        <%= current_user.provider? ? "Provider" : "Patient" %>
+                        <%= current_user.admin? ? "Admin" : (current_user.provider? ? "Provider" : "Patient") %>
                       </span>
                     </div>
                   </div>
@@ -201,6 +215,22 @@
 
               <!-- Menu items -->
               <div class="py-2">
+                <% if current_user.admin? %>
+                  <%= link_to admin_users_path,
+                      class: "group flex items-center px-5 py-3 text-sm font-medium text-red-700 hover:bg-gradient-to-r hover:from-red-50 hover:to-pink-50 hover:text-red-600 transition-all duration-200",
+                      role: "menuitem" do %>
+                    <div class="mr-3 h-8 w-8 rounded-lg bg-red-100 group-hover:bg-red-200 flex items-center justify-center transition-colors">
+                      <svg class="h-5 w-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                      </svg>
+                    </div>
+                    <span>Admin Panel</span>
+                    <svg class="ml-auto h-4 w-4 text-gray-400 group-hover:text-red-600 transition-transform group-hover:translate-x-1" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                  <% end %>
+                <% end %>
+
                 <% if current_user.provider? && current_user.provider_profile.present? %>
                   <%= link_to provider_profile_path(current_user.provider_profile),
                       class: "group flex items-center px-5 py-3 text-sm font-medium text-gray-700 hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 hover:text-indigo-600 transition-all duration-200",
@@ -309,6 +339,17 @@
       <%= link_to "Become a Provider", become_provider_path,
           data: { action: "click->navbar#handleLinkClick" },
           class: "block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 transition" %>
+
+      <% if user_signed_in? && current_user.admin? %>
+        <%= link_to admin_users_path,
+            data: { action: "click->navbar#handleLinkClick" },
+            class: "flex items-center px-3 py-2 rounded-md text-base font-semibold text-red-700 hover:text-red-600 hover:bg-red-50 transition" do %>
+          <svg class="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+          </svg>
+          Admin
+        <% end %>
+      <% end %>
     </div>
 
     <% if user_signed_in? %>
@@ -322,7 +363,7 @@
           <div class="ml-3">
             <div class="text-base font-medium text-gray-800"><%= current_user.email %></div>
             <div class="text-sm font-medium text-gray-500">
-              <%= current_user.provider? ? "Provider Account" : "Patient Account" %>
+              <%= current_user.admin? ? "Admin Account" : (current_user.provider? ? "Provider Account" : "Patient Account") %>
             </div>
           </div>
         </div>
@@ -330,6 +371,17 @@
           <%= link_to "Notifications #{current_user.notifications.unread.count > 0 ? "(#{current_user.notifications.unread.count})" : ''}", notifications_path,
               data: { action: "click->navbar#handleLinkClick" },
               class: "block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 transition" %>
+
+          <% if current_user.admin? %>
+            <%= link_to admin_users_path,
+                data: { action: "click->navbar#handleLinkClick" },
+                class: "flex items-center px-3 py-2 rounded-md text-base font-semibold text-red-700 hover:text-red-600 hover:bg-red-50 transition" do %>
+              <svg class="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+              </svg>
+              Admin Panel
+            <% end %>
+          <% end %>
 
           <% if current_user.provider? && current_user.provider_profile.present? %>
             <%= link_to "My Dashboard", provider_profile_path(current_user.provider_profile),

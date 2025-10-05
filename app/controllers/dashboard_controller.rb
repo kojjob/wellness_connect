@@ -2,7 +2,9 @@ class DashboardController < ApplicationController
   before_action :authenticate_user!
 
   def index
-    if current_user.provider?
+    if current_user.admin?
+      redirect_to admin_users_path
+    elsif current_user.provider?
       render_provider_dashboard
     elsif current_user.patient?
       render_patient_dashboard
