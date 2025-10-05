@@ -1,9 +1,10 @@
 module Admin
   class AppointmentsController < BaseController
     before_action :set_appointment, only: [ :show ]
+    before_action :authorize_appointment
 
     def index
-      @appointments = Appointment.includes(:patient, :provider, :service).order(start_time: :desc)
+      @appointments = policy_scope([ :admin, Appointment ]).includes(:patient, :provider, :service).order(start_time: :desc)
 
       # Filter by status
       if params[:status].present? && Appointment.statuses.keys.include?(params[:status])
@@ -43,6 +44,14 @@ module Admin
 
     def set_appointment
       @appointment = Appointment.find(params[:id])
+    end
+
+    def authorize_appointment
+      if @appointment
+        authorize [ :admin, @appointment ]
+      else
+        authorize [ :admin, Appointment ]
+      end
     end
   end
 end

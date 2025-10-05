@@ -1,9 +1,10 @@
 module Admin
   class ProviderProfilesController < BaseController
     before_action :set_provider_profile, only: [ :show, :edit, :update ]
+    before_action :authorize_provider_profile
 
     def index
-      @provider_profiles = ProviderProfile.includes(:user, :services, :reviews).order(created_at: :desc)
+      @provider_profiles = policy_scope([ :admin, ProviderProfile ]).includes(:user, :services, :reviews).order(created_at: :desc)
 
       # Search by provider name, specialty, or credentials
       if params[:search].present?
@@ -46,6 +47,14 @@ module Admin
 
     def set_provider_profile
       @provider_profile = ProviderProfile.find(params[:id])
+    end
+
+    def authorize_provider_profile
+      if @provider_profile
+        authorize [ :admin, @provider_profile ]
+      else
+        authorize [ :admin, ProviderProfile ]
+      end
     end
 
     def provider_profile_params

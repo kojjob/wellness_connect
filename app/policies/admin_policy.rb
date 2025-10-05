@@ -1,3 +1,5 @@
+# Base policy for all admin namespace policies
+# Ensures only admin users can perform any actions
 class AdminPolicy
   attr_reader :user, :record
 
@@ -6,33 +8,80 @@ class AdminPolicy
     @record = record
   end
 
-  # Main access control - only admins can access admin namespace
-  def access?
+  # Only admins can access admin namespace
+  def admin_user?
     user&.admin?
   end
 
-  # Dashboard access
+  # Backward compatibility methods
+  def access?
+    admin_user?
+  end
+
   def dashboard?
     access?
   end
 
-  # User management permissions
   def manage_users?
     access?
   end
 
-  # Provider profile management permissions
   def manage_provider_profiles?
     access?
   end
 
-  # Appointments viewing permissions
   def view_appointments?
     access?
   end
 
-  # Payments viewing permissions
   def view_payments?
     access?
+  end
+
+  # Standard Pundit CRUD methods - default to admin_user?
+  def index?
+    admin_user?
+  end
+
+  def show?
+    admin_user?
+  end
+
+  def create?
+    admin_user?
+  end
+
+  def new?
+    create?
+  end
+
+  def update?
+    admin_user?
+  end
+
+  def edit?
+    update?
+  end
+
+  def destroy?
+    admin_user?
+  end
+
+  # Scope for index actions
+  class Scope
+    attr_reader :user, :scope
+
+    def initialize(user, scope)
+      @user = user
+      @scope = scope
+    end
+
+    def resolve
+      if user&.admin?
+        scope.all
+      else
+        scope.none
+      end
+    end
   end
 end

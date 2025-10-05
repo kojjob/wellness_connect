@@ -1,9 +1,10 @@
 module Admin
   class PaymentsController < BaseController
     before_action :set_payment, only: [ :show ]
+    before_action :authorize_payment
 
     def index
-      @payments = Payment.includes(:payer, :appointment).order(created_at: :desc)
+      @payments = policy_scope([ :admin, Payment ]).includes(:payer, :appointment).order(created_at: :desc)
 
       # Filter by status
       if params[:status].present? && Payment.statuses.keys.include?(params[:status])
@@ -39,6 +40,14 @@ module Admin
 
     def set_payment
       @payment = Payment.find(params[:id])
+    end
+
+    def authorize_payment
+      if @payment
+        authorize [ :admin, @payment ]
+      else
+        authorize [ :admin, Payment ]
+      end
     end
   end
 end

@@ -1,9 +1,10 @@
 module Admin
   class UsersController < BaseController
     before_action :set_user, only: [ :show, :edit, :update ]
+    before_action :authorize_user
 
     def index
-      @users = User.all.order(created_at: :desc)
+      @users = policy_scope(User).order(created_at: :desc)
 
       # Filter by role if specified
       if params[:role].present? && User.roles.keys.include?(params[:role])
@@ -42,6 +43,14 @@ module Admin
 
     def set_user
       @user = User.find(params[:id])
+    end
+
+    def authorize_user
+      if @user
+        authorize [ :admin, @user ]
+      else
+        authorize [ :admin, User ]
+      end
     end
 
     def user_params
