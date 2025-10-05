@@ -88,26 +88,53 @@ class AppointmentsController < ApplicationController
   def cancel
     authorize @appointment
 
-    if @appointment.update(
-      status: current_user.patient? ? :cancelled_by_patient : :cancelled_by_provider,
-      cancellation_reason: params[:cancellation_reason]
-    )
-      # Release the availability slot
-      availability = Availability.find_by(
-        provider_profile: @appointment.service.provider_profile,
-        start_time: @appointment.start_time,
-        end_time: @appointment.end_time
+    ActiveRecord::Base.transaction do
+      # Update appointment status
+      if @appointment.update(
+        status: current_user.patient? ? :cancelled_by_patient : :cancelled_by_provider,
+        cancellation_reason: params[:cancellation_reason]
       )
-      availability&.update(is_booked: false)
+        # Release the availability slot
+        availability = Availability.find_by(
+          provider_profile: @appointment.service.provider_profile,
+          start_time: @appointment.start_time,
+          end_time: @appointment.end_time
+        )
+        availability&.update(is_booked: false)
 
-      # Send cancellation notifications
-      AppointmentMailer.cancellation_notification(@appointment, @appointment.patient).deliver_later
-      AppointmentMailer.cancellation_notification(@appointment, @appointment.provider).deliver_later
+        # Process refund if payment exists and was successful
+        payment = @appointment.payment
+        refund_message = ""
 
-      redirect_to appointments_path, notice: "Appointment cancelled successfully."
-    else
-      redirect_to @appointment, alert: "Failed to cancel appointment."
+        if payment&.succeeded?
+          refund_result = RefundService.process_refund(payment, params[:cancellation_reason] || "Appointment cancelled")
+
+          if refund_result[:success]
+            case refund_result[:refund_type]
+            when "full"
+              refund_message = " A full refund of $#{refund_result[:refund_amount].round(2)} will be processed."
+            when "partial"
+              refund_message = " A partial refund of $#{refund_result[:refund_amount].round(2)} (50%) will be processed."
+            when "none"
+              refund_message = " Per our cancellation policy, no refund is available for cancellations less than 24 hours before the appointment."
+            end
+          else
+            refund_message = " There was an issue processing your refund. Our support team will contact you shortly."
+            Rails.logger.error "Refund failed for appointment #{@appointment.id}: #{refund_result[:error]}"
+          end
+        end
+
+        # Send cancellation notifications
+        NotificationService.notify_appointment_cancelled(@appointment, current_user)
+
+        redirect_to appointments_path, notice: "Appointment cancelled successfully.#{refund_message}"
+      else
+        redirect_to @appointment, alert: "Failed to cancel appointment."
+      end
     end
+  rescue StandardError => e
+    Rails.logger.error "Error cancelling appointment #{@appointment.id}: #{e.message}"
+    redirect_to @appointment, alert: "An error occurred while cancelling the appointment. Please try again or contact support."
   end
 
   private
