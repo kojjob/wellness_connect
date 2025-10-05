@@ -99,15 +99,15 @@
             <% end %>
 
             <% if user_signed_in? && current_user != @provider_profile.user %>
-              <%= link_to "#",
-                  class: "inline-flex items-center px-6 py-3 bg-white/20 backdrop-blur-sm text-white rounded-lg font-semibold hover:bg-white/30 transition border-2 border-white/50",
-                  title: "Send a message to #{@provider_profile.full_name}",
-                  data: { turbo_method: :post } do %>
+              <button class="inline-flex items-center px-6 py-3 bg-white/20 backdrop-blur-sm text-white rounded-lg font-semibold hover:bg-white/30 transition border-2 border-white/50"
+                      data-controller="message"
+                      data-action="click->message#showComingSoon"
+                      title="Send a message to #{@provider_profile.full_name}">
                 <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
                 </svg>
                 Message
-              <% end %>
+              </button>
             <% else %>
               <button class="inline-flex items-center px-6 py-3 bg-white/20 backdrop-blur-sm text-white rounded-lg font-semibold hover:bg-white/30 transition border-2 border-white/50 opacity-50 cursor-not-allowed"
                       disabled
