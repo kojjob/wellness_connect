@@ -7,28 +7,103 @@ class ProviderProfilesControllerTest < ActionDispatch::IntegrationTest
     @provider_profile = provider_profiles(:provider_profile_one)
   end
 
-  # Index tests
-  test "should get index" do
-    sign_in @provider_user
-    get provider_profiles_url
-    assert_response :success
-  end
-
+  # Index tests - Public browsing allowed
   test "should get index without authentication" do
     get provider_profiles_url
     assert_response :success
   end
 
-  # Show tests
-  test "should show provider_profile" do
+  test "should get index when authenticated as patient" do
+    sign_in @patient_user
+    get provider_profiles_url
+    assert_response :success
+  end
+
+  test "should get index when authenticated as provider" do
     sign_in @provider_user
+    get provider_profiles_url
+    assert_response :success
+  end
+
+  test "should display all active provider profiles on index" do
+    get provider_profiles_url
+    assert_response :success
+
+    # Should display provider information
+    assert_select "div", text: /#{@provider_user.first_name} #{@provider_user.last_name}/
+    assert_select "p", text: /#{@provider_profile.specialty}/
+  end
+
+  test "should display link to view provider profile" do
+    get provider_profiles_url
+    assert_select "a[href=?]", provider_profile_path(@provider_profile)
+  end
+
+  test "should filter providers by specialty" do
+    get provider_profiles_url, params: { specialty: @provider_profile.specialty }
+    assert_response :success
+
+    # Should display matching provider
+    assert_select "div", text: /#{@provider_user.first_name} #{@provider_user.last_name}/
+  end
+
+  test "should search providers by name" do
+    get provider_profiles_url, params: { search: @provider_user.first_name }
+    assert_response :success
+
+    # Should display matching provider
+    assert_select "div", text: /#{@provider_user.first_name}/
+  end
+
+  # Show tests - Public viewing allowed
+  test "should show provider profile without authentication" do
     get provider_profile_url(@provider_profile)
     assert_response :success
   end
 
-  test "should show provider_profile without authentication" do
+  test "should show provider profile when authenticated" do
+    sign_in @patient_user
     get provider_profile_url(@provider_profile)
     assert_response :success
+  end
+
+  test "should display provider information on show page" do
+    get provider_profile_url(@provider_profile)
+    assert_response :success
+
+    # Provider details
+    assert_select "h1", text: /#{@provider_user.first_name} #{@provider_user.last_name}/
+    assert_select "p", text: /#{@provider_profile.specialty}/
+    assert_select "p", text: /#{@provider_profile.bio}/
+    assert_select "p", text: /#{@provider_profile.credentials}/
+  end
+
+  test "should display provider's services on show page" do
+    get provider_profile_url(@provider_profile)
+    assert_response :success
+
+    # Should show services section
+    assert_select "h2", text: /Services/i
+  end
+
+  test "should display provider's available slots on show page" do
+    get provider_profile_url(@provider_profile)
+    assert_response :success
+
+    # Should show availabilities section
+    assert_select "h2", text: /Available/i
+  end
+
+  test "should display consultation rate on show page" do
+    get provider_profile_url(@provider_profile)
+    assert_response :success
+
+    assert_select "div", text: /\$#{@provider_profile.consultation_rate}/
+  end
+
+  test "should handle invalid provider profile id" do
+    get provider_profile_url(id: 99999)
+    assert_response :not_found
   end
 
   # New tests
