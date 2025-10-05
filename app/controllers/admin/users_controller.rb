@@ -92,6 +92,11 @@ module Admin
     def update
       authorize @user
 
+      # Handle avatar removal if requested
+      if params[:user][:remove_avatar] == "1"
+        @user.avatar.purge if @user.avatar.attached?
+      end
+
       if @user.update(user_params)
         respond_to do |format|
           format.html { redirect_to admin_user_path(@user), notice: "User successfully updated." }
