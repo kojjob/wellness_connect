@@ -91,26 +91,222 @@ class PaymentsControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test "should confirm payment and update status" do
-    # Create a payment first
+  # Payment Confirmation Tests
+
+  test "should confirm pending payment successfully" do
     payment = Payment.create!(
       payer: @patient,
       appointment: @appointment,
       amount: @service.price,
       currency: "USD",
       status: :pending,
-      stripe_payment_intent_id: "pi_test_123"
+      stripe_payment_intent_id: "pi_test_confirm_success"
     )
 
-    # Simulate payment confirmation
-    patch confirm_payment_path(payment), as: :json
+    assert_equal "pending", payment.status
+    assert_nil payment.paid_at
 
+    patch confirm_payment_path(payment), params: {
+      payment_intent_id: payment.stripe_payment_intent_id
+    }, as: :json
+
+    assert_response :success
+    payment.reload
+    assert_equal "succeeded", payment.status
+    assert_not_nil payment.paid_at
+  end
+
+  test "should update appointment status to scheduled when payment confirmed" do
+    @appointment.update!(status: :payment_pending)
+
+    payment = Payment.create!(
+      payer: @patient,
+      appointment: @appointment,
+      amount: @service.price,
+      currency: "USD",
+      status: :pending,
+      stripe_payment_intent_id: "pi_test_appointment_update"
+    )
+
+    assert_equal "payment_pending", @appointment.status
+
+    patch confirm_payment_path(payment), params: {
+      payment_intent_id: payment.stripe_payment_intent_id
+    }, as: :json
+
+    assert_response :success
+    @appointment.reload
+    assert_equal "scheduled", @appointment.status
+  end
+
+  test "should return success response with payment details on confirmation" do
+    payment = Payment.create!(
+      payer: @patient,
+      appointment: @appointment,
+      amount: @service.price,
+      currency: "USD",
+      status: :pending,
+      stripe_payment_intent_id: "pi_test_response_details"
+    )
+
+    patch confirm_payment_path(payment), params: {
+      payment_intent_id: payment.stripe_payment_intent_id
+    }, as: :json
+
+    assert_response :success
+    json_response = JSON.parse(response.body)
+
+    assert_equal "succeeded", json_response["status"]
+    assert_equal payment.id, json_response["payment"]["id"]
+    assert_equal "succeeded", json_response["payment"]["status"]
+    assert_not_nil json_response["payment"]["paid_at"]
+  end
+
+  test "should not allow confirming another user's payment" do
+    other_patient = users(:patient_user_two)
+    payment = Payment.create!(
+      payer: other_patient,
+      appointment: Appointment.create!(
+        patient: other_patient,
+        provider: @provider,
+        service: @service,
+        start_time: 4.days.from_now.change(hour: 10),
+        end_time: 4.days.from_now.change(hour: 11),
+        status: :payment_pending
+      ),
+      amount: @service.price,
+      currency: "USD",
+      status: :pending,
+      stripe_payment_intent_id: "pi_test_other_user"
+    )
+
+    patch confirm_payment_path(payment), params: {
+      payment_intent_id: payment.stripe_payment_intent_id
+    }, as: :json
+
+    assert_response :forbidden
+  end
+
+  test "should handle already confirmed payment idempotently" do
+    payment = Payment.create!(
+      payer: @patient,
+      appointment: @appointment,
+      amount: @service.price,
+      currency: "USD",
+      status: :pending,
+      stripe_payment_intent_id: "pi_test_idempotent"
+    )
+
+    # First confirmation
+    patch confirm_payment_path(payment), params: {
+      payment_intent_id: payment.stripe_payment_intent_id
+    }, as: :json
+    assert_response :success
+
+    original_paid_at = payment.reload.paid_at
+
+    # Wait a moment
+    sleep 0.1
+
+    # Second confirmation - should still succeed and not change paid_at
+    patch confirm_payment_path(payment), params: {
+      payment_intent_id: payment.stripe_payment_intent_id
+    }, as: :json
     assert_response :success
 
     payment.reload
-    # Note: In real implementation, this would be updated by Stripe webhook
-    # For now, we're just testing the endpoint exists
-    assert_not_nil payment
+    assert_equal "succeeded", payment.status
+    assert_equal original_paid_at.to_i, payment.paid_at.to_i
+  end
+
+  test "should return 404 for non-existent payment" do
+    patch confirm_payment_path(id: 99999), params: {
+      payment_intent_id: "pi_test_nonexistent"
+    }, as: :json
+
+    assert_response :not_found
+  end
+
+  test "should return error if payment_intent_id doesn't match" do
+    payment = Payment.create!(
+      payer: @patient,
+      appointment: @appointment,
+      amount: @service.price,
+      currency: "USD",
+      status: :pending,
+      stripe_payment_intent_id: "pi_test_mismatch"
+    )
+
+    patch confirm_payment_path(payment), params: {
+      payment_intent_id: "pi_wrong_intent_id"
+    }, as: :json
+
+    assert_response :unprocessable_entity
+    json_response = JSON.parse(response.body)
+    assert_equal "error", json_response["status"]
+    assert_match /payment intent/i, json_response["message"]
+  end
+
+  test "should return error if payment_intent_id is missing" do
+    payment = Payment.create!(
+      payer: @patient,
+      appointment: @appointment,
+      amount: @service.price,
+      currency: "USD",
+      status: :pending,
+      stripe_payment_intent_id: "pi_test_missing_param"
+    )
+
+    patch confirm_payment_path(payment), params: {}, as: :json
+
+    assert_response :unprocessable_entity
+    json_response = JSON.parse(response.body)
+    assert_equal "error", json_response["status"]
+    assert_match /payment intent/i, json_response["message"]
+  end
+
+  test "should handle failed payment status" do
+    payment = Payment.create!(
+      payer: @patient,
+      appointment: @appointment,
+      amount: @service.price,
+      currency: "USD",
+      status: :failed,
+      stripe_payment_intent_id: "pi_test_already_failed"
+    )
+
+    patch confirm_payment_path(payment), params: {
+      payment_intent_id: payment.stripe_payment_intent_id
+    }, as: :json
+
+    assert_response :unprocessable_entity
+    json_response = JSON.parse(response.body)
+    assert_equal "error", json_response["status"]
+    assert_match /cannot confirm.*failed/i, json_response["message"]
+  end
+
+  test "should rollback if appointment update fails during confirmation" do
+    payment = Payment.create!(
+      payer: @patient,
+      appointment: @appointment,
+      amount: @service.price,
+      currency: "USD",
+      status: :pending,
+      stripe_payment_intent_id: "pi_test_rollback"
+    )
+
+    # Stub appointment update to raise error
+    Appointment.any_instance.stubs(:update!).raises(ActiveRecord::RecordInvalid)
+
+    assert_no_difference -> { Payment.where(status: :succeeded).count } do
+      patch confirm_payment_path(payment), params: {
+        payment_intent_id: payment.stripe_payment_intent_id
+      }, as: :json
+    end
+
+    assert_response :unprocessable_entity
+    payment.reload
+    assert_equal "pending", payment.status
   end
 
   test "should handle Stripe webhook events" do

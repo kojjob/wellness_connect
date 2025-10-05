@@ -9,55 +9,57 @@
   </div>
 
   <!-- Statistics Cards -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-    <!-- Total Services Card -->
-    <div class="bg-white rounded-lg shadow-md p-6">
-      <div class="flex items-center justify-between">
-        <div>
-          <p class="text-gray-600 text-sm font-medium">Total Services</p>
-          <h3 class="text-3xl font-bold text-gray-900 mt-2"><%= @total_services %></h3>
-        </div>
-        <div class="bg-blue-100 rounded-full p-3">
-          <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-          </svg>
-        </div>
-      </div>
-    </div>
-
-    <!-- Available Slots Card -->
-    <div class="bg-white rounded-lg shadow-md p-6">
-      <div class="flex items-center justify-between">
-        <div>
-          <p class="text-gray-600 text-sm font-medium">Available Slots</p>
-          <h3 class="text-3xl font-bold text-gray-900 mt-2"><%= @total_availability_slots %></h3>
-        </div>
-        <div class="bg-green-100 rounded-full p-3">
-          <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
-        </div>
-      </div>
-    </div>
-
-    <!-- Quick Actions Card -->
-    <div class="bg-white rounded-lg shadow-md p-6">
-      <div class="flex items-center justify-between">
-        <div>
-          <p class="text-gray-600 text-sm font-medium">Quick Actions</p>
-          <div class="mt-2 space-y-2">
-            <%= link_to "Add Service", new_provider_profile_service_path(@provider_profile), class: "text-blue-600 hover:text-blue-700 text-sm font-medium block" %>
-            <%= link_to "Add Availability", new_provider_profile_availability_path(@provider_profile), class: "text-blue-600 hover:text-blue-700 text-sm font-medium block" %>
+  <% cache ["dashboard_stats", @provider_profile, @total_availability_slots], expires_in: 5.minutes do %>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <!-- Total Services Card -->
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-gray-600 text-sm font-medium">Total Services</p>
+            <h3 class="text-3xl font-bold text-gray-900 mt-2"><%= @total_services %></h3>
+          </div>
+          <div class="bg-blue-100 rounded-full p-3">
+            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
           </div>
         </div>
-        <div class="bg-purple-100 rounded-full p-3">
-          <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-          </svg>
+      </div>
+
+      <!-- Available Slots Card -->
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-gray-600 text-sm font-medium">Available Slots</p>
+            <h3 class="text-3xl font-bold text-gray-900 mt-2"><%= @total_availability_slots %></h3>
+          </div>
+          <div class="bg-green-100 rounded-full p-3">
+            <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions Card -->
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-gray-600 text-sm font-medium">Quick Actions</p>
+            <div class="mt-2 space-y-2">
+              <%= link_to "Add Service", new_provider_profile_service_path(@provider_profile), class: "text-blue-600 hover:text-blue-700 text-sm font-medium block" %>
+              <%= link_to "Add Availability", new_provider_profile_availability_path(@provider_profile), class: "text-blue-600 hover:text-blue-700 text-sm font-medium block" %>
+            </div>
+          </div>
+          <div class="bg-purple-100 rounded-full p-3">
+            <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  <% end %>
 
   <!-- Services Section -->
   <div class="bg-white rounded-lg shadow-md p-6 mb-8">

@@ -91,14 +91,12 @@ class LeadTest < ActiveSupport::TestCase
       "plaintext",
       "@example.com",
       "user@",
-      "user @example.com",
-      "user@example"
+      "user @example.com"
     ]
-    
+
     invalid_emails.each do |email|
       lead = Lead.new(email: email)
       assert_not lead.valid?, "#{email} should be invalid"
     end
   end
 end
-

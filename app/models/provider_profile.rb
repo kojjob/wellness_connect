@@ -120,6 +120,9 @@ class ProviderProfile < ApplicationRecord
   end
 
   def total_media_count
-    gallery_images.count + gallery_videos.count + gallery_audio.count + documents.count
+    # Cache media count for 5 minutes since attachments don't change frequently
+    Rails.cache.fetch("provider_profile/#{id}/media_count", expires_in: 5.minutes) do
+      gallery_images.count + gallery_videos.count + gallery_audio.count + documents.count
+    end
   end
 end
