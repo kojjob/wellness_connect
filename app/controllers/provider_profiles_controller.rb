@@ -25,8 +25,7 @@ class ProviderProfilesController < ApplicationController
       profiles.to_a # Force query execution and cache the result array
     end
 
-    # Don't require authorization for public browsing
-    authorize @provider_profiles if user_signed_in?
+    # Public browsing - no authorization required for index
   end
 
   def show
