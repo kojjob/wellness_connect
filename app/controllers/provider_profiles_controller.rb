@@ -67,7 +67,7 @@ class ProviderProfilesController < ApplicationController
   private
 
   def set_provider_profile
-    @provider_profile = ProviderProfile.find(params[:id])
+    @provider_profile = ProviderProfile.includes(:user, :services, :availabilities).find(params[:id])
   end
 
   def provider_profile_params

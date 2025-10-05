@@ -4,9 +4,13 @@ class AppointmentsController < ApplicationController
 
   def index
     @appointments = if current_user.patient?
-      current_user.appointments_as_patient.order(start_time: :asc)
+      current_user.appointments_as_patient
+                  .includes(:service, :provider, provider: :provider_profile)
+                  .order(start_time: :asc)
     else
-      current_user.appointments_as_provider.order(start_time: :asc)
+      current_user.appointments_as_provider
+                  .includes(:service, :patient, patient: :patient_profile)
+                  .order(start_time: :asc)
     end
   end
 

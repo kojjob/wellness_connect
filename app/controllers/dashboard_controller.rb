@@ -25,13 +25,18 @@ class DashboardController < ApplicationController
     @availabilities = @provider_profile.availabilities.where("start_time >= ?", Time.current).order(start_time: :asc).limit(10)
     @total_services = @provider_profile.services.count
     @total_availability_slots = @provider_profile.availabilities.where(is_booked: false).where("start_time >= ?", Time.current).count
-    @appointments = current_user.appointments_as_provider.order(start_time: :desc).limit(10)
+    @appointments = current_user.appointments_as_provider
+                                .includes(:service, :patient, patient: :patient_profile)
+                                .order(start_time: :desc)
+                                .limit(10)
 
     render :provider_dashboard
   end
 
   def render_patient_dashboard
-    @appointments = current_user.appointments_as_patient.order(start_time: :asc)
+    @appointments = current_user.appointments_as_patient
+                                .includes(:service, :provider, provider: :provider_profile)
+                                .order(start_time: :asc)
 
     render :patient_dashboard
   end
