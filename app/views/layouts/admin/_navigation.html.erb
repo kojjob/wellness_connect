@@ -1,0 +1,52 @@
+<!-- Admin Top Navigation -->
+<nav class="fixed top-0 right-0 left-64 h-16 bg-white border-b border-gray-200 z-30">
+  <div class="flex items-center justify-between h-full px-6">
+    <!-- Page Title -->
+    <div>
+      <h1 class="text-xl font-semibold text-gray-900">
+        <%= content_for(:admin_page_title) || "Dashboard" %>
+      </h1>
+    </div>
+
+    <!-- Admin User Menu -->
+    <div class="flex items-center gap-4">
+      <!-- Admin Badge -->
+      <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+        </svg>
+        Admin
+      </span>
+
+      <!-- User Info -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center">
+          <span class="text-white font-semibold">
+            <%= current_user.first_name.first.upcase %>
+          </span>
+        </div>
+
+        <div class="text-right">
+          <p class="text-sm font-medium text-gray-900"><%= current_user.full_name %></p>
+          <p class="text-xs text-gray-500"><%= current_user.email %></p>
+        </div>
+      </div>
+
+      <!-- Back to Main Site -->
+      <%= link_to root_path, class: "flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-md transition" do %>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+        </svg>
+        Back to Site
+      <% end %>
+
+      <!-- Sign Out -->
+      <%= button_to destroy_user_session_path, method: :delete, class: "flex items-center gap-2 px-4 py-2 text-sm text-red-700 hover:text-red-900 hover:bg-red-50 rounded-md transition" do %>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+        </svg>
+        Sign Out
+      <% end %>
+    </div>
+  </div>
+</nav>

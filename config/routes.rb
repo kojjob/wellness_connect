@@ -4,6 +4,15 @@ Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
   root "home#index"
 
+  # Admin dashboard (admin-only access)
+  namespace :admin do
+    root to: "dashboard#index" # /admin
+    resources :users, only: [ :index, :show, :edit, :update ]
+    resources :provider_profiles, only: [ :index, :show, :edit, :update ]
+    resources :appointments, only: [ :index, :show ]
+    resources :payments, only: [ :index, :show ]
+  end
+
   # Provider dashboard
   get "dashboard", to: "dashboard#index", as: :dashboard
 

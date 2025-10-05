@@ -28,6 +28,9 @@ gem "devise"
 # Authorization with Pundit
 gem "pundit"
 
+# Pagination
+gem "kaminari"
+
 # Payment processing with Stripe
 gem "stripe"
 
