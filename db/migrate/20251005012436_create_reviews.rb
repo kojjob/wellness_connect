@@ -13,7 +13,7 @@ class CreateReviews < ActiveRecord::Migration[8.1]
     add_check_constraint :reviews, "rating >= 1 AND rating <= 5", name: "rating_range_check"
 
     # Add indexes for better query performance
-    add_index :reviews, [ :provider_profile_id, :created_at ], name: "index_reviews_on_provider_and_date"
-    add_index :reviews, :reviewer_id
+    add_index :reviews, [ :provider_profile_id, :created_at ], name: "index_reviews_on_provider_and_date", if_not_exists: true
+    add_index :reviews, :reviewer_id, if_not_exists: true
   end
 end

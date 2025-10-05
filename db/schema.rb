@@ -142,6 +142,19 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_05_012911) do
     t.index ["user_id"], name: "index_provider_profiles_on_user_id"
   end
 
+  create_table "reviews", force: :cascade do |t|
+    t.text "comment"
+    t.datetime "created_at", null: false
+    t.bigint "provider_profile_id", null: false
+    t.integer "rating", null: false
+    t.bigint "reviewer_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider_profile_id", "created_at"], name: "index_reviews_on_provider_and_date"
+    t.index ["provider_profile_id"], name: "index_reviews_on_provider_profile_id"
+    t.index ["reviewer_id"], name: "index_reviews_on_reviewer_id"
+    t.check_constraint "rating >= 1 AND rating <= 5", name: "rating_range_check"
+  end
+
   create_table "services", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "description"
@@ -182,5 +195,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_05_012911) do
   add_foreign_key "payments", "appointments"
   add_foreign_key "payments", "users", column: "payer_id"
   add_foreign_key "provider_profiles", "users"
+  add_foreign_key "reviews", "provider_profiles"
+  add_foreign_key "reviews", "users", column: "reviewer_id"
   add_foreign_key "services", "provider_profiles"
 end
