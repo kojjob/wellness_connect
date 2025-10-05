@@ -1,0 +1,107 @@
+<% content_for :admin_page_title, "Provider Management" %>
+
+<!-- Filters and Search -->
+<div class="bg-white rounded-lg shadow mb-6">
+  <div class="px-6 py-4">
+    <%= form_with url: admin_provider_profiles_path, method: :get, class: "flex flex-wrap gap-4 items-end" do |f| %>
+      <!-- Search -->
+      <div class="flex-1 min-w-[200px]">
+        <%= f.label :search, "Search", class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= f.text_field :search, value: params[:search], placeholder: "Name, specialty, or credentials...", class: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" %>
+      </div>
+
+      <!-- Specialty Filter -->
+      <div class="w-48">
+        <%= f.label :specialty, "Specialty", class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= f.text_field :specialty, value: params[:specialty], placeholder: "Filter by specialty...", class: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" %>
+      </div>
+
+      <!-- Submit -->
+      <div>
+        <%= f.submit "Filter", class: "px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500" %>
+        <%= link_to "Clear", admin_provider_profiles_path, class: "ml-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300" %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<!-- Provider Profiles Grid -->
+<div class="bg-white rounded-lg shadow overflow-hidden">
+  <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+    <div>
+      <h2 class="text-lg font-semibold text-gray-900">All Providers</h2>
+      <p class="text-sm text-gray-500 mt-1">Total: <%= @provider_profiles.total_count %> providers</p>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+    <% @provider_profiles.each do |profile| %>
+      <div class="bg-white border border-gray-200 rounded-lg hover:shadow-md transition overflow-hidden">
+        <!-- Profile Header -->
+        <div class="bg-gradient-to-r from-purple-500 to-indigo-600 px-6 py-4">
+          <div class="flex items-center">
+            <div class="w-16 h-16 rounded-full bg-white text-purple-600 flex items-center justify-center text-2xl font-bold">
+              <%= profile.user.first_name.first.upcase %>
+            </div>
+            <div class="ml-4 text-white">
+              <h3 class="text-lg font-bold"><%= profile.user.full_name %></h3>
+              <p class="text-sm text-purple-100"><%= profile.specialty %></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Profile Stats -->
+        <div class="px-6 py-4 border-b border-gray-200">
+          <div class="grid grid-cols-3 gap-4 text-center">
+            <div>
+              <p class="text-2xl font-bold text-gray-900"><%= profile.services.count %></p>
+              <p class="text-xs text-gray-500">Services</p>
+            </div>
+            <div>
+              <p class="text-2xl font-bold text-gray-900"><%= profile.total_reviews %></p>
+              <p class="text-xs text-gray-500">Reviews</p>
+            </div>
+            <div>
+              <p class="text-2xl font-bold text-gray-900"><%= profile.display_rating %></p>
+              <p class="text-xs text-gray-500">Rating</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Profile Info -->
+        <div class="px-6 py-4">
+          <div class="space-y-2">
+            <div>
+              <p class="text-xs font-medium text-gray-500">Credentials</p>
+              <p class="text-sm text-gray-900"><%= profile.credentials || "Not specified" %></p>
+            </div>
+            <div>
+              <p class="text-xs font-medium text-gray-500">Bio</p>
+              <p class="text-sm text-gray-700 line-clamp-2"><%= profile.bio || "No bio provided" %></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="px-6 py-3 bg-gray-50 border-t border-gray-200 flex justify-between">
+          <%= link_to "View Details", admin_provider_profile_path(profile), class: "text-sm font-medium text-indigo-600 hover:text-indigo-900" %>
+          <%= link_to "Edit", edit_admin_provider_profile_path(profile), class: "text-sm font-medium text-gray-600 hover:text-gray-900" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Pagination -->
+  <% if @provider_profiles.total_pages > 1 %>
+    <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
+      <div class="flex items-center justify-between">
+        <div class="text-sm text-gray-700">
+          Showing <%= @provider_profiles.offset_value + 1 %> to <%= [@provider_profiles.offset_value + @provider_profiles.limit_value, @provider_profiles.total_count].min %> of <%= @provider_profiles.total_count %> results
+        </div>
+        <div class="flex gap-2">
+          <%= paginate @provider_profiles %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>
