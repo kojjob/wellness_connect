@@ -44,7 +44,7 @@ Rails.application.routes.draw do
   end
 
   # Payments
-  resources :payments, only: [ :create ] do
+  resources :payments, only: [ :index, :create ] do
     member do
       patch :confirm
     end

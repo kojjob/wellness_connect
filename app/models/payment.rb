@@ -5,6 +5,7 @@ class Payment < ApplicationRecord
   enum :status, {
     pending: 0,
     succeeded: 1,
-    failed: 2
+    failed: 2,
+    refunded: 3
   }, default: :pending
 end
