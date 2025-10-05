@@ -18,6 +18,7 @@ Rails.application.routes.draw do
   resources :provider_profiles do
     resources :services
     resources :availabilities
+    resources :reviews, only: [ :new, :create, :edit, :update, :destroy ]
   end
 
   # Appointments

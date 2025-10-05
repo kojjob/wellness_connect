@@ -129,6 +129,22 @@ class ProviderProfile < ApplicationRecord
     languages.present? ? languages.split(",").map(&:strip) : []
   end
 
+  def areas_of_expertise_array
+    areas_of_expertise.present? ? areas_of_expertise.split(",").map(&:strip) : []
+  end
+
+  def treatment_modalities_array
+    treatment_modalities.present? ? treatment_modalities.split(",").map(&:strip) : []
+  end
+
+  def session_formats_array
+    session_formats.present? ? session_formats.split(",").map(&:strip) : []
+  end
+
+  def industries_served_array
+    industries_served.present? ? industries_served.split(",").map(&:strip) : []
+  end
+
   def total_media_count
     gallery_images.count + gallery_videos.count + gallery_audio.count + documents.count
   end

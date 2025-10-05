@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_10_04_202217) do
+ActiveRecord::Schema[8.1].define(version: 2025_10_05_012911) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -114,6 +114,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_04_202217) do
   end
 
   create_table "provider_profiles", force: :cascade do |t|
+    t.text "areas_of_expertise"
     t.decimal "average_rating"
     t.text "bio"
     t.text "certifications"
@@ -122,13 +123,17 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_04_202217) do
     t.text "credentials"
     t.text "education"
     t.string "facebook_url"
+    t.text "industries_served"
     t.string "instagram_url"
     t.text "languages"
     t.string "linkedin_url"
     t.text "office_address"
+    t.text "philosophy"
     t.string "phone"
+    t.text "session_formats"
     t.string "specialty"
     t.integer "total_reviews"
+    t.text "treatment_modalities"
     t.string "twitter_url"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
