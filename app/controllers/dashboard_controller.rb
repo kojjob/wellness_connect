@@ -13,6 +13,28 @@ class DashboardController < ApplicationController
     end
   end
 
+  def export
+    start_date = params[:start_date].present? ? Date.parse(params[:start_date]) : nil
+    end_date = params[:end_date].present? ? Date.parse(params[:end_date]) : nil
+
+    exporter = AnalyticsExporter.new(current_user, start_date: start_date, end_date: end_date)
+
+    csv_data = if current_user.provider?
+      exporter.export_provider_revenue_csv
+    elsif current_user.patient?
+      exporter.export_patient_analytics_csv
+    else
+      redirect_to dashboard_path, alert: "Export not available for your account type."
+      return
+    end
+
+    filename = "#{current_user.role}_analytics_#{Time.current.strftime('%Y%m%d_%H%M%S')}.csv"
+
+    send_data csv_data,
+              type: 'text/csv; charset=utf-8',
+              disposition: "attachment; filename=#{filename}"
+  end
+
   private
 
   def render_provider_dashboard
@@ -29,18 +51,32 @@ class DashboardController < ApplicationController
     @total_availability_slots = @provider_profile.availabilities.where(is_booked: false).where("start_time >= ?", Time.current).count
     @appointments = current_user.appointments_as_provider.order(start_time: :desc).limit(10)
 
-    # Revenue statistics
-    @total_earnings = Payment.joins(:appointment)
-                             .where(appointments: { provider_id: current_user.id })
-                             .where(status: :succeeded)
-                             .sum(:amount)
+    # Revenue Analytics (using Analytics concern methods)
+    @total_earnings = current_user.total_revenue
+    @earnings_this_month = current_user.revenue_for_period(Time.current.beginning_of_month, Time.current.end_of_month)
+    @revenue_by_month = current_user.revenue_by_month(6) # Last 6 months
+    @revenue_by_service = current_user.revenue_by_service
+    @average_revenue_per_appointment = current_user.average_revenue_per_appointment
 
-    @earnings_this_month = Payment.joins(:appointment)
-                                  .where(appointments: { provider_id: current_user.id })
-                                  .where(status: :succeeded)
-                                  .where("payments.created_at >= ?", Time.current.beginning_of_month)
-                                  .sum(:amount)
+    # Appointment Analytics (using Analytics concern methods)
+    @total_appointments = current_user.total_appointments_count
+    @completed_appointments = current_user.completed_appointments_count
+    @scheduled_appointments = current_user.scheduled_appointments_count
+    @cancelled_appointments = current_user.cancelled_appointments_count
+    @no_show_appointments = current_user.no_show_appointments_count
 
+    # Performance Metrics
+    @completion_rate = current_user.completion_rate
+    @cancellation_rate = current_user.cancellation_rate
+    @no_show_rate = current_user.no_show_rate
+    @average_appointments_per_week = current_user.average_appointments_per_week
+
+    # Appointment Trends
+    @appointments_by_month = current_user.appointments_by_month(6) # Last 6 months
+    @appointments_by_status = current_user.appointments_by_status
+    @peak_booking_hours = current_user.peak_booking_hours
+
+    # Recent Payments
     @recent_payments = Payment.joins(:appointment)
                               .where(appointments: { provider_id: current_user.id })
                               .where(status: [ :succeeded, :refunded ])

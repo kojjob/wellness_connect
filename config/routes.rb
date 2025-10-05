@@ -7,10 +7,12 @@ Rails.application.routes.draw do
   # Admin dashboard (admin-only access)
   namespace :admin do
     root to: "dashboard#index" # /admin
+    get "dashboard/export", to: "dashboard#export", as: :dashboard_export
   end
 
   # Provider dashboard
   get "dashboard", to: "dashboard#index", as: :dashboard
+  get "dashboard/export", to: "dashboard#export", as: :dashboard_export
 
   # Public provider browsing
   get "providers", to: "provider_profiles#index", as: :providers

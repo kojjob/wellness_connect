@@ -45,7 +45,16 @@
     </div>
   <% end %>
 
-  <h1 class="text-3xl font-bold text-gray-900 mb-8">My Dashboard</h1>
+  <div class="flex justify-between items-center mb-8">
+    <h1 class="text-3xl font-bold text-gray-900">My Dashboard</h1>
+    <%= link_to dashboard_export_path(start_date: params[:start_date], end_date: params[:end_date]),
+                class: "inline-flex items-center gap-2 bg-teal-600 hover:bg-teal-700 text-white font-semibold px-6 py-3 rounded-lg transition duration-200" do %>
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+      </svg>
+      Export Analytics
+    <% end %>
+  </div>
 
   <!-- My Appointments Section -->
   <div class="bg-white shadow rounded-lg p-6 mb-6">
