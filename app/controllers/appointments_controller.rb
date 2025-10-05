@@ -1,127 +1,88 @@
 class AppointmentsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_appointment, only: [ :show, :cancel ]
+  before_action :set_appointment, only: [:show, :cancel]
 
   def index
-    @appointments = if current_user.patient?
-      current_user.appointments_as_patient.order(start_time: :asc)
+    authorize Appointment
+
+    if current_user.patient?
+      @appointments = current_user.appointments_as_patient
+                                 .includes(:provider, :service)
+                                 .order(start_time: :desc)
+    elsif current_user.provider?
+      @appointments = current_user.appointments_as_provider
+                                 .includes(:patient, :service)
+                                 .order(start_time: :desc)
     else
-      current_user.appointments_as_provider.order(start_time: :asc)
+      @appointments = Appointment.none
     end
-  end
 
-  def new
-    @availability = Availability.find(params[:availability_id])
-    @provider_profile = @availability.provider_profile
-    @services = @provider_profile.services.where(is_active: true)
-    @appointment = Appointment.new(
-      patient: current_user,
-      provider: @provider_profile.user,
-      start_time: @availability.start_time,
-      end_time: @availability.end_time
-    )
-  end
-
-  def create
-    @appointment = Appointment.new(appointment_params)
-    @appointment.patient = current_user
-    # Status defaults to payment_pending
-
-    # Get availability and service
-    availability = Availability.find(params[:availability_id])
-    service = @appointment.service
-
-    ActiveRecord::Base.transaction do
-      if @appointment.save
-        # Mark availability as booked to prevent double-booking during payment
-        availability.update!(is_booked: true)
-
-        begin
-          # Create Stripe Payment Intent
-          payment_intent = Stripe::PaymentIntent.create(
-            amount: (service.price.to_f * 100).to_i, # Stripe uses cents
-            currency: "usd",
-            metadata: {
-              appointment_id: @appointment.id,
-              patient_id: current_user.id,
-              provider_id: @appointment.provider.id
-            }
-          )
-
-          # Create Payment record
-          payment = Payment.create!(
-            payer: current_user,
-            appointment: @appointment,
-            amount: service.price,
-            currency: "USD",
-            status: :pending,
-            stripe_payment_intent_id: payment_intent.id
-          )
-
-          # Send confirmation emails
-          AppointmentMailer.booking_confirmation(@appointment).deliver_later
-          AppointmentMailer.provider_booking_notification(@appointment).deliver_later
-
-          # Create notifications
-          NotificationService.notify_appointment_booked(@appointment) if defined?(NotificationService)
-
-          # Return payment info for frontend
-          respond_to do |format|
-            format.html { redirect_to dashboard_path, notice: "Please complete payment to confirm your appointment." }
-            format.json do
-              render json: {
-                success: true,
-                appointment_id: @appointment.id,
-                client_secret: payment_intent.client_secret,
-                payment_intent_id: payment_intent.id,
-                payment_id: payment.id,
-                amount: service.price
-              }, status: :ok
-            end
-          end
-        rescue Stripe::StripeError => e
-          # Payment Intent creation failed - rollback appointment and availability
-          availability.update!(is_booked: false)
-          @appointment.destroy
-
-          respond_to do |format|
-            format.html do
-              @availability = availability
-              @provider_profile = availability.provider_profile
-              @services = @provider_profile.services.where(is_active: true)
-              flash.now[:alert] = "Payment processing error: #{e.message}"
-              render :new, status: :unprocessable_entity
-            end
-            format.json { render json: { error: e.message }, status: :unprocessable_entity }
-          end
-        end
-      else
-        @availability = availability
-        @provider_profile = availability.provider_profile
-        @services = @provider_profile.services.where(is_active: true)
-
-        respond_to do |format|
-          format.html { render :new, status: :unprocessable_entity }
-          format.json { render json: { errors: @appointment.errors.full_messages }, status: :unprocessable_entity }
-        end
-      end
-    end
-  rescue ActiveRecord::RecordInvalid => e
-    @availability = availability
-    @provider_profile = availability.provider_profile
-    @services = @provider_profile.services.where(is_active: true)
-
-    respond_to do |format|
-      format.html do
-        flash.now[:alert] = "Failed to book appointment: #{e.message}"
-        render :new, status: :unprocessable_entity
-      end
-      format.json { render json: { error: e.message }, status: :unprocessable_entity }
-    end
+    # Filter by status if provided
+    @appointments = @appointments.where(status: params[:status]) if params[:status].present?
   end
 
   def show
     authorize @appointment
+    @service = @appointment.service
+    @provider = @appointment.provider
+    @patient = @appointment.patient
+  end
+
+  def new
+    authorize Appointment, :create?
+
+    # Get service and availability from params
+    @service = Service.find(params[:service_id]) if params[:service_id].present?
+    @availability = Availability.find(params[:availability_id]) if params[:availability_id].present?
+
+    # Build new appointment
+    @appointment = Appointment.new(
+      patient: current_user,
+      provider: @service&.provider_profile&.user,
+      service: @service,
+      start_time: @availability&.start_time,
+      end_time: @availability&.end_time
+    )
+  end
+
+  def create
+    authorize Appointment, :create?
+
+    ActiveRecord::Base.transaction do
+      # Build appointment from params
+      @appointment = Appointment.new(appointment_params)
+      @appointment.patient = current_user
+      @appointment.status = :scheduled
+
+      # Find and lock the availability slot
+      @availability = Availability.find(params[:appointment][:availability_id])
+
+      # Check if availability is still available
+      if @availability.is_booked?
+        redirect_to new_appointment_path, alert: "This time slot has already been booked. Please choose another time." and return
+      end
+
+      # Save appointment and lock availability
+      if @appointment.save
+        # Mark availability as booked
+        @availability.update!(is_booked: true)
+
+        # Send confirmation emails
+        AppointmentMailer.booking_confirmation(@appointment).deliver_later
+        AppointmentMailer.provider_booking_notification(@appointment).deliver_later
+
+        # Redirect to Stripe payment (will be implemented)
+        redirect_to @appointment, notice: "Appointment booked successfully! Please complete payment to confirm."
+      else
+        render :new, status: :unprocessable_entity
+      end
+    end
+  rescue ActiveRecord::RecordNotFound
+    redirect_to new_appointment_path, alert: "Invalid availability slot selected."
+  rescue ActiveRecord::RecordInvalid => e
+    @appointment ||= Appointment.new
+    flash.now[:alert] = "Failed to book appointment: #{e.message}"
+    render :new, status: :unprocessable_entity
   end
 
   def cancel
@@ -131,7 +92,7 @@ class AppointmentsController < ApplicationController
       status: current_user.patient? ? :cancelled_by_patient : :cancelled_by_provider,
       cancellation_reason: params[:cancellation_reason]
     )
-      # Release availability slot
+      # Release the availability slot
       availability = Availability.find_by(
         provider_profile: @appointment.service.provider_profile,
         start_time: @appointment.start_time,
@@ -139,16 +100,13 @@ class AppointmentsController < ApplicationController
       )
       availability&.update(is_booked: false)
 
-      # Create notification for the other party
-      NotificationService.notify_appointment_cancelled(@appointment, current_user) if defined?(NotificationService)
-
-      # Send cancellation notifications to both patient and provider
+      # Send cancellation notifications
       AppointmentMailer.cancellation_notification(@appointment, @appointment.patient).deliver_later
       AppointmentMailer.cancellation_notification(@appointment, @appointment.provider).deliver_later
 
-      redirect_to dashboard_path, notice: "Appointment cancelled successfully"
+      redirect_to appointments_path, notice: "Appointment cancelled successfully."
     else
-      redirect_to dashboard_path, alert: "Failed to cancel appointment"
+      redirect_to @appointment, alert: "Failed to cancel appointment."
     end
   end
 
@@ -159,6 +117,6 @@ class AppointmentsController < ApplicationController
   end
 
   def appointment_params
-    params.require(:appointment).permit(:service_id, :provider_id, :start_time, :end_time)
+    params.require(:appointment).permit(:service_id, :provider_id, :start_time, :end_time, :availability_id, :notes)
   end
 end

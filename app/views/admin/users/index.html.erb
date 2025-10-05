@@ -1,102 +1,48 @@
-<% content_for :admin_page_title, "User Management" %>
-
-<!-- Filters and Search -->
-<div class="bg-white rounded-lg shadow mb-6">
-  <div class="px-6 py-4">
-    <%= form_with url: admin_users_path, method: :get, class: "flex flex-wrap gap-4 items-end" do |f| %>
-      <!-- Search -->
-      <div class="flex-1 min-w-[200px]">
-        <%= f.label :search, "Search", class: "block text-sm font-medium text-gray-700 mb-1" %>
-        <%= f.text_field :search, value: params[:search], placeholder: "Name or email...", class: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" %>
-      </div>
-
-      <!-- Role Filter -->
-      <div class="w-48">
-        <%= f.label :role, "Role", class: "block text-sm font-medium text-gray-700 mb-1" %>
-        <%= f.select :role,
-            options_for_select([["All Roles", ""], ["Patients", "patient"], ["Providers", "provider"], ["Admins", "admin"]], params[:role]),
-            {},
-            class: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" %>
-      </div>
-
-      <!-- Submit -->
-      <div>
-        <%= f.submit "Filter", class: "px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500" %>
-        <%= link_to "Clear", admin_users_path, class: "ml-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300" %>
-      </div>
-    <% end %>
+<div class="container mx-auto px-4 py-8">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold">User Management</h1>
+    <%= link_to "Create New User", new_admin_user_path, class: "bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" %>
   </div>
-</div>
 
-<!-- Users Table -->
-<div class="bg-white rounded-lg shadow overflow-hidden">
-  <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-    <div>
-      <h2 class="text-lg font-semibold text-gray-900">All Users</h2>
-      <p class="text-sm text-gray-500 mt-1">Total: <%= @users.total_count %> users</p>
+  <%# Search Form %>
+  <%= form_with url: admin_users_path, method: :get, class: "mb-6" do |f| %>
+    <div class="flex gap-2">
+      <%= f.text_field :q, value: params[:q], placeholder: "Search by name or email", class: "flex-1 px-4 py-2 border rounded" %>
+      <%= f.submit "Search", class: "bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded" %>
     </div>
-  </div>
+  <% end %>
 
-  <div class="overflow-x-auto">
+  <%# Users Table %>
+  <div class="bg-white shadow-md rounded-lg overflow-hidden">
     <table class="min-w-full divide-y divide-gray-200">
       <thead class="bg-gray-50">
         <tr>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
           <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
           <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
           <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
         </tr>
       </thead>
       <tbody class="bg-white divide-y divide-gray-200">
         <% @users.each do |user| %>
-          <tr class="hover:bg-gray-50 transition">
+          <tr>
+            <td class="px-6 py-4 whitespace-nowrap"><%= user.full_name %></td>
+            <td class="px-6 py-4 whitespace-nowrap"><%= user.email %></td>
+            <td class="px-6 py-4 whitespace-nowrap"><%= user.role.titleize %></td>
             <td class="px-6 py-4 whitespace-nowrap">
-              <div class="flex items-center">
-                <div class="w-10 h-10 rounded-full <%= user.admin? ? 'bg-purple-100 text-purple-600' : user.provider? ? 'bg-green-100 text-green-600' : 'bg-blue-100 text-blue-600' %> flex items-center justify-center">
-                  <span class="font-semibold"><%= user.first_name.first.upcase %></span>
-                </div>
-                <div class="ml-4">
-                  <div class="text-sm font-medium text-gray-900"><%= user.full_name %></div>
-                  <div class="text-sm text-gray-500"><%= user.email %></div>
-                </div>
-              </div>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                <%= user.admin? ? 'bg-purple-100 text-purple-800' : user.provider? ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800' %>">
-                <%= user.role.titleize %>
+              <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full <%= user.status_badge_class %>">
+                <%= user.status.titleize %>
               </span>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                Active
-              </span>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-              <%= user.created_at.strftime("%b %d, %Y") %>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-              <%= link_to "View", admin_user_path(user), class: "text-indigo-600 hover:text-indigo-900 mr-4" %>
-              <%= link_to "Edit", edit_admin_user_path(user), class: "text-gray-600 hover:text-gray-900" %>
+              <%= link_to "View", admin_user_path(user), class: "text-blue-600 hover:text-blue-900 mr-3" %>
+              <%= link_to "Edit", edit_admin_user_path(user), class: "text-indigo-600 hover:text-indigo-900 mr-3" %>
+              <%= button_to "Delete", admin_user_path(user), method: :delete, data: { confirm: "Are you sure?" }, class: "text-red-600 hover:text-red-900" %>
             </td>
           </tr>
         <% end %>
       </tbody>
     </table>
   </div>
-
-  <!-- Pagination -->
-  <% if @users.total_pages > 1 %>
-    <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
-      <div class="flex items-center justify-between">
-        <div class="text-sm text-gray-700">
-          Showing <%= @users.offset_value + 1 %> to <%= [@users.offset_value + @users.limit_value, @users.total_count].min %> of <%= @users.total_count %> results
-        </div>
-        <div class="flex gap-2">
-          <%= paginate @users %>
-        </div>
-      </div>
-    </div>
-  <% end %>
 </div>

@@ -1,30 +1,43 @@
 class AppointmentPolicy < ApplicationPolicy
-  class Scope < ApplicationPolicy::Scope
-    def resolve
-      if user.patient?
-        scope.where(patient: user)
-      elsif user.provider?
-        scope.where(provider: user)
-      else
-        scope.none
-      end
-    end
-  end
-
-  def show?
-    user.patient? && record.patient == user || user.provider? && record.provider == user
-  end
-
+  # Patients can create appointments
   def create?
     user.patient?
   end
 
-  def cancel?
-    # Patients and providers can cancel their own appointments
-    (user.patient? && record.patient == user) || (user.provider? && record.provider == user)
+  # Users can only view their own appointments
+  def show?
+    user_is_patient_or_provider?
   end
 
-  def update?
-    cancel?
+  # Users can view their own appointments list
+  def index?
+    user.present?
+  end
+
+  # Only patients can cancel their own appointments (>24h before)
+  # Providers can cancel any of their appointments
+  def cancel?
+    return false unless user_is_patient_or_provider?
+
+    if user.patient? && record.patient == user
+      # Patients can cancel if >24 hours before appointment
+      record.start_time > 24.hours.from_now
+    elsif user.provider? && record.provider == user
+      # Providers can cancel any of their appointments
+      true
+    elsif user.admin?
+      # Admins can cancel any appointment
+      true
+    else
+      false
+    end
+  end
+
+  private
+
+  def user_is_patient_or_provider?
+    (user.patient? && record.patient == user) ||
+    (user.provider? && record.provider == user) ||
+    user.admin?
   end
 end

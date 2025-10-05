@@ -31,7 +31,7 @@ Rails.application.routes.draw do
   end
 
   # Appointments
-  resources :appointments, only: [ :index, :new, :create, :show ] do
+  resources :appointments, only: [:index, :show, :new, :create] do
     member do
       patch :cancel
     end
@@ -56,6 +56,18 @@ Rails.application.routes.draw do
 
   # Stripe webhooks
   post "stripe/webhooks", to: "stripe_webhooks#create", as: :stripe_webhooks
+
+  # Admin namespace
+  namespace :admin do
+    resources :users do
+      member do
+        post :suspend
+        post :unsuspend
+        post :block
+        post :unblock
+      end
+    end
+  end
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.

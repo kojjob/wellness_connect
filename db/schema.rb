@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_10_05_022750) do
+ActiveRecord::Schema[8.1].define(version: 2025_10_05_044007) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -43,6 +43,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_05_022750) do
   end
 
   create_table "appointments", force: :cascade do |t|
+    t.bigint "availability_id"
     t.text "cancellation_reason"
     t.datetime "created_at", null: false
     t.datetime "end_time"
@@ -53,6 +54,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_05_022750) do
     t.integer "status"
     t.datetime "updated_at", null: false
     t.string "video_session_id"
+    t.index ["availability_id"], name: "index_appointments_on_availability_id"
     t.index ["patient_id"], name: "index_appointments_on_patient_id"
     t.index ["provider_id"], name: "index_appointments_on_provider_id"
     t.index ["service_id"], name: "index_appointments_on_service_id"
@@ -168,6 +170,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_05_022750) do
   end
 
   create_table "users", force: :cascade do |t|
+    t.datetime "blocked_at"
     t.datetime "created_at", null: false
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -177,14 +180,19 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_05_022750) do
     t.datetime "reset_password_sent_at"
     t.string "reset_password_token"
     t.integer "role", default: 0, null: false
+    t.text "status_reason"
+    t.datetime "suspended_at"
     t.string "time_zone", default: "UTC"
     t.datetime "updated_at", null: false
+    t.index ["blocked_at"], name: "index_users_on_blocked_at"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+    t.index ["suspended_at"], name: "index_users_on_suspended_at"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "appointments", "availabilities"
   add_foreign_key "appointments", "services"
   add_foreign_key "appointments", "users", column: "patient_id"
   add_foreign_key "appointments", "users", column: "provider_id"

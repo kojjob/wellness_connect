@@ -143,6 +143,8 @@ class ProviderProfilesController < ApplicationController
       :years_of_experience, :education, :certifications, :languages,
       :phone, :office_address, :website,
       :linkedin_url, :twitter_url, :facebook_url, :instagram_url,
+      :areas_of_expertise, :industries_served, :philosophy,
+      :session_formats, :treatment_modalities,
       :avatar,
       gallery_images: [],
       gallery_videos: [],
