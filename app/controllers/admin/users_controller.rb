@@ -2,7 +2,7 @@
 
 module Admin
   class UsersController < Admin::BaseController
-    before_action :set_user, only: [ :show, :edit, :update, :destroy, :suspend, :unsuspend, :block, :unblock ]
+    before_action :set_user, only: [ :show, :edit, :update, :destroy, :suspend, :unsuspend, :block, :unblock, :remove_avatar ]
 
     def index
       authorize User
@@ -93,9 +93,15 @@ module Admin
       authorize @user
 
       if @user.update(user_params)
-        redirect_to admin_user_path(@user), notice: "User successfully updated."
+        respond_to do |format|
+          format.html { redirect_to admin_user_path(@user), notice: "User successfully updated." }
+          format.json { render json: { success: true, message: "User successfully updated." } }
+        end
       else
-        render :edit, status: :unprocessable_entity
+        respond_to do |format|
+          format.html { render :edit, status: :unprocessable_entity }
+          format.json { render json: { success: false, errors: @user.errors.full_messages }, status: :unprocessable_entity }
+        end
       end
     end
 
@@ -129,6 +135,17 @@ module Admin
       redirect_to admin_user_path(@user), notice: "User successfully unblocked."
     end
 
+    def remove_avatar
+      authorize @user
+
+      if @user.avatar.attached?
+        @user.avatar.purge
+        render json: { success: true, message: "Avatar removed successfully." }
+      else
+        render json: { success: false, message: "No avatar to remove." }, status: :unprocessable_entity
+      end
+    end
+
     private
 
     def set_user
@@ -136,7 +153,7 @@ module Admin
     end
 
     def user_params
-      params.require(:user).permit(:first_name, :last_name, :email, :password, :password_confirmation, :role)
+      params.require(:user).permit(:first_name, :last_name, :email, :password, :password_confirmation, :role, :avatar)
     end
   end
 end

@@ -66,6 +66,7 @@ Rails.application.routes.draw do
         post :unsuspend
         post :block
         post :unblock
+        delete :remove_avatar
       end
     end
     resources :provider_profiles # Full CRUD for provider profiles
