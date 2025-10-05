@@ -1,6 +1,6 @@
 <section id="services" class="bg-white rounded-2xl shadow-lg p-8">
   <h2 class="text-3xl font-bold text-gray-900 mb-2 flex items-center">
-    <svg class="w-8 h-8 mr-3 text-indigo-600" fill="currentColor" viewBox="0 0 24 24">
+    <svg class="w-8 h-8 mr-3 text-teal-600" fill="currentColor" viewBox="0 0 24 24">
       <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
     </svg>
     Service Packages
@@ -10,10 +10,10 @@
   <% if @provider_profile.services.where(is_active: true).any? %>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
       <% @provider_profile.services.where(is_active: true).limit(3).each_with_index do |service, index| %>
-        <div class="border-2 <%= index == 1 ? 'border-indigo-600 shadow-xl scale-105 relative' : 'border-gray-200' %> rounded-xl p-6 hover:shadow-2xl transition-all duration-300 flex flex-col">
+        <div class="border-2 <%= index == 1 ? 'border-teal-600 shadow-xl scale-105 relative' : 'border-gray-200' %> rounded-xl p-6 hover:shadow-2xl transition-all duration-300 flex flex-col">
           <% if index == 1 %>
             <div class="absolute -top-3 left-1/2 transform -translate-x-1/2">
-              <span class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-1 rounded-full text-sm font-semibold shadow-lg">
+              <span class="bg-gradient-to-r from-teal-600 to-gray-700 text-white px-4 py-1 rounded-full text-sm font-semibold shadow-lg">
                 Most Popular
               </span>
             </div>
@@ -23,7 +23,7 @@
           <div class="text-center mb-6">
             <h3 class="text-2xl font-bold text-gray-900 mb-3"><%= service.name %></h3>
             <div class="mb-2">
-              <span class="text-5xl font-bold text-indigo-600">
+              <span class="text-5xl font-bold text-teal-600">
                 $<%= number_with_precision(service.price, precision: 0) %>
               </span>
             </div>
@@ -70,8 +70,8 @@
 
           <!-- CTA Button -->
           <% if user_signed_in? && current_user.patient? %>
-            <%= link_to new_appointment_path(service_id: service.id), 
-                class: "block w-full text-center px-6 py-3 #{index == 1 ? 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700' : 'bg-gray-900 hover:bg-gray-800'} text-white rounded-lg font-semibold transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5",
+            <%= link_to new_appointment_path(service_id: service.id),
+                class: "block w-full text-center px-6 py-3 #{index == 1 ? 'bg-gradient-to-r from-teal-600 to-gray-700 hover:from-teal-700 hover:to-gray-800' : 'bg-gray-900 hover:bg-gray-800'} text-white rounded-lg font-semibold transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5",
                 data: { turbo: false } do %>
               <span class="flex items-center justify-center gap-2">
                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -81,8 +81,8 @@
               </span>
             <% end %>
           <% else %>
-            <%= link_to new_user_session_path, 
-                class: "block w-full text-center px-6 py-3 #{index == 1 ? 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700' : 'bg-gray-900 hover:bg-gray-800'} text-white rounded-lg font-semibold transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5" do %>
+            <%= link_to new_user_session_path,
+                class: "block w-full text-center px-6 py-3 #{index == 1 ? 'bg-gradient-to-r from-teal-600 to-gray-700 hover:from-teal-700 hover:to-gray-800' : 'bg-gray-900 hover:bg-gray-800'} text-white rounded-lg font-semibold transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5" do %>
               <span class="flex items-center justify-center gap-2">
                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
@@ -101,9 +101,9 @@
         <h3 class="text-xl font-bold text-gray-900 mb-4">Additional Services</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <% @provider_profile.services.where(is_active: true).offset(3).each do |service| %>
-            <div class="flex items-start gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200 hover:border-indigo-300 hover:shadow-md transition">
-              <div class="flex-shrink-0 w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
-                <svg class="w-6 h-6 text-indigo-600" fill="currentColor" viewBox="0 0 24 24">
+            <div class="flex items-start gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200 hover:border-teal-300 hover:shadow-md transition">
+              <div class="flex-shrink-0 w-12 h-12 bg-teal-100 rounded-lg flex items-center justify-center">
+                <svg class="w-6 h-6 text-teal-600" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
                 </svg>
               </div>
@@ -111,7 +111,7 @@
                 <h4 class="font-semibold text-gray-900 mb-1"><%= service.name %></h4>
                 <p class="text-sm text-gray-600 mb-2"><%= truncate(service.description, length: 100) %></p>
                 <div class="flex items-center justify-between">
-                  <span class="text-lg font-bold text-indigo-600">$<%= number_with_precision(service.price, precision: 0) %></span>
+                  <span class="text-lg font-bold text-teal-600">$<%= number_with_precision(service.price, precision: 0) %></span>
                   <span class="text-sm text-gray-500"><%= service.duration_minutes %> min</span>
                 </div>
               </div>
@@ -132,4 +132,3 @@
     </div>
   <% end %>
 </section>
-

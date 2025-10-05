@@ -1,6 +1,6 @@
 <section id="reviews" class="bg-white rounded-2xl shadow-lg p-8">
   <h2 class="text-3xl font-bold text-gray-900 mb-6 flex items-center">
-    <svg class="w-8 h-8 mr-3 text-indigo-600" fill="currentColor" viewBox="0 0 24 24">
+    <svg class="w-8 h-8 mr-3 text-teal-600" fill="currentColor" viewBox="0 0 24 24">
       <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
     </svg>
     Client Reviews & Testimonials
@@ -10,11 +10,11 @@
   <%# For now, showing a placeholder with sample testimonials %>
 
   <!-- Rating Summary -->
-  <div class="mb-8 p-6 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl border border-indigo-200">
+  <div class="mb-8 p-6 bg-gradient-to-br from-teal-50 to-gray-50 rounded-xl border border-teal-200">
     <div class="flex flex-col md:flex-row items-center gap-8">
       <!-- Overall Rating -->
       <div class="text-center">
-        <div class="text-6xl font-bold text-indigo-600 mb-2">
+        <div class="text-6xl font-bold text-teal-600 mb-2">
           <%= @provider_profile.display_rating %>
         </div>
         <div class="flex items-center justify-center mb-2">
@@ -48,7 +48,7 @@
     <!-- Testimonial 1 -->
     <div class="border border-gray-200 rounded-xl p-6 hover:shadow-lg transition">
       <div class="flex items-start gap-4 mb-4">
-        <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
+        <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-teal-500 to-gray-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
           JD
         </div>
         <div class="flex-grow">
@@ -79,7 +79,7 @@
     <!-- Testimonial 2 -->
     <div class="border border-gray-200 rounded-xl p-6 hover:shadow-lg transition">
       <div class="flex items-start gap-4 mb-4">
-        <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
+        <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-gray-600 to-gray-700 rounded-full flex items-center justify-center text-white font-bold text-lg">
           MS
         </div>
         <div class="flex-grow">
@@ -110,7 +110,7 @@
     <!-- Testimonial 3 -->
     <div class="border border-gray-200 rounded-xl p-6 hover:shadow-lg transition">
       <div class="flex items-start gap-4 mb-4">
-        <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
+        <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-teal-600 to-teal-700 rounded-full flex items-center justify-center text-white font-bold text-lg">
           AL
         </div>
         <div class="flex-grow">
@@ -140,20 +140,19 @@
   </div>
 
   <!-- Coming Soon Notice -->
-  <div class="mt-8 p-6 bg-blue-50 rounded-xl border border-blue-200">
+  <div class="mt-8 p-6 bg-teal-50 rounded-xl border border-teal-200">
     <div class="flex items-start gap-4">
       <div class="flex-shrink-0">
-        <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
+        <svg class="w-6 h-6 text-teal-600" fill="currentColor" viewBox="0 0 24 24">
           <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
         </svg>
       </div>
       <div>
-        <h3 class="text-lg font-semibold text-blue-900 mb-1">Review System Coming Soon</h3>
-        <p class="text-blue-800 text-sm">
+        <h3 class="text-lg font-semibold text-teal-900 mb-1">Review System Coming Soon</h3>
+        <p class="text-teal-800 text-sm">
           We're currently developing a comprehensive review system. Soon, verified clients will be able to leave detailed reviews and ratings. The testimonials shown above are representative examples of the quality of service provided.
         </p>
       </div>
     </div>
   </div>
 </section>
-
