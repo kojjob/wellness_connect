@@ -56,8 +56,9 @@
           <p class="text-sm font-medium text-gray-900 leading-relaxed">
             <%= @provider_profile.office_address %>
           </p>
-          <a href="https://maps.google.com/?q=<%= CGI.escape(@provider_profile.office_address) %>" 
+          <a href="https://maps.google.com/?q=<%= ERB::Util.url_encode(@provider_profile.office_address) %>"
              target="_blank"
+             rel="noopener noreferrer"
              class="inline-flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-700 mt-2">
             <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
@@ -78,8 +79,7 @@
         </div>
         <div class="flex-grow min-w-0">
           <p class="text-xs text-gray-600 mb-1">Website</p>
-          <%= link_to @provider_profile.website, 
-              @provider_profile.website, 
+          <%= link_to @provider_profile.website,
               target: "_blank",
               rel: "noopener noreferrer",
               class: "text-sm font-medium text-indigo-600 hover:text-indigo-700 transition break-all inline-flex items-center gap-1" do %>
@@ -149,4 +149,3 @@
     </div>
   <% end %>
 </div>
-

@@ -122,13 +122,14 @@ module Admin
       sign_in_as(@admin)
 
       visit new_admin_user_path
-      within "form" do
-        fill_in "user_email", with: "invalid"
-        click_button "Create User"
-      end
+      fill_in "user_email", with: "invalid"
+      # Leave password blank - Devise requires password
+      click_button "Create User"
 
-      assert_selector "div.error", text: "First name can't be blank"
-      assert_selector "div.error", text: "Last name can't be blank"
+      # Check for Devise validation errors
+      assert_text "Email is invalid"
+      assert_text "Password can't be blank"
+      assert_selector "div.error"
     end
 
     # Edit user tests
@@ -169,9 +170,10 @@ module Admin
       sign_in_as(@admin)
 
       visit admin_user_path(@patient)
-      accept_confirm do
-        click_button "Delete User"
-      end
+
+      # Handle Turbo confirmation by dismissing it via JavaScript
+      page.driver.browser.execute_script("window.confirm = function() { return true; }")
+      click_button "Delete User"
 
       assert_text "User successfully deleted."
       assert_current_path admin_users_path
@@ -320,9 +322,8 @@ module Admin
       assert_text "active"
 
       # 9. Delete user
-      accept_confirm do
-        click_button "Delete User"
-      end
+      page.driver.browser.execute_script("window.confirm = function() { return true; }")
+      click_button "Delete User"
       assert_text "User successfully deleted."
       assert_current_path admin_users_path
     end

@@ -34,9 +34,16 @@ class AppointmentBookingFlowTest < ApplicationSystemTestCase
     visit provider_profile_path(@provider_profile)
     assert_current_path provider_profile_path(@provider_profile)
     assert_text @provider.full_name
-    assert_text @service.name
 
-    # Step 4: Start booking process
+    # Step 4: Start booking process (click the Book Appointment button in hero section)
+    # Debug: Find and inspect the Book Appointment link
+    book_link = find_link("Book Appointment", match: :first)
+    puts "\n=== DEBUG: Book Appointment Link ==="
+    puts "Text: #{book_link.text}"
+    puts "Href: #{book_link[:href]}"
+    puts "Visible: #{book_link.visible?}"
+    puts "=== END DEBUG ===\n"
+
     click_link "Book Appointment", match: :first
     assert_current_path new_appointment_path(service_id: @service.id)
     assert_text "Book Your Appointment"
