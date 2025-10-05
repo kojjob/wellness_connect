@@ -4,6 +4,12 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable, :timeoutable
 
+  # Analytics modules
+  include Analytics::ProviderRevenue
+  include Analytics::ProviderAppointments
+  include Analytics::PatientAnalytics
+  include Analytics::PlatformAnalytics
+
   # Enums
   enum :role, { patient: 0, provider: 1, admin: 2 }, default: :patient
 
