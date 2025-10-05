@@ -1,0 +1,35 @@
+APPOINTMENT REMINDER - Tomorrow!
+
+Hello <%= @patient.first_name %>,
+
+This is a friendly reminder that you have an upcoming appointment scheduled for tomorrow.
+
+===== APPOINTMENT DETAILS =====
+
+Service: <%= @service.name %>
+Provider: <%= @provider.full_name %>
+Date & Time: <%= @appointment_time.strftime("%A, %B %d, %Y at %I:%M %p") %>
+Duration: <%= @service.duration_minutes %> minutes
+
+<% if @appointment.video_session_id.present? %>
+Session Link: Available in your dashboard before the appointment
+<% end %>
+
+===== PREPARATION CHECKLIST =====
+
+Please ensure you:
+- Are ready a few minutes before the scheduled time
+- Have a stable internet connection
+- Are in a quiet, private space for the session
+<% if @appointment.video_session_id.present? %>
+- Test your camera and microphone beforehand
+<% end %>
+
+If you need to cancel or reschedule, please do so as soon as possible through your dashboard.
+
+Looking forward to your session!
+
+---
+Need help? Contact us at <%= ENV['SUPPORT_EMAIL'] || 'support@wellnessconnect.com' %>
+
+WellnessConnect - Connecting you with qualified professionals

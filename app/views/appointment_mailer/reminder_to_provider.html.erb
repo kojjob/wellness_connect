@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .header {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        padding: 30px;
+        text-align: center;
+        border-radius: 8px 8px 0 0;
+      }
+      .content {
+        background: #f9fafb;
+        padding: 30px;
+        border-radius: 0 0 8px 8px;
+      }
+      .appointment-details {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        margin: 20px 0;
+        border-left: 4px solid #f093fb;
+      }
+      .detail-row {
+        margin: 12px 0;
+        display: flex;
+      }
+      .detail-label {
+        font-weight: 600;
+        width: 140px;
+        color: #6b7280;
+      }
+      .detail-value {
+        color: #111827;
+      }
+      .client-info {
+        background: #eff6ff;
+        padding: 15px;
+        border-radius: 6px;
+        margin: 20px 0;
+        border-left: 3px solid #3b82f6;
+      }
+      .button {
+        display: inline-block;
+        background: #f093fb;
+        color: white;
+        padding: 12px 24px;
+        text-decoration: none;
+        border-radius: 6px;
+        margin-top: 20px;
+      }
+      .footer {
+        text-align: center;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #e5e7eb;
+        color: #6b7280;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1 style="margin: 0;">Session Reminder</h1>
+      <p style="margin: 10px 0 0 0; opacity: 0.9;">You have a session scheduled for tomorrow</p>
+    </div>
+
+    <div class="content">
+      <p>Hello <%= @provider.first_name %>,</p>
+
+      <p>This is a reminder that you have a session scheduled with a client tomorrow.</p>
+
+      <div class="appointment-details">
+        <h3 style="margin-top: 0; color: #111827;">Session Details</h3>
+
+        <div class="detail-row">
+          <span class="detail-label">Service:</span>
+          <span class="detail-value"><strong><%= @service.name %></strong></span>
+        </div>
+
+        <div class="detail-row">
+          <span class="detail-label">Client:</span>
+          <span class="detail-value"><%= @patient.full_name %></span>
+        </div>
+
+        <div class="detail-row">
+          <span class="detail-label">Date & Time:</span>
+          <span class="detail-value">
+            <strong><%= @appointment_time.strftime("%A, %B %d, %Y at %I:%M %p") %></strong>
+          </span>
+        </div>
+
+        <div class="detail-row">
+          <span class="detail-label">Duration:</span>
+          <span class="detail-value"><%= @service.duration_minutes %> minutes</span>
+        </div>
+
+        <% if @appointment.video_session_id.present? %>
+          <div class="detail-row">
+            <span class="detail-label">Session Link:</span>
+            <span class="detail-value">Available in your provider dashboard before the appointment</span>
+          </div>
+        <% end %>
+      </div>
+
+      <div class="client-info">
+        <h4 style="margin-top: 0; color: #1e40af;">Client Information</h4>
+        <p style="margin: 5px 0;"><strong>Name:</strong> <%= @patient.full_name %></p>
+        <p style="margin: 5px 0;"><strong>Email:</strong> <%= @patient.email %></p>
+        <% if @patient.patient_profile&.health_goals.present? %>
+          <p style="margin: 5px 0;"><strong>Goals:</strong> <%= @patient.patient_profile.health_goals %></p>
+        <% end %>
+      </div>
+
+      <p><strong>Session preparation:</strong></p>
+      <ul style="color: #4b5563;">
+        <li>Review any previous session notes</li>
+        <li>Prepare materials or resources you might need</li>
+        <li>Test your equipment and connection a few minutes early</li>
+        <li>Have consultation note template ready for documentation</li>
+      </ul>
+
+      <p style="margin-top: 30px; color: #6b7280; font-size: 14px;">
+        <strong>Need to reschedule?</strong> Please contact the client as soon as possible through the platform.
+      </p>
+    </div>
+
+    <div class="footer">
+      <p>WellnessConnect Provider Portal</p>
+      <p style="font-size: 12px; margin-top: 10px;">
+        Manage your appointments through your provider dashboard.
+      </p>
+    </div>
+  </body>
+</html>
