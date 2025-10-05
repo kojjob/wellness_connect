@@ -5,8 +5,64 @@ module Admin
     before_action :set_user, only: [ :show, :edit, :update, :destroy, :suspend, :unsuspend, :block, :unblock ]
 
     def index
-      @users = policy_scope(User).search(params[:q]).order(created_at: :desc)
       authorize User
+
+      # Base query
+      @users = policy_scope(User)
+
+      # Search
+      if params[:q].present?
+        @users = @users.search(params[:q])
+      end
+
+      # Filter by role
+      if params[:role].present? && User.roles.keys.include?(params[:role])
+        @users = @users.where(role: params[:role])
+      end
+
+      # Filter by status
+      case params[:status]
+      when "active"
+        @users = @users.active
+      when "suspended"
+        @users = @users.suspended
+      when "blocked"
+        @users = @users.blocked
+      when "inactive"
+        @users = @users.inactive
+      end
+
+      # Filter by date range
+      if params[:start_date].present?
+        @users = @users.where("created_at >= ?", Date.parse(params[:start_date]).beginning_of_day)
+      end
+
+      if params[:end_date].present?
+        @users = @users.where("created_at <= ?", Date.parse(params[:end_date]).end_of_day)
+      end
+
+      # Sorting
+      sort_column = params[:sort] || "created_at"
+      sort_direction = params[:direction] || "desc"
+
+      # Validate sort column
+      allowed_columns = %w[first_name last_name email role created_at]
+      sort_column = "created_at" unless allowed_columns.include?(sort_column)
+      sort_direction = "desc" unless %w[asc desc].include?(sort_direction)
+
+      @users = @users.order("#{sort_column} #{sort_direction}")
+
+      # Statistics
+      @total_users = User.count
+      @active_users = User.active.count
+      @providers_count = User.where(role: "provider").count
+      @patients_count = User.where(role: "patient").count
+      @recent_signups = User.where("created_at >= ?", 7.days.ago).count
+
+      # Pagination
+      @per_page = params[:per_page]&.to_i || 20
+      @per_page = 20 unless [20, 50, 100].include?(@per_page)
+      @users = @users.page(params[:page]).per(@per_page)
     end
 
     def show
