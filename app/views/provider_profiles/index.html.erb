@@ -94,7 +94,7 @@
           <div class="md:col-span-3 flex gap-2">
             <div class="flex-1">
               <%= form.submit "Search",
-                  class: "w-full h-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-3 rounded-xl transition shadow-md flex items-center justify-center" %>
+                  class: "w-full h-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-2 rounded-xl transition shadow-md flex items-center justify-center" %>
             </div>
             <% if params[:search].present? || params[:specialty].present? %>
               <%= link_to providers_path,
