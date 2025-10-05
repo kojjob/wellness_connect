@@ -5,7 +5,7 @@ class PaymentsController < ApplicationController
 
   def index
     # Build base query based on user role
-    @payments = if current_user.provider?
+    base_payments = if current_user.provider?
       # Providers see payments they've received
       Payment.joins(:appointment)
              .where(appointments: { provider_id: current_user.id })
@@ -14,23 +14,76 @@ class PaymentsController < ApplicationController
       Payment.where(payer: current_user)
     end
 
+    # Apply search filter
+    if params[:search].present?
+      search_term = "%#{params[:search]}%"
+      base_payments = base_payments.joins(appointment: [:provider, :service])
+                                   .where("users.first_name ILIKE ? OR users.last_name ILIKE ? OR services.name ILIKE ? OR payments.stripe_payment_intent_id ILIKE ?",
+                                          search_term, search_term, search_term, search_term)
+    end
+
     # Apply status filter if provided
     if params[:status].present? && Payment.statuses.keys.include?(params[:status])
-      @payments = @payments.where(status: params[:status])
+      base_payments = base_payments.where(status: params[:status])
     end
 
-    # Apply date range filter if provided
-    if params[:start_date].present?
-      @payments = @payments.where("payments.created_at >= ?", params[:start_date])
+    # Apply date range filter with presets
+    if params[:date_range].present?
+      case params[:date_range]
+      when 'last_7_days'
+        base_payments = base_payments.where("payments.created_at >= ?", 7.days.ago)
+      when 'last_30_days'
+        base_payments = base_payments.where("payments.created_at >= ?", 30.days.ago)
+      when 'last_3_months'
+        base_payments = base_payments.where("payments.created_at >= ?", 3.months.ago)
+      when 'last_year'
+        base_payments = base_payments.where("payments.created_at >= ?", 1.year.ago)
+      when 'custom'
+        if params[:start_date].present?
+          base_payments = base_payments.where("payments.created_at >= ?", params[:start_date])
+        end
+        if params[:end_date].present?
+          base_payments = base_payments.where("payments.created_at <= ?", params[:end_date])
+        end
+      end
     end
 
-    if params[:end_date].present?
-      @payments = @payments.where("payments.created_at <= ?", params[:end_date])
-    end
+    # Apply sorting
+    @payments = case params[:sort]
+                when 'amount_high'
+                  base_payments.order(amount: :desc)
+                when 'amount_low'
+                  base_payments.order(amount: :asc)
+                when 'oldest'
+                  base_payments.order(created_at: :asc)
+                else # 'newest' or default
+                  base_payments.order(created_at: :desc)
+                end
 
-    # Order by most recent first and paginate
+    # Calculate statistics before pagination
+    @total_spent = base_payments.where(status: :succeeded).sum(:amount)
+    @pending_amount = base_payments.where(status: :pending).sum(:amount)
+    @refunded_amount = base_payments.where(status: :refunded).sum(:amount)
+    @total_payments_count = base_payments.count
+    @succeeded_count = base_payments.where(status: :succeeded).count
+    @pending_count = base_payments.where(status: :pending).count
+    @failed_count = base_payments.where(status: :failed).count
+    @refunded_count = base_payments.where(status: :refunded).count
+
+    # Monthly spending (last 6 months)
+    @monthly_spending = base_payments.where(status: :succeeded)
+                                     .where("payments.paid_at >= ?", 6.months.ago)
+                                     .group_by { |p| p.paid_at&.strftime("%Y-%m") || p.created_at.strftime("%Y-%m") }
+                                     .transform_values { |payments| payments.sum(&:amount) }
+                                     .sort.to_h
+
+    # Recent transactions for sidebar (last 5)
+    @recent_transactions = base_payments.includes(:payer, appointment: [:patient, :provider, :service])
+                                       .order(created_at: :desc)
+                                       .limit(5)
+
+    # Paginate main list
     @payments = @payments.includes(:payer, appointment: [:patient, :provider, :service])
-                        .order(created_at: :desc)
                         .page(params[:page]).per(20)
   end
 

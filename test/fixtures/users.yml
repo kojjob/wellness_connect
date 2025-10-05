@@ -24,6 +24,14 @@ admin_user:
   role: 2 # admin
   time_zone: UTC
 
+super_admin_user:
+  email: superadmin@example.com
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password123') %>
+  first_name: Super
+  last_name: Admin
+  role: 3 # super_admin
+  time_zone: UTC
+
 provider_user_two:
   email: provider2@example.com
   encrypted_password: <%= Devise::Encryptor.digest(User, 'password123') %>

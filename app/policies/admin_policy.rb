@@ -8,9 +8,14 @@ class AdminPolicy
     @record = record
   end
 
-  # Only admins can access admin namespace
+  # Only admins and super_admins can access admin namespace
   def admin_user?
-    user&.admin?
+    user&.admin? || user&.super_admin?
+  end
+
+  # Check if user is a super admin
+  def super_admin_user?
+    user&.super_admin?
   end
 
   # Backward compatibility methods

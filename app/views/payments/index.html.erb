@@ -1,263 +1,527 @@
-<div class="max-w-7xl mx-auto px-4 py-8">
-  <!-- Page Header -->
-  <div class="mb-8">
-    <h1 class="text-3xl font-bold text-gray-900 mb-2">Payment History</h1>
-    <p class="text-gray-600">
-      <% if current_user.provider? %>
-        View all payments received for your services
-      <% else %>
-        View all payments made for appointments
-      <% end %>
-    </p>
-  </div>
+<div data-controller="payments" class="min-h-screen bg-gray-50">
+  <%# Hero Section with Dark Gradient Background %>
+  <div class="relative bg-gradient-to-br from-teal-600 via-gray-700 to-teal-800 overflow-hidden">
+    <%# Animated Background Blobs %>
+    <div class="absolute inset-0 overflow-hidden">
+      <div class="absolute -top-40 -right-40 w-80 h-80 bg-teal-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"></div>
+      <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-gray-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-2000"></div>
+      <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-teal-400 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-4000"></div>
+    </div>
 
-  <!-- Filter Section -->
-  <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-    <h2 class="text-lg font-semibold text-gray-900 mb-4">Filter Payments</h2>
-
-    <%= form_with url: payments_path, method: :get, local: true, class: "space-y-4" do |f| %>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <!-- Status Filter -->
-        <div>
-          <%= f.label :status, "Status", class: "block text-sm font-medium text-gray-700 mb-2" %>
-          <%= f.select :status,
-                       options_for_select([
-                         ["All Statuses", ""],
-                         ["Pending", "pending"],
-                         ["Succeeded", "succeeded"],
-                         ["Failed", "failed"],
-                         ["Refunded", "refunded"]
-                       ], params[:status]),
-                       {},
-                       class: "w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" %>
-        </div>
-
-        <!-- Start Date Filter -->
-        <div>
-          <%= f.label :start_date, "From Date", class: "block text-sm font-medium text-gray-700 mb-2" %>
-          <%= f.date_field :start_date,
-                          value: params[:start_date],
-                          class: "w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" %>
-        </div>
-
-        <!-- End Date Filter -->
-        <div>
-          <%= f.label :end_date, "To Date", class: "block text-sm font-medium text-gray-700 mb-2" %>
-          <%= f.date_field :end_date,
-                          value: params[:end_date],
-                          class: "w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" %>
-        </div>
-      </div>
-
-      <!-- Filter Actions -->
-      <div class="flex gap-4">
-        <%= f.submit "Apply Filters", class: "bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg transition duration-200" %>
-        <%= link_to "Clear Filters", payments_path, class: "bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold px-6 py-2 rounded-lg transition duration-200" %>
-      </div>
-    <% end %>
-  </div>
-
-  <!-- Payments Table -->
-  <div class="bg-white rounded-lg shadow-md overflow-hidden">
-    <% if @payments.any? %>
-      <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
-            <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-              <% if current_user.provider? %>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client</th>
-              <% else %>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Provider</th>
-              <% end %>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Service</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Appointment</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-            </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            <% @payments.each do |payment| %>
-              <tr class="hover:bg-gray-50">
-                <!-- Date -->
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  <%= payment.created_at.strftime("%b %d, %Y") %>
-                  <span class="block text-xs text-gray-500"><%= payment.created_at.strftime("%I:%M %p") %></span>
-                </td>
-
-                <!-- Client/Provider Name -->
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  <% if current_user.provider? %>
-                    <%= payment.appointment.patient.full_name %>
-                  <% else %>
-                    <%= payment.appointment.provider.full_name %>
-                  <% end %>
-                </td>
-
-                <!-- Service Name -->
-                <td class="px-6 py-4 text-sm text-gray-600">
-                  <%= truncate(payment.appointment.service.name, length: 40) %>
-                </td>
-
-                <!-- Appointment Date -->
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                  <%= payment.appointment.start_time.strftime("%b %d, %Y") %>
-                  <span class="block text-xs text-gray-500"><%= payment.appointment.start_time.strftime("%I:%M %p") %></span>
-                </td>
-
-                <!-- Amount -->
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                  <%= number_to_currency(payment.amount, unit: "$") %>
-                </td>
-
-                <!-- Status Badge -->
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full
-                    <%= case payment.status
-                        when 'succeeded' then 'bg-green-100 text-green-800'
-                        when 'pending' then 'bg-yellow-100 text-yellow-800'
-                        when 'failed' then 'bg-red-100 text-red-800'
-                        when 'refunded' then 'bg-purple-100 text-purple-800'
-                        else 'bg-gray-100 text-gray-800'
-                        end %>">
-                    <%= payment.status.titleize %>
-                  </span>
-
-                  <% if payment.refunded? && payment.refunded_at.present? %>
-                    <span class="block text-xs text-gray-500 mt-1">
-                      <%= payment.refunded_at.strftime("%b %d, %Y") %>
-                    </span>
-                  <% elsif payment.succeeded? && payment.paid_at.present? %>
-                    <span class="block text-xs text-gray-500 mt-1">
-                      <%= payment.paid_at.strftime("%b %d, %Y") %>
-                    </span>
-                  <% end %>
-                </td>
-
-                <!-- Actions -->
-                <td class="px-6 py-4 whitespace-nowrap text-sm">
-                  <%= link_to "View Details",
-                              appointment_path(payment.appointment),
-                              class: "text-blue-600 hover:text-blue-700 font-medium" %>
-                </td>
-              </tr>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <%# Welcome Message %>
+      <div class="text-center mb-8">
+        <h1 class="text-4xl md:text-5xl font-bold mb-3">
+          <span class="bg-gradient-to-r from-white to-teal-200 bg-clip-text text-transparent">
+            <% if current_user.provider? %>
+              Payment Revenue 💰
+            <% else %>
+              Payment History 💳
             <% end %>
-          </tbody>
-        </table>
+          </span>
+        </h1>
+        <p class="text-teal-100 text-lg">
+          <% if current_user.provider? %>
+            Track your earnings and manage payment records
+          <% else %>
+            View your payment history and manage transactions
+          <% end %>
+        </p>
       </div>
 
-      <!-- Pagination -->
-      <% if @payments.respond_to?(:total_pages) && @payments.total_pages > 1 %>
-        <div class="bg-gray-50 px-6 py-4 border-t border-gray-200">
-          <div class="flex items-center justify-between">
-            <div class="text-sm text-gray-700">
-              Showing
-              <span class="font-medium"><%= @payments.offset_value + 1 %></span>
-              to
-              <span class="font-medium"><%= [@payments.offset_value + @payments.length, @payments.total_count].min %></span>
-              of
-              <span class="font-medium"><%= @payments.total_count %></span>
-              payments
+      <%# Quick Stats Overview %>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <%# Total Spent/Received %>
+        <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300">
+          <div class="flex items-center justify-between mb-2">
+            <p class="text-teal-100 text-sm font-medium">
+              <% if current_user.provider? %>
+                Total Received
+              <% else %>
+                Total Spent
+              <% end %>
+            </p>
+            <div class="w-10 h-10 bg-green-500/20 rounded-full flex items-center justify-center">
+              <svg class="w-5 h-5 text-green-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+          </div>
+          <p class="text-3xl font-bold text-white"><%= number_to_currency(@total_spent, unit: "$") %></p>
+          <p class="text-teal-200 text-xs mt-1"><%= @succeeded_count %> successful transactions</p>
+        </div>
+
+        <%# Pending Payments %>
+        <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300">
+          <div class="flex items-center justify-between mb-2">
+            <p class="text-teal-100 text-sm font-medium">Pending</p>
+            <div class="w-10 h-10 bg-yellow-500/20 rounded-full flex items-center justify-center">
+              <svg class="w-5 h-5 text-yellow-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+          </div>
+          <p class="text-3xl font-bold text-white"><%= number_to_currency(@pending_amount, unit: "$") %></p>
+          <p class="text-teal-200 text-xs mt-1"><%= @pending_count %> pending transactions</p>
+        </div>
+
+        <%# Refunded Amount %>
+        <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300">
+          <div class="flex items-center justify-between mb-2">
+            <p class="text-teal-100 text-sm font-medium">Refunded</p>
+            <div class="w-10 h-10 bg-purple-500/20 rounded-full flex items-center justify-center">
+              <svg class="w-5 h-5 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
+              </svg>
+            </div>
+          </div>
+          <p class="text-3xl font-bold text-white"><%= number_to_currency(@refunded_amount, unit: "$") %></p>
+          <p class="text-teal-200 text-xs mt-1"><%= @refunded_count %> refunded transactions</p>
+        </div>
+
+        <%# Total Transactions %>
+        <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300">
+          <div class="flex items-center justify-between mb-2">
+            <p class="text-teal-100 text-sm font-medium">Total Transactions</p>
+            <div class="w-10 h-10 bg-teal-500/20 rounded-full flex items-center justify-center">
+              <svg class="w-5 h-5 text-teal-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+              </svg>
+            </div>
+          </div>
+          <p class="text-3xl font-bold text-white"><%= @total_payments_count %></p>
+          <p class="text-teal-200 text-xs mt-1">All time</p>
+        </div>
+      </div>
+
+      <%# Quick Action Buttons %>
+      <div class="flex flex-wrap gap-3 justify-center">
+        <button data-action="click->payments#exportCSV" class="bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white font-semibold px-6 py-3 rounded-xl border border-white/20 transition-all duration-300 flex items-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+          Download All Receipts
+        </button>
+        <% unless current_user.provider? %>
+          <%= link_to new_appointment_path, class: "bg-teal-500 hover:bg-teal-600 text-white font-semibold px-6 py-3 rounded-xl transition-all duration-300 flex items-center gap-2 shadow-lg" do %>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+            Book New Appointment
+          <% end %>
+        <% end %>
+        <button data-action="click->payments#contactSupport" class="bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white font-semibold px-6 py-3 rounded-xl border border-white/20 transition-all duration-300 flex items-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"/>
+          </svg>
+          Contact Support
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <%# Main Content Area %>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lg:grid lg:grid-cols-3 lg:gap-8">
+      <%# Main Content (Left - 2/3 width) %>
+      <div class="lg:col-span-2 space-y-6">
+        <%# Advanced Search & Filters Card %>
+        <div class="bg-white rounded-2xl shadow-lg p-6">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-bold text-gray-900 flex items-center gap-2">
+              <svg class="w-6 h-6 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+              </svg>
+              Search & Filter
+            </h2>
+            <button data-action="click->payments#toggleFilters" class="lg:hidden text-teal-600 hover:text-teal-700 font-medium text-sm">
+              Toggle Filters
+            </button>
+          </div>
+
+          <%= form_with url: payments_path, method: :get, data: { turbo_frame: "payments_list", action: "submit->payments#handleFilterSubmit" }, class: "space-y-4" do |f| %>
+            <%# Search Bar %>
+            <div>
+              <%= f.label :search, class: "block text-sm font-medium text-gray-700 mb-2 flex items-center gap-1.5" do %>
+                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+                Search Payments
+              <% end %>
+              <%= f.text_field :search,
+                              value: params[:search],
+                              placeholder: "Search by provider, service, or transaction ID...",
+                              class: "w-full rounded-lg border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 transition-colors",
+                              data: { action: "input->payments#handleSearch" } %>
             </div>
 
-            <div class="flex gap-2">
-              <% if @payments.prev_page %>
-                <%= link_to "Previous",
-                            payments_path(page: @payments.prev_page, status: params[:status], start_date: params[:start_date], end_date: params[:end_date]),
-                            class: "px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50" %>
-              <% else %>
-                <span class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-400 bg-gray-100 cursor-not-allowed">
-                  Previous
-                </span>
-              <% end %>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <%# Status Filter %>
+              <div>
+                <%= f.label :status, class: "block text-sm font-medium text-gray-700 mb-2 flex items-center gap-1.5" do %>
+                  <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                  Status
+                <% end %>
+                <%= f.select :status,
+                            options_for_select([
+                              ["All Statuses", ""],
+                              ["Succeeded", "succeeded"],
+                              ["Pending", "pending"],
+                              ["Failed", "failed"],
+                              ["Refunded", "refunded"]
+                            ], params[:status]),
+                            {},
+                            class: "w-full rounded-lg border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 transition-colors" %>
+              </div>
 
-              <% if @payments.next_page %>
-                <%= link_to "Next",
-                            payments_path(page: @payments.next_page, status: params[:status], start_date: params[:start_date], end_date: params[:end_date]),
-                            class: "px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50" %>
-              <% else %>
-                <span class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-400 bg-gray-100 cursor-not-allowed">
-                  Next
+              <%# Date Range Preset %>
+              <div>
+                <%= f.label :date_range, class: "block text-sm font-medium text-gray-700 mb-2 flex items-center gap-1.5" do %>
+                  <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                  </svg>
+                  Date Range
+                <% end %>
+                <%= f.select :date_range,
+                            options_for_select([
+                              ["All Time", ""],
+                              ["Last 7 Days", "last_7_days"],
+                              ["Last 30 Days", "last_30_days"],
+                              ["Last 3 Months", "last_3_months"],
+                              ["Last Year", "last_year"],
+                              ["Custom Range", "custom"]
+                            ], params[:date_range]),
+                            {},
+                            class: "w-full rounded-lg border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 transition-colors",
+                            data: { action: "change->payments#toggleCustomDateRange" } %>
+              </div>
+
+              <%# Sort By %>
+              <div>
+                <%= f.label :sort, class: "block text-sm font-medium text-gray-700 mb-2 flex items-center gap-1.5" do %>
+                  <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"/>
+                  </svg>
+                  Sort By
+                <% end %>
+                <%= f.select :sort,
+                            options_for_select([
+                              ["Newest First", "newest"],
+                              ["Oldest First", "oldest"],
+                              ["Amount (High to Low)", "amount_high"],
+                              ["Amount (Low to High)", "amount_low"]
+                            ], params[:sort]),
+                            {},
+                            class: "w-full rounded-lg border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 transition-colors" %>
+              </div>
+            </div>
+
+            <%# Custom Date Range (shown when "Custom Range" is selected) %>
+            <div id="custom-date-range" class="<%= 'hidden' unless params[:date_range] == 'custom' %> grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <div>
+                <%= f.label :start_date, "From Date", class: "block text-sm font-medium text-gray-700 mb-2" %>
+                <%= f.date_field :start_date,
+                                value: params[:start_date],
+                                class: "w-full rounded-lg border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500" %>
+              </div>
+              <div>
+                <%= f.label :end_date, "To Date", class: "block text-sm font-medium text-gray-700 mb-2" %>
+                <%= f.date_field :end_date,
+                                value: params[:end_date],
+                                class: "w-full rounded-lg border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500" %>
+              </div>
+            </div>
+
+            <%# Filter Actions %>
+            <div class="flex flex-wrap gap-3">
+              <%= f.submit "Apply Filters", class: "bg-teal-600 hover:bg-teal-700 text-white font-semibold px-6 py-2.5 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg flex items-center gap-2" %>
+              <%= link_to payments_path, class: "bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold px-6 py-2.5 rounded-lg transition-all duration-200 flex items-center gap-2" do %>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+                Clear Filters
+              <% end %>
+              <% if params[:status].present? || params[:date_range].present? || params[:search].present? %>
+                <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-teal-100 text-teal-800">
+                  Filters Active
                 </span>
               <% end %>
+            </div>
+          <% end %>
+        </div>
+
+        <%# Payment History List %>
+        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+          <div class="px-6 py-4 bg-gradient-to-r from-teal-600 to-gray-700 border-b border-gray-200">
+            <h3 class="text-lg font-bold text-white flex items-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+              </svg>
+              Payment History
+              <span class="ml-auto text-sm font-normal text-teal-100">
+                <%= @total_payments_count %> total
+              </span>
+            </h3>
+          </div>
+
+          <% if @payments.any? %>
+            <%# Desktop Table View (hidden on mobile) %>
+            <div class="hidden md:block overflow-x-auto">
+              <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                    <% if current_user.provider? %>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client</th>
+                    <% else %>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Provider</th>
+                    <% end %>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Service</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                  <% @payments.each do |payment| %>
+                    <%= render partial: 'payment_row', locals: { payment: payment } %>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+
+            <%# Mobile Card View (shown on mobile only) %>
+            <div class="md:hidden divide-y divide-gray-200">
+              <% @payments.each do |payment| %>
+                <%= render partial: 'payment_card', locals: { payment: payment } %>
+              <% end %>
+            </div>
+
+            <%# Pagination %>
+            <% if @payments.respond_to?(:total_pages) && @payments.total_pages > 1 %>
+              <div class="bg-gray-50 px-6 py-4 border-t border-gray-200">
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div class="text-sm text-gray-700">
+                    Showing
+                    <span class="font-medium text-teal-600"><%= @payments.offset_value + 1 %></span>
+                    to
+                    <span class="font-medium text-teal-600"><%= [@payments.offset_value + @payments.length, @payments.total_count].min %></span>
+                    of
+                    <span class="font-medium text-teal-600"><%= @payments.total_count %></span>
+                    payments
+                  </div>
+
+                  <div class="flex gap-2">
+                    <% if @payments.prev_page %>
+                      <%= link_to payments_path(page: @payments.prev_page, status: params[:status], date_range: params[:date_range], start_date: params[:start_date], end_date: params[:end_date], search: params[:search], sort: params[:sort]),
+                                  class: "px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors flex items-center gap-1" do %>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                        </svg>
+                        Previous
+                      <% end %>
+                    <% else %>
+                      <span class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-400 bg-gray-100 cursor-not-allowed flex items-center gap-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                        </svg>
+                        Previous
+                      </span>
+                    <% end %>
+
+                    <% if @payments.next_page %>
+                      <%= link_to payments_path(page: @payments.next_page, status: params[:status], date_range: params[:date_range], start_date: params[:start_date], end_date: params[:end_date], search: params[:search], sort: params[:sort]),
+                                  class: "px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors flex items-center gap-1" do %>
+                        Next
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        </svg>
+                      <% end %>
+                    <% else %>
+                      <span class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-400 bg-gray-100 cursor-not-allowed flex items-center gap-1">
+                        Next
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        </svg>
+                      </span>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          <% else %>
+            <%# Empty State %>
+            <div class="text-center py-16 px-6">
+              <div class="bg-gradient-to-br from-teal-100 to-gray-100 rounded-full w-20 h-20 mx-auto flex items-center justify-center mb-6 shadow-inner">
+                <svg class="w-10 h-10 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+
+              <% if params[:status].present? || params[:date_range].present? || params[:search].present? %>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">No payments found</h3>
+                <p class="text-gray-600 mb-6">Try adjusting your search or filter criteria</p>
+                <%= link_to payments_path, class: "inline-flex items-center gap-2 bg-teal-600 hover:bg-teal-700 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg" do %>
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                  </svg>
+                  Clear All Filters
+                <% end %>
+              <% else %>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">
+                  <% if current_user.provider? %>
+                    No payments received yet
+                  <% else %>
+                    No payments made yet
+                  <% end %>
+                </h3>
+                <p class="text-gray-600 mb-6">
+                  <% if current_user.provider? %>
+                    Payments from your appointments will appear here
+                  <% else %>
+                    Your payment history will appear here after booking appointments
+                  <% end %>
+                </p>
+                <% unless current_user.provider? %>
+                  <%= link_to new_appointment_path, class: "inline-flex items-center gap-2 bg-teal-600 hover:bg-teal-700 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg" do %>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                    Book Your First Appointment
+                  <% end %>
+                <% end %>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <%# Sidebar (Right - 1/3 width) %>
+      <div class="lg:col-span-1 space-y-6">
+        <%# Recent Transactions Card %>
+        <div class="bg-white rounded-2xl shadow-lg p-6">
+          <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            Recent Transactions
+          </h3>
+
+          <% if @recent_transactions.any? %>
+            <div class="space-y-3">
+              <% @recent_transactions.each do |payment| %>
+                <div class="flex items-start gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                  <%# Status Icon %>
+                  <div class="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center <%= case payment.status
+                    when 'succeeded' then 'bg-green-100'
+                    when 'pending' then 'bg-yellow-100'
+                    when 'failed' then 'bg-red-100'
+                    when 'refunded' then 'bg-purple-100'
+                    end %>">
+                    <svg class="w-5 h-5 <%= case payment.status
+                      when 'succeeded' then 'text-green-600'
+                      when 'pending' then 'text-yellow-600'
+                      when 'failed' then 'text-red-600'
+                      when 'refunded' then 'text-purple-600'
+                      end %>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <% if payment.succeeded? %>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                      <% elsif payment.pending? %>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                      <% elsif payment.failed? %>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                      <% else %>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
+                      <% end %>
+                    </svg>
+                  </div>
+
+                  <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-gray-900 truncate">
+                      <%= payment.appointment.service.name %>
+                    </p>
+                    <p class="text-xs text-gray-500">
+                      <%= time_ago_in_words(payment.created_at) %> ago
+                    </p>
+                  </div>
+
+                  <div class="text-right">
+                    <p class="text-sm font-bold text-gray-900">
+                      <%= number_to_currency(payment.amount, unit: "$") %>
+                    </p>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+
+            <%= link_to "#", class: "block text-center text-sm text-teal-600 hover:text-teal-700 font-medium mt-4" do %>
+              View All →
+            <% end %>
+          <% else %>
+            <p class="text-sm text-gray-500 text-center py-4">No recent transactions</p>
+          <% end %>
+        </div>
+
+        <%# Monthly Spending Chart %>
+        <% if @monthly_spending.any? %>
+          <div class="bg-white rounded-2xl shadow-lg p-6">
+            <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <svg class="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+              </svg>
+              <% if current_user.provider? %>
+                Revenue Trend
+              <% else %>
+                Spending Trend
+              <% end %>
+            </h3>
+
+            <canvas id="spending-chart" data-payments-target="spendingChart" data-monthly-spending="<%= @monthly_spending.to_json %>"></canvas>
+
+            <div class="mt-4 pt-4 border-t border-gray-200">
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-600">Last 6 months</span>
+                <span class="font-bold text-teal-600">
+                  <%= number_to_currency(@monthly_spending.values.sum, unit: "$") %>
+                </span>
+              </div>
+            </div>
+          </div>
+        <% end %>
+
+        <%# Payment Statistics Summary %>
+        <div class="bg-gradient-to-br from-teal-50 to-gray-50 rounded-2xl shadow-lg p-6 border border-teal-100">
+          <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+            </svg>
+            Quick Stats
+          </h3>
+
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-sm text-gray-600">Success Rate</span>
+              <span class="text-sm font-bold text-green-600">
+                <%= @total_payments_count > 0 ? number_to_percentage((@succeeded_count.to_f / @total_payments_count * 100), precision: 1) : '0%' %>
+              </span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-sm text-gray-600">Avg. Transaction</span>
+              <span class="text-sm font-bold text-gray-900">
+                <%= @succeeded_count > 0 ? number_to_currency(@total_spent / @succeeded_count, unit: "$") : '$0.00' %>
+              </span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-sm text-gray-600">Failed Payments</span>
+              <span class="text-sm font-bold text-red-600">
+                <%= @failed_count %>
+              </span>
             </div>
           </div>
         </div>
-      <% end %>
-    <% else %>
-      <!-- Empty State -->
-      <div class="text-center py-12">
-        <div class="bg-gray-100 rounded-full w-16 h-16 mx-auto flex items-center justify-center mb-4">
-          <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-        </div>
-
-        <% if params[:status].present? || params[:start_date].present? || params[:end_date].present? %>
-          <p class="text-gray-500 mb-2 font-medium">No payments found with current filters</p>
-          <p class="text-gray-400 text-sm mb-4">Try adjusting your filter criteria</p>
-          <%= link_to "Clear Filters", payments_path, class: "text-blue-600 hover:text-blue-700 font-medium" %>
-        <% else %>
-          <p class="text-gray-500 mb-2 font-medium">
-            <% if current_user.provider? %>
-              No payments received yet
-            <% else %>
-              No payments made yet
-            <% end %>
-          </p>
-          <p class="text-gray-400 text-sm">
-            <% if current_user.provider? %>
-              Payments from your appointments will appear here
-            <% else %>
-              Payments for your appointments will appear here
-            <% end %>
-          </p>
-        <% end %>
-      </div>
-    <% end %>
-  </div>
-
-  <!-- Summary Statistics (if payments exist) -->
-  <% if @payments.any? %>
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
-      <!-- Total Payments -->
-      <div class="bg-white rounded-lg shadow-md p-4">
-        <p class="text-sm text-gray-600 mb-1">Total Payments</p>
-        <p class="text-2xl font-bold text-gray-900">
-          <%= @payments.unscope(:limit, :offset).count %>
-        </p>
-      </div>
-
-      <!-- Total Amount -->
-      <div class="bg-white rounded-lg shadow-md p-4">
-        <p class="text-sm text-gray-600 mb-1">
-          <% if current_user.provider? %>
-            Total Received
-          <% else %>
-            Total Paid
-          <% end %>
-        </p>
-        <p class="text-2xl font-bold text-gray-900">
-          <%= number_to_currency(@payments.unscope(:limit, :offset).where(status: :succeeded).sum(:amount), unit: "$") %>
-        </p>
-      </div>
-
-      <!-- Successful Payments -->
-      <div class="bg-white rounded-lg shadow-md p-4">
-        <p class="text-sm text-gray-600 mb-1">Successful</p>
-        <p class="text-2xl font-bold text-green-600">
-          <%= @payments.unscope(:limit, :offset).where(status: :succeeded).count %>
-        </p>
-      </div>
-
-      <!-- Refunded Payments -->
-      <div class="bg-white rounded-lg shadow-md p-4">
-        <p class="text-sm text-gray-600 mb-1">Refunded</p>
-        <p class="text-2xl font-bold text-purple-600">
-          <%= @payments.unscope(:limit, :offset).where(status: :refunded).count %>
-        </p>
       </div>
     </div>
-  <% end %>
+  </div>
 </div>

@@ -8,7 +8,12 @@ class User < ApplicationRecord
   include Analytics
 
   # Enums
-  enum :role, { patient: 0, provider: 1, admin: 2 }, default: :patient
+  # Role hierarchy: patient < provider < admin < super_admin
+  # super_admin: Full system access including user creation and management
+  # admin: Can view and manage content but cannot create users
+  # provider: Can offer services and manage appointments
+  # patient: Can book appointments and access services
+  enum :role, { patient: 0, provider: 1, admin: 2, super_admin: 3 }, default: :patient
 
   # Associations
   has_one :provider_profile, dependent: :destroy

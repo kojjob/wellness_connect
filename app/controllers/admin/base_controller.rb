@@ -7,7 +7,7 @@ module Admin
     private
 
     def require_admin!
-      unless current_user&.admin?
+      unless current_user&.admin? || current_user&.super_admin?
         flash[:alert] = "You are not authorized to perform this action."
         redirect_to root_path
       end
