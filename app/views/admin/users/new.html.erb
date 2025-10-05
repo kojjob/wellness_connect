@@ -1,12 +1,56 @@
-<div class="container mx-auto px-4 py-8">
-  <div class="max-w-2xl mx-auto">
-    <div class="flex justify-between items-center mb-6">
-      <h1 class="text-3xl font-bold">Create New User</h1>
-      <%= link_to "Back to Users", admin_users_path, class: "text-blue-600 hover:text-blue-800" %>
+<% content_for :admin_page_title, "Create New User" %>
+
+<div class="min-h-screen bg-gray-50 -mt-6">
+  <%# Hero Header Section %>
+  <section class="relative bg-gradient-to-br from-teal-600 via-gray-700 to-teal-800 text-white overflow-hidden pt-6 pb-16">
+    <%# Animated Background Blobs %>
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+      <div class="absolute -top-40 -right-40 w-80 h-80 bg-teal-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"></div>
+      <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-gray-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-2000"></div>
+      <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-teal-300 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-4000"></div>
     </div>
 
-    <div class="bg-white shadow-md rounded-lg p-6">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <%# Breadcrumb Navigation %>
+      <nav class="flex items-center space-x-2 text-sm mb-6" aria-label="Breadcrumb">
+        <%= link_to admin_root_path, class: "text-white/80 hover:text-white transition-colors" do %>
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+            <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+          </svg>
+        <% end %>
+        <svg class="w-4 h-4 text-white/60" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+          <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+        </svg>
+        <%= link_to "Users", admin_users_path, class: "text-white/80 hover:text-white transition-colors" %>
+        <svg class="w-4 h-4 text-white/60" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+          <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+        </svg>
+        <span class="text-white font-medium">New User</span>
+      </nav>
+
+      <%# Page Header %>
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h1 class="text-3xl font-bold bg-gradient-to-r from-white to-teal-200 bg-clip-text text-transparent mb-2">
+            Create New User
+          </h1>
+          <p class="text-white/80 text-sm">Add a new user to the WellnessConnect platform</p>
+        </div>
+
+        <%= link_to admin_users_path, class: "inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white rounded-lg transition-all duration-200 border border-white/20" do %>
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+          </svg>
+          Back to Users
+        <% end %>
+      </div>
+    </div>
+  </section>
+
+  <%# Form Container %>
+  <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 pb-12 relative z-10">
+    <div class="bg-white rounded-2xl shadow-xl p-6 md:p-8">
       <%= render "form", user: @user %>
     </div>
-  </div>
+  </section>
 </div>

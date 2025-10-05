@@ -4,6 +4,9 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable, :timeoutable
 
+  # Include Analytics concern for provider metrics
+  include Analytics
+
   # Enums
   enum :role, { patient: 0, provider: 1, admin: 2 }, default: :patient
 
@@ -14,6 +17,7 @@ class User < ApplicationRecord
   has_many :appointments_as_provider, class_name: "Appointment", foreign_key: "provider_id", dependent: :destroy
   has_many :payments_made, class_name: "Payment", foreign_key: "payer_id", dependent: :destroy
   has_many :notifications, dependent: :destroy
+  has_many :reviews, foreign_key: "reviewer_id", dependent: :destroy
 
   # Active Storage
   has_one_attached :avatar

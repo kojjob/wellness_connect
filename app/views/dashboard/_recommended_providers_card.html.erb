@@ -1,0 +1,106 @@
+<%# Recommended Providers Card %>
+<div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+  <div class="bg-gradient-to-r from-teal-50 to-gray-50 px-6 py-4 border-b border-gray-200">
+    <div class="flex items-center">
+      <div class="bg-teal-100 p-2 rounded-lg mr-3">
+        <svg class="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+        </svg>
+      </div>
+      <h2 class="text-lg font-bold text-gray-900">Recommended Providers</h2>
+    </div>
+  </div>
+
+  <div class="p-4">
+    <% if @recommended_providers.any? %>
+      <div class="space-y-4">
+        <% @recommended_providers.each do |provider_profile| %>
+          <div class="group border border-gray-200 rounded-xl p-4 hover:border-teal-300 hover:shadow-md transition-all duration-200 cursor-pointer">
+            <%= link_to provider_profile_path(provider_profile), class: "block" do %>
+              <div class="flex items-start gap-3">
+                <%# Provider Avatar %>
+                <div class="flex-shrink-0">
+                  <% if provider_profile.user.avatar.attached? %>
+                    <%= image_tag provider_profile.user.avatar.variant(resize_to_limit: [48, 48]), 
+                                  alt: "#{provider_profile.user.full_name}",
+                                  class: "w-12 h-12 rounded-full object-cover ring-2 ring-gray-100 group-hover:ring-teal-200 transition-all duration-200",
+                                  loading: "lazy" %>
+                  <% else %>
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-teal-500 to-teal-600 flex items-center justify-center ring-2 ring-gray-100 group-hover:ring-teal-200 transition-all duration-200">
+                      <span class="text-white text-base font-bold">
+                        <%= provider_profile.user.first_name&.first&.upcase %><%= provider_profile.user.last_name&.first&.upcase %>
+                      </span>
+                    </div>
+                  <% end %>
+                </div>
+
+                <%# Provider Info %>
+                <div class="flex-1 min-w-0">
+                  <h3 class="text-sm font-semibold text-gray-900 group-hover:text-teal-600 transition-colors duration-200 mb-0.5">
+                    <%= provider_profile.user.full_name %>
+                  </h3>
+                  <p class="text-xs text-gray-600 mb-2 line-clamp-1"><%= provider_profile.specialty %></p>
+
+                  <%# Rating %>
+                  <% if provider_profile.reviews.any? %>
+                    <div class="flex items-center gap-1 mb-2">
+                      <div class="flex items-center">
+                        <% provider_profile.display_rating.floor.times do %>
+                          <svg class="w-3.5 h-3.5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                          </svg>
+                        <% end %>
+                        <% (5 - provider_profile.display_rating.floor).times do %>
+                          <svg class="w-3.5 h-3.5 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                          </svg>
+                        <% end %>
+                      </div>
+                      <span class="text-xs text-gray-600">
+                        <%= provider_profile.display_rating %> (<%= provider_profile.total_reviews %>)
+                      </span>
+                    </div>
+                  <% else %>
+                    <p class="text-xs text-gray-500 mb-2">New provider</p>
+                  <% end %>
+
+                  <%# Quick Book Button %>
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-medium text-teal-600 group-hover:text-teal-700">View Profile →</span>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+
+      <%# Browse All Link %>
+      <div class="mt-4 pt-4 border-t border-gray-200">
+        <%= link_to providers_path, class: "block text-center text-sm font-medium text-teal-600 hover:text-teal-700 transition-colors duration-200" do %>
+          Browse All Providers
+          <svg class="w-4 h-4 inline-block ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
+        <% end %>
+      </div>
+    <% else %>
+      <%# Empty State %>
+      <div class="text-center py-8">
+        <div class="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-teal-100 to-gray-100 rounded-full mb-3">
+          <svg class="w-6 h-6 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+          </svg>
+        </div>
+        <p class="text-sm text-gray-600 mb-3">No recommendations yet</p>
+        <%= link_to providers_path, class: "inline-flex items-center px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium rounded-lg shadow-sm hover:shadow-md transition-all duration-200" do %>
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+          Browse Providers
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>
+

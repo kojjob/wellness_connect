@@ -8,19 +8,19 @@
 <% end %>
 
 <!-- Hero Section -->
-<section class="relative bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 pt-32 pb-24 overflow-hidden">
+<section class="relative bg-gradient-to-br from-gray-900 via-gray-800 to-teal-900 pt-32 pb-24 overflow-hidden">
   <!-- Animated background elements -->
   <div class="absolute inset-0 overflow-hidden opacity-20">
-    <div class="absolute -top-40 -right-40 w-80 h-80 bg-white rounded-full mix-blend-overlay filter blur-3xl animate-blob"></div>
-    <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-white rounded-full mix-blend-overlay filter blur-3xl animate-blob animation-delay-2000"></div>
-    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-white rounded-full mix-blend-overlay filter blur-3xl animate-blob animation-delay-4000"></div>
+    <div class="absolute -top-40 -right-40 w-80 h-80 bg-teal-500 rounded-full mix-blend-overlay filter blur-3xl animate-blob"></div>
+    <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-teal-500 rounded-full mix-blend-overlay filter blur-3xl animate-blob animation-delay-2000"></div>
+    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-teal-500 rounded-full mix-blend-overlay filter blur-3xl animate-blob animation-delay-4000"></div>
   </div>
 
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
     <div class="text-center max-w-4xl mx-auto">
       <!-- Trust badge -->
       <div class="inline-flex items-center px-4 py-2 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 mb-6">
-        <svg class="w-5 h-5 text-white mr-2" fill="currentColor" viewBox="0 0 20 20">
+        <svg class="w-5 h-5 text-white mr-2" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
           <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
         </svg>
         <span class="text-white font-semibold">Trusted by 50,000+ Users Worldwide</span>
@@ -31,23 +31,23 @@
         <span class="block">Transforming Lives</span>
       </h1>
 
-      <p class="text-xl md:text-2xl text-white/90 leading-relaxed mb-12">
+      <p class="text-xl md:text-2xl text-gray-300 leading-relaxed mb-12">
         We're on a mission to make professional wellness and personal development services accessible to everyone, everywhere.
       </p>
 
-      <!-- Mission stats -->
+      <!-- Mission stats with animated counters -->
       <div class="grid grid-cols-3 gap-8 max-w-3xl mx-auto mt-16">
-        <div class="text-center">
-          <div class="text-4xl font-bold text-white mb-2">50K+</div>
-          <div class="text-white/80 text-sm">Active Users</div>
+        <div class="text-center" data-controller="counter" data-counter-end-value="50" data-counter-suffix-value="K+">
+          <div class="text-4xl font-bold text-white mb-2" data-counter-target="number">0</div>
+          <div class="text-gray-300 text-sm">Active Users</div>
         </div>
-        <div class="text-center">
-          <div class="text-4xl font-bold text-white mb-2">5K+</div>
-          <div class="text-white/80 text-sm">Expert Providers</div>
+        <div class="text-center" data-controller="counter" data-counter-end-value="5" data-counter-suffix-value="K+">
+          <div class="text-4xl font-bold text-white mb-2" data-counter-target="number">0</div>
+          <div class="text-gray-300 text-sm">Expert Providers</div>
         </div>
-        <div class="text-center">
-          <div class="text-4xl font-bold text-white mb-2">150+</div>
-          <div class="text-white/80 text-sm">Countries Served</div>
+        <div class="text-center" data-controller="counter" data-counter-end-value="150" data-counter-suffix-value="+">
+          <div class="text-4xl font-bold text-white mb-2" data-counter-target="number">0</div>
+          <div class="text-gray-300 text-sm">Countries Served</div>
         </div>
       </div>
     </div>
@@ -55,22 +55,23 @@
 </section>
 
 <!-- Our Story Section -->
-<section class="py-24 bg-white">
+<section class="py-24 bg-white" data-controller="scroll-reveal">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="grid md:grid-cols-2 gap-16 items-center">
-      <div>
-        <div class="inline-flex items-center px-4 py-2 rounded-full bg-indigo-100 text-indigo-700 font-semibold mb-6">
-          <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+      <div class="scroll-reveal" data-scroll-reveal-target="element">
+        <div class="inline-flex items-center px-4 py-2 rounded-full bg-teal-100 text-teal-800 font-semibold mb-6">
+          <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
           </svg>
           Our Story
         </div>
 
-        <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-          Building Bridges Between Expertise and Opportunity
+        <h2 class="text-4xl md:text-5xl font-bold mb-6">
+          <span class="gradient-text">Building Bridges Between</span>
+          <span class="block text-gray-900">Expertise and Opportunity</span>
         </h2>
 
-        <div class="space-y-6 text-lg text-gray-600">
+        <div class="space-y-6 text-lg text-gray-700 leading-relaxed">
           <p>
             WellnessConnect was born from a simple observation: talented professionals struggled to find clients, while people seeking expert guidance didn't know where to turn. We saw an opportunity to create something meaningful.
           </p>
@@ -85,92 +86,99 @@
         </div>
       </div>
 
-      <div class="relative">
-        <div class="aspect-w-4 aspect-h-3 bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 rounded-2xl overflow-hidden">
-          <div class="flex items-center justify-center">
-            <svg class="w-32 h-32 text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z"></path>
-            </svg>
-          </div>
+      <div class="relative scroll-reveal" data-scroll-reveal-target="element">
+        <div class="relative aspect-w-4 aspect-h-3 rounded-2xl overflow-hidden shadow-xl transform hover:scale-105 transition-transform duration-500">
+          <!-- Professional collaboration image -->
+          <img
+            src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&h=600&fit=crop&q=80"
+            alt="Diverse team of professionals collaborating together, representing WellnessConnect's mission to bridge expertise and opportunity"
+            class="w-full h-full object-cover"
+            loading="lazy">
+
+          <!-- Subtle overlay gradient for visual consistency -->
+          <div class="absolute inset-0 bg-gradient-to-t from-teal-900/20 via-transparent to-transparent"></div>
         </div>
 
         <!-- Decorative elements -->
-        <div class="absolute -bottom-6 -right-6 w-24 h-24 bg-gradient-to-br from-pink-400 to-purple-500 rounded-full opacity-20 blur-2xl"></div>
-        <div class="absolute -top-6 -left-6 w-32 h-32 bg-gradient-to-br from-indigo-400 to-blue-500 rounded-full opacity-20 blur-2xl"></div>
+        <div class="absolute -bottom-6 -right-6 w-24 h-24 bg-teal-500 rounded-full opacity-20 blur-2xl animate-pulse"></div>
+        <div class="absolute -top-6 -left-6 w-32 h-32 bg-teal-600 rounded-full opacity-20 blur-2xl animate-pulse" style="animation-delay: 1s;"></div>
       </div>
     </div>
   </div>
 </section>
 
 <!-- Values Section -->
-<section class="py-24 bg-gray-50">
+<section class="py-24 bg-gray-50" data-controller="scroll-reveal">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="text-center max-w-3xl mx-auto mb-16">
-      <div class="inline-flex items-center px-4 py-2 rounded-full bg-purple-100 text-purple-700 font-semibold mb-6">
-        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+    <div class="text-center max-w-3xl mx-auto mb-16 scroll-reveal" data-scroll-reveal-target="element">
+      <div class="inline-flex items-center px-4 py-2 rounded-full bg-teal-100 text-teal-800 font-semibold mb-6">
+        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
           <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>
         </svg>
         Our Values
       </div>
 
-      <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-        What We Stand For
+      <h2 class="text-4xl md:text-5xl font-bold mb-6">
+        <span class="gradient-text">What We Stand For</span>
       </h2>
 
-      <p class="text-xl text-gray-600">
+      <p class="text-xl text-gray-600 leading-relaxed">
         Our core principles guide everything we do, from product development to customer support.
       </p>
+
+      <!-- Decorative divider -->
+      <div class="decorative-divider"></div>
     </div>
 
     <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
       <!-- Value 1 -->
-      <div class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow">
-        <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center mb-6">
-          <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+      <div class="bg-white rounded-xl p-8 shadow-lg card-tilt scroll-reveal" data-scroll-reveal-target="element">
+        <div class="w-16 h-16 bg-gradient-to-br from-teal-500 to-teal-600 rounded-xl flex items-center justify-center mb-6 icon-pulse">
+          <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
             <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
           </svg>
         </div>
-        <h3 class="text-xl font-bold text-gray-900 mb-3">Trust & Safety</h3>
-        <p class="text-gray-600">
+        <h3 class="text-xl font-semibold text-gray-900 mb-3">Trust & Safety</h3>
+        <p class="text-gray-600 leading-relaxed">
           Every provider is thoroughly vetted to ensure quality and safety for our community.
         </p>
       </div>
 
       <!-- Value 2 -->
-      <div class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow">
-        <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center mb-6">
-          <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+      <div class="bg-white rounded-xl p-8 shadow-lg card-tilt scroll-reveal" data-scroll-reveal-target="element">
+        <div class="w-16 h-16 bg-gradient-to-br from-teal-600 to-gray-700 rounded-xl flex items-center justify-center mb-6 icon-pulse">
+          <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
             <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"></path>
           </svg>
         </div>
-        <h3 class="text-xl font-bold text-gray-900 mb-3">Inclusivity</h3>
-        <p class="text-gray-600">
+        <h3 class="text-xl font-semibold text-gray-900 mb-3">Inclusivity</h3>
+        <p class="text-gray-600 leading-relaxed">
           We believe everyone deserves access to professional guidance, regardless of background or location.
         </p>
       </div>
 
       <!-- Value 3 -->
-      <div class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow">
-        <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-teal-600 rounded-xl flex items-center justify-center mb-6">
-          <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+      <div class="bg-white rounded-xl p-8 shadow-lg card-tilt scroll-reveal" data-scroll-reveal-target="element">
+        <div class="w-16 h-16 bg-gradient-to-br from-gray-700 to-gray-800 rounded-xl flex items-center justify-center mb-6 icon-pulse">
+          <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
             <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path>
           </svg>
         </div>
-        <h3 class="text-xl font-bold text-gray-900 mb-3">Innovation</h3>
-        <p class="text-gray-600">
+        <h3 class="text-xl font-semibold text-gray-900 mb-3">Innovation</h3>
+        <p class="text-gray-600 leading-relaxed">
           We continuously evolve our platform to provide the best experience for both providers and clients.
         </p>
       </div>
 
       <!-- Value 4 -->
-      <div class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow">
-        <div class="w-16 h-16 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-xl flex items-center justify-center mb-6">
-          <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+      <div class="bg-white rounded-xl p-8 shadow-lg card-tilt scroll-reveal" data-scroll-reveal-target="element">
+        <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-teal-600 rounded-xl flex items-center justify-center mb-6 icon-pulse">
+          <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
             <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd"></path>
           </svg>
         </div>
-        <h3 class="text-xl font-bold text-gray-900 mb-3">Empowerment</h3>
-        <p class="text-gray-600">
+        <h3 class="text-xl font-semibold text-gray-900 mb-3">Empowerment</h3>
+        <p class="text-gray-600 leading-relaxed">
           We empower both providers and clients to achieve their goals through meaningful connections.
         </p>
       </div>
@@ -179,37 +187,43 @@
 </section>
 
 <!-- Team Section -->
-<section class="py-24 bg-white">
+<section class="py-24 bg-white" data-controller="scroll-reveal">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="text-center max-w-3xl mx-auto mb-16">
-      <div class="inline-flex items-center px-4 py-2 rounded-full bg-indigo-100 text-indigo-700 font-semibold mb-6">
-        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+    <div class="text-center max-w-3xl mx-auto mb-16 scroll-reveal" data-scroll-reveal-target="element">
+      <div class="inline-flex items-center px-4 py-2 rounded-full bg-teal-100 text-teal-800 font-semibold mb-6">
+        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
           <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"></path>
         </svg>
         Meet Our Team
       </div>
 
-      <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-        The People Behind WellnessConnect
+      <h2 class="text-4xl md:text-5xl font-bold mb-6">
+        <span class="gradient-text">The People Behind</span>
+        <span class="block text-gray-900">WellnessConnect</span>
       </h2>
 
-      <p class="text-xl text-gray-600">
+      <p class="text-xl text-gray-600 leading-relaxed">
         A passionate team dedicated to transforming how people access professional services.
       </p>
+
+      <!-- Decorative divider -->
+      <div class="decorative-divider"></div>
     </div>
 
     <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
       <!-- Team Member 1 -->
       <div class="text-center group">
         <div class="relative inline-block mb-6">
-          <div class="w-48 h-48 bg-gradient-to-br from-blue-400 to-indigo-600 rounded-2xl flex items-center justify-center text-white text-5xl font-bold group-hover:scale-105 transition-transform shadow-lg">
-            EJ
-          </div>
-          <div class="absolute inset-0 bg-gradient-to-br from-blue-400 to-indigo-600 rounded-2xl opacity-0 group-hover:opacity-20 blur-xl transition-opacity"></div>
+          <img
+            src="https://i.pravatar.cc/192?img=47"
+            alt="Emily Johnson, CEO & Co-Founder of WellnessConnect"
+            class="w-48 h-48 rounded-2xl object-cover group-hover:scale-105 transition-transform duration-200 shadow-lg"
+            loading="lazy">
+          <div class="absolute inset-0 bg-gradient-to-br from-teal-500 to-teal-600 rounded-2xl opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-200"></div>
         </div>
         <h3 class="text-xl font-bold text-gray-900 mb-2">Emily Johnson</h3>
-        <p class="text-indigo-600 font-semibold mb-3">CEO & Co-Founder</p>
-        <p class="text-gray-600 text-sm">
+        <p class="text-teal-600 font-semibold mb-3">CEO & Co-Founder</p>
+        <p class="text-gray-600 text-sm leading-relaxed">
           Former wellness consultant with 15 years of industry experience building meaningful connections.
         </p>
       </div>
@@ -217,14 +231,16 @@
       <!-- Team Member 2 -->
       <div class="text-center group">
         <div class="relative inline-block mb-6">
-          <div class="w-48 h-48 bg-gradient-to-br from-purple-400 to-pink-600 rounded-2xl flex items-center justify-center text-white text-5xl font-bold group-hover:scale-105 transition-transform shadow-lg">
-            MC
-          </div>
-          <div class="absolute inset-0 bg-gradient-to-br from-purple-400 to-pink-600 rounded-2xl opacity-0 group-hover:opacity-20 blur-xl transition-opacity"></div>
+          <img
+            src="https://i.pravatar.cc/192?img=12"
+            alt="Michael Chen, CTO & Co-Founder of WellnessConnect"
+            class="w-48 h-48 rounded-2xl object-cover group-hover:scale-105 transition-transform duration-200 shadow-lg"
+            loading="lazy">
+          <div class="absolute inset-0 bg-gradient-to-br from-teal-600 to-gray-700 rounded-2xl opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-200"></div>
         </div>
         <h3 class="text-xl font-bold text-gray-900 mb-2">Michael Chen</h3>
-        <p class="text-purple-600 font-semibold mb-3">CTO & Co-Founder</p>
-        <p class="text-gray-600 text-sm">
+        <p class="text-teal-600 font-semibold mb-3">CTO & Co-Founder</p>
+        <p class="text-gray-600 text-sm leading-relaxed">
           Tech entrepreneur passionate about building scalable platforms that make a difference.
         </p>
       </div>
@@ -232,14 +248,16 @@
       <!-- Team Member 3 -->
       <div class="text-center group">
         <div class="relative inline-block mb-6">
-          <div class="w-48 h-48 bg-gradient-to-br from-green-400 to-teal-600 rounded-2xl flex items-center justify-center text-white text-5xl font-bold group-hover:scale-105 transition-transform shadow-lg">
-            SP
-          </div>
-          <div class="absolute inset-0 bg-gradient-to-br from-green-400 to-teal-600 rounded-2xl opacity-0 group-hover:opacity-20 blur-xl transition-opacity"></div>
+          <img
+            src="https://i.pravatar.cc/192?img=32"
+            alt="Sarah Patel, Head of Community at WellnessConnect"
+            class="w-48 h-48 rounded-2xl object-cover group-hover:scale-105 transition-transform duration-200 shadow-lg"
+            loading="lazy">
+          <div class="absolute inset-0 bg-gradient-to-br from-gray-700 to-gray-800 rounded-2xl opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-200"></div>
         </div>
         <h3 class="text-xl font-bold text-gray-900 mb-2">Sarah Patel</h3>
-        <p class="text-green-600 font-semibold mb-3">Head of Community</p>
-        <p class="text-gray-600 text-sm">
+        <p class="text-gray-700 font-semibold mb-3">Head of Community</p>
+        <p class="text-gray-600 text-sm leading-relaxed">
           Dedicated to creating supportive environments where both providers and clients thrive.
         </p>
       </div>
@@ -247,14 +265,16 @@
       <!-- Team Member 4 -->
       <div class="text-center group">
         <div class="relative inline-block mb-6">
-          <div class="w-48 h-48 bg-gradient-to-br from-yellow-400 to-orange-600 rounded-2xl flex items-center justify-center text-white text-5xl font-bold group-hover:scale-105 transition-transform shadow-lg">
-            DK
-          </div>
-          <div class="absolute inset-0 bg-gradient-to-br from-yellow-400 to-orange-600 rounded-2xl opacity-0 group-hover:opacity-20 blur-xl transition-opacity"></div>
+          <img
+            src="https://i.pravatar.cc/192?img=15"
+            alt="David Kim, Head of Product at WellnessConnect"
+            class="w-48 h-48 rounded-2xl object-cover group-hover:scale-105 transition-transform duration-200 shadow-lg"
+            loading="lazy">
+          <div class="absolute inset-0 bg-gradient-to-br from-green-500 to-teal-600 rounded-2xl opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-200"></div>
         </div>
         <h3 class="text-xl font-bold text-gray-900 mb-2">David Kim</h3>
-        <p class="text-orange-600 font-semibold mb-3">Head of Product</p>
-        <p class="text-gray-600 text-sm">
+        <p class="text-green-600 font-semibold mb-3">Head of Product</p>
+        <p class="text-gray-600 text-sm leading-relaxed">
           Product visionary focused on creating intuitive experiences that delight users.
         </p>
       </div>
@@ -263,54 +283,58 @@
 </section>
 
 <!-- Contact Section -->
-<section class="py-24 bg-gray-50">
+<section class="py-24 bg-gray-50" data-controller="scroll-reveal">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="text-center max-w-3xl mx-auto mb-16">
-      <div class="inline-flex items-center px-4 py-2 rounded-full bg-pink-100 text-pink-700 font-semibold mb-6">
-        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+    <div class="text-center max-w-3xl mx-auto mb-16 scroll-reveal" data-scroll-reveal-target="element">
+      <div class="inline-flex items-center px-4 py-2 rounded-full bg-teal-100 text-teal-800 font-semibold mb-6">
+        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
           <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
           <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
         </svg>
         Get in Touch
       </div>
 
-      <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-        We'd Love to Hear From You
+      <h2 class="text-4xl md:text-5xl font-bold mb-6">
+        <span class="gradient-text">We'd Love to Hear</span>
+        <span class="block text-gray-900">From You</span>
       </h2>
 
-      <p class="text-xl text-gray-600">
+      <p class="text-xl text-gray-600 leading-relaxed">
         Have questions, feedback, or just want to say hello? Reach out to us using the form below or through any of our contact channels.
       </p>
+
+      <!-- Decorative divider -->
+      <div class="decorative-divider"></div>
     </div>
 
     <div class="grid lg:grid-cols-3 gap-12">
       <!-- Contact Form -->
       <div class="lg:col-span-2">
-        <div class="bg-white rounded-2xl shadow-xl p-8">
+        <div class="bg-white rounded-xl shadow-lg p-8">
           <form class="space-y-6">
             <div class="grid md:grid-cols-2 gap-6">
               <div>
-                <label for="name" class="block text-sm font-semibold text-gray-900 mb-2">Full Name</label>
-                <input type="text" id="name" name="name" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-shadow" placeholder="John Doe" required>
+                <label for="name" class="block text-sm font-semibold text-gray-700 mb-2">Full Name</label>
+                <input type="text" id="name" name="name" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200" placeholder="John Doe" required>
               </div>
 
               <div>
-                <label for="email" class="block text-sm font-semibold text-gray-900 mb-2">Email Address</label>
-                <input type="email" id="email" name="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-shadow" placeholder="john@example.com" required>
+                <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
+                <input type="email" id="email" name="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200" placeholder="john@example.com" required>
               </div>
             </div>
 
             <div>
-              <label for="subject" class="block text-sm font-semibold text-gray-900 mb-2">Subject</label>
-              <input type="text" id="subject" name="subject" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-shadow" placeholder="How can we help?" required>
+              <label for="subject" class="block text-sm font-semibold text-gray-700 mb-2">Subject</label>
+              <input type="text" id="subject" name="subject" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200" placeholder="How can we help?" required>
             </div>
 
             <div>
-              <label for="message" class="block text-sm font-semibold text-gray-900 mb-2">Message</label>
-              <textarea id="message" name="message" rows="6" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-shadow resize-none" placeholder="Tell us more about your inquiry..." required></textarea>
+              <label for="message" class="block text-sm font-semibold text-gray-700 mb-2">Message</label>
+              <textarea id="message" name="message" rows="6" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 resize-none" placeholder="Tell us more about your inquiry..." required></textarea>
             </div>
 
-            <button type="submit" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-4 px-8 rounded-lg font-semibold hover:from-indigo-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl">
+            <button type="submit" class="w-full bg-gradient-to-r from-teal-600 to-gray-700 hover:from-teal-700 hover:to-gray-800 text-white py-3 px-8 rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2">
               Send Message
             </button>
           </form>
@@ -320,84 +344,84 @@
       <!-- Contact Information -->
       <div class="space-y-6">
         <!-- Email -->
-        <div class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow">
+        <div class="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-200">
           <div class="flex items-start">
             <div class="flex-shrink-0">
-              <div class="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
-                <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+              <div class="w-12 h-12 bg-gradient-to-br from-teal-500 to-teal-600 rounded-lg flex items-center justify-center">
+                <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                   <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
                   <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
                 </svg>
               </div>
             </div>
             <div class="ml-4">
-              <h3 class="text-lg font-bold text-gray-900 mb-2">Email Us</h3>
-              <p class="text-gray-600 mb-2">support@wellnessconnect.com</p>
-              <p class="text-sm text-gray-500">We'll respond within 24 hours</p>
+              <h3 class="text-lg font-semibold text-gray-900 mb-2">Email Us</h3>
+              <p class="text-gray-700 mb-2">support@wellnessconnect.com</p>
+              <p class="text-sm text-gray-600">We'll respond within 24 hours</p>
             </div>
           </div>
         </div>
 
         <!-- Phone -->
-        <div class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow">
+        <div class="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-200">
           <div class="flex items-start">
             <div class="flex-shrink-0">
-              <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg flex items-center justify-center">
-                <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+              <div class="w-12 h-12 bg-gradient-to-br from-teal-600 to-gray-700 rounded-lg flex items-center justify-center">
+                <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                   <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path>
                 </svg>
               </div>
             </div>
             <div class="ml-4">
-              <h3 class="text-lg font-bold text-gray-900 mb-2">Call Us</h3>
-              <p class="text-gray-600 mb-2">1-800-WELLNESS</p>
-              <p class="text-sm text-gray-500">Mon-Fri, 9am-6pm EST</p>
+              <h3 class="text-lg font-semibold text-gray-900 mb-2">Call Us</h3>
+              <p class="text-gray-700 mb-2">1-800-WELLNESS</p>
+              <p class="text-sm text-gray-600">Mon-Fri, 9am-6pm EST</p>
             </div>
           </div>
         </div>
 
         <!-- Address -->
-        <div class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow">
+        <div class="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-200">
           <div class="flex items-start">
             <div class="flex-shrink-0">
-              <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-teal-600 rounded-lg flex items-center justify-center">
-                <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+              <div class="w-12 h-12 bg-gradient-to-br from-gray-700 to-gray-800 rounded-lg flex items-center justify-center">
+                <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                   <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
                 </svg>
               </div>
             </div>
             <div class="ml-4">
-              <h3 class="text-lg font-bold text-gray-900 mb-2">Visit Us</h3>
-              <p class="text-gray-600 mb-2">
+              <h3 class="text-lg font-semibold text-gray-900 mb-2">Visit Us</h3>
+              <p class="text-gray-700 mb-2">
                 123 Wellness Street<br>
                 San Francisco, CA 94102
               </p>
-              <p class="text-sm text-gray-500">By appointment only</p>
+              <p class="text-sm text-gray-600">By appointment only</p>
             </div>
           </div>
         </div>
 
         <!-- Social Media -->
-        <div class="bg-white rounded-2xl p-6 shadow-lg">
-          <h3 class="text-lg font-bold text-gray-900 mb-4">Follow Us</h3>
+        <div class="bg-white rounded-xl p-6 shadow-lg">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Follow Us</h3>
           <div class="flex space-x-4">
-            <a href="#" class="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center hover:scale-110 transition-transform">
-              <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+            <a href="#" class="w-12 h-12 bg-gradient-to-br from-teal-500 to-teal-600 rounded-lg flex items-center justify-center hover:scale-110 transition-transform duration-200 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2" aria-label="Follow us on Facebook">
+              <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
               </svg>
             </a>
-            <a href="#" class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg flex items-center justify-center hover:scale-110 transition-transform">
-              <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+            <a href="#" class="w-12 h-12 bg-gradient-to-br from-teal-600 to-gray-700 rounded-lg flex items-center justify-center hover:scale-110 transition-transform duration-200 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2" aria-label="Follow us on Instagram">
+              <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z"/>
               </svg>
             </a>
-            <a href="#" class="w-12 h-12 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-lg flex items-center justify-center hover:scale-110 transition-transform">
-              <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+            <a href="#" class="w-12 h-12 bg-gradient-to-br from-gray-700 to-gray-800 rounded-lg flex items-center justify-center hover:scale-110 transition-transform duration-200 focus:outline-none focus:ring-2 focus:ring-gray-700 focus:ring-offset-2" aria-label="Follow us on Twitter">
+              <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
               </svg>
             </a>
-            <a href="#" class="w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-lg flex items-center justify-center hover:scale-110 transition-transform">
-              <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+            <a href="#" class="w-12 h-12 bg-gradient-to-br from-green-500 to-teal-600 rounded-lg flex items-center justify-center hover:scale-110 transition-transform duration-200 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2" aria-label="Follow us on LinkedIn">
+              <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
               </svg>
             </a>
@@ -409,10 +433,10 @@
 </section>
 
 <!-- Final CTA Section -->
-<section class="relative bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 py-24 overflow-hidden">
+<section class="relative bg-gradient-to-br from-gray-900 via-gray-800 to-teal-900 py-24 overflow-hidden">
   <div class="absolute inset-0 overflow-hidden opacity-20">
-    <div class="absolute -top-40 -right-40 w-80 h-80 bg-white rounded-full mix-blend-overlay filter blur-3xl animate-blob"></div>
-    <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-white rounded-full mix-blend-overlay filter blur-3xl animate-blob animation-delay-2000"></div>
+    <div class="absolute -top-40 -right-40 w-80 h-80 bg-teal-500 rounded-full mix-blend-overlay filter blur-3xl animate-blob"></div>
+    <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-teal-500 rounded-full mix-blend-overlay filter blur-3xl animate-blob animation-delay-2000"></div>
   </div>
 
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
@@ -420,13 +444,13 @@
       Ready to Get Started?
     </h2>
 
-    <p class="text-xl text-white/90 mb-8">
+    <p class="text-xl text-gray-300 mb-8 leading-relaxed">
       Join thousands of professionals and clients already experiencing the benefits of WellnessConnect.
     </p>
 
     <div class="flex flex-col sm:flex-row gap-4 justify-center">
-      <%= link_to "Become a Provider", become_provider_path, class: "bg-white text-indigo-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-50 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl" %>
-      <%= link_to "Find a Provider", root_path, class: "bg-white/10 backdrop-blur-sm border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white/20 transform hover:scale-105 transition-all duration-200" %>
+      <%= link_to "Become a Provider", become_provider_path, class: "bg-white text-teal-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-50 transition-all duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-teal-400 focus:ring-offset-2 focus:ring-offset-gray-900" %>
+      <%= link_to "Find a Provider", root_path, class: "bg-white/10 backdrop-blur-sm border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white/20 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:ring-offset-2 focus:ring-offset-gray-900" %>
     </div>
   </div>
 </section>

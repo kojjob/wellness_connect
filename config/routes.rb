@@ -12,6 +12,11 @@ Rails.application.routes.draw do
   # Provider dashboard
   get "dashboard", to: "dashboard#index", as: :dashboard
 
+  # Provider namespace for provider-specific features
+  namespace :provider do
+    get "analytics", to: "analytics#index", as: :analytics
+  end
+
   # Public provider browsing
   get "providers", to: "provider_profiles#index", as: :providers
 
@@ -61,6 +66,7 @@ Rails.application.routes.draw do
         post :unsuspend
         post :block
         post :unblock
+        delete :remove_avatar
       end
     end
     resources :provider_profiles # Full CRUD for provider profiles

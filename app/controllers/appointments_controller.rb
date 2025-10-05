@@ -59,7 +59,7 @@ class AppointmentsController < ApplicationController
 
       # Check if availability is still available
       if @availability.is_booked?
-        redirect_to new_appointment_path, alert: "This time slot has already been booked. Please choose another time." and return
+        redirect_to new_appointment_path(service_id: params[:appointment][:service_id]), error: "⚠ This time slot has already been booked. Please choose another time." and return
       end
 
       # Save appointment and lock availability
@@ -71,17 +71,24 @@ class AppointmentsController < ApplicationController
         AppointmentMailer.booking_confirmation(@appointment).deliver_later
         AppointmentMailer.provider_booking_notification(@appointment).deliver_later
 
+        # Create detailed success message
+        success_message = "✓ Appointment booked successfully! Your appointment with #{@appointment.provider.full_name} is scheduled for #{@appointment.start_time.strftime('%A, %B %d at %I:%M %p')}. Please complete payment to confirm."
+
         # Redirect to Stripe payment (will be implemented)
-        redirect_to @appointment, notice: "Appointment booked successfully! Please complete payment to confirm."
+        redirect_to @appointment, notice: success_message
       else
+        # Set detailed error message
+        @service = Service.find(params[:appointment][:service_id]) if params[:appointment][:service_id].present?
+        flash.now[:error] = "Unable to book appointment. #{@appointment.errors.full_messages.join(', ')}"
         render :new, status: :unprocessable_entity
       end
     end
   rescue ActiveRecord::RecordNotFound
-    redirect_to new_appointment_path, alert: "Invalid availability slot selected."
+    redirect_to new_appointment_path, error: "⚠ Invalid availability slot selected. Please choose another time slot."
   rescue ActiveRecord::RecordInvalid => e
     @appointment ||= Appointment.new
-    flash.now[:alert] = "Failed to book appointment: #{e.message}"
+    @service = Service.find(params[:appointment][:service_id]) if params[:appointment][:service_id].present?
+    flash.now[:error] = "⚠ Failed to book appointment: #{e.message}"
     render :new, status: :unprocessable_entity
   end
 
