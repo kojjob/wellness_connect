@@ -3,6 +3,37 @@ class PaymentsController < ApplicationController
   before_action :set_appointment, only: [ :create ]
   before_action :authorize_appointment_access, only: [ :create ]
 
+  def index
+    # Build base query based on user role
+    @payments = if current_user.provider?
+      # Providers see payments they've received
+      Payment.joins(:appointment)
+             .where(appointments: { provider_id: current_user.id })
+    else
+      # Patients/clients see payments they've made
+      Payment.where(payer: current_user)
+    end
+
+    # Apply status filter if provided
+    if params[:status].present? && Payment.statuses.keys.include?(params[:status])
+      @payments = @payments.where(status: params[:status])
+    end
+
+    # Apply date range filter if provided
+    if params[:start_date].present?
+      @payments = @payments.where("payments.created_at >= ?", params[:start_date])
+    end
+
+    if params[:end_date].present?
+      @payments = @payments.where("payments.created_at <= ?", params[:end_date])
+    end
+
+    # Order by most recent first and paginate
+    @payments = @payments.includes(:payer, appointment: [:patient, :provider, :service])
+                        .order(created_at: :desc)
+                        .page(params[:page]).per(20)
+  end
+
   def create
     begin
       # Create Stripe Payment Intent

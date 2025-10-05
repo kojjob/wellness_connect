@@ -1,0 +1,263 @@
+<div class="max-w-7xl mx-auto px-4 py-8">
+  <!-- Page Header -->
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900 mb-2">Payment History</h1>
+    <p class="text-gray-600">
+      <% if current_user.provider? %>
+        View all payments received for your services
+      <% else %>
+        View all payments made for appointments
+      <% end %>
+    </p>
+  </div>
+
+  <!-- Filter Section -->
+  <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+    <h2 class="text-lg font-semibold text-gray-900 mb-4">Filter Payments</h2>
+
+    <%= form_with url: payments_path, method: :get, local: true, class: "space-y-4" do |f| %>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Status Filter -->
+        <div>
+          <%= f.label :status, "Status", class: "block text-sm font-medium text-gray-700 mb-2" %>
+          <%= f.select :status,
+                       options_for_select([
+                         ["All Statuses", ""],
+                         ["Pending", "pending"],
+                         ["Succeeded", "succeeded"],
+                         ["Failed", "failed"],
+                         ["Refunded", "refunded"]
+                       ], params[:status]),
+                       {},
+                       class: "w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" %>
+        </div>
+
+        <!-- Start Date Filter -->
+        <div>
+          <%= f.label :start_date, "From Date", class: "block text-sm font-medium text-gray-700 mb-2" %>
+          <%= f.date_field :start_date,
+                          value: params[:start_date],
+                          class: "w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" %>
+        </div>
+
+        <!-- End Date Filter -->
+        <div>
+          <%= f.label :end_date, "To Date", class: "block text-sm font-medium text-gray-700 mb-2" %>
+          <%= f.date_field :end_date,
+                          value: params[:end_date],
+                          class: "w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" %>
+        </div>
+      </div>
+
+      <!-- Filter Actions -->
+      <div class="flex gap-4">
+        <%= f.submit "Apply Filters", class: "bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg transition duration-200" %>
+        <%= link_to "Clear Filters", payments_path, class: "bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold px-6 py-2 rounded-lg transition duration-200" %>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Payments Table -->
+  <div class="bg-white rounded-lg shadow-md overflow-hidden">
+    <% if @payments.any? %>
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+              <% if current_user.provider? %>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client</th>
+              <% else %>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Provider</th>
+              <% end %>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Service</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Appointment</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <% @payments.each do |payment| %>
+              <tr class="hover:bg-gray-50">
+                <!-- Date -->
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <%= payment.created_at.strftime("%b %d, %Y") %>
+                  <span class="block text-xs text-gray-500"><%= payment.created_at.strftime("%I:%M %p") %></span>
+                </td>
+
+                <!-- Client/Provider Name -->
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <% if current_user.provider? %>
+                    <%= payment.appointment.patient.full_name %>
+                  <% else %>
+                    <%= payment.appointment.provider.full_name %>
+                  <% end %>
+                </td>
+
+                <!-- Service Name -->
+                <td class="px-6 py-4 text-sm text-gray-600">
+                  <%= truncate(payment.appointment.service.name, length: 40) %>
+                </td>
+
+                <!-- Appointment Date -->
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                  <%= payment.appointment.start_time.strftime("%b %d, %Y") %>
+                  <span class="block text-xs text-gray-500"><%= payment.appointment.start_time.strftime("%I:%M %p") %></span>
+                </td>
+
+                <!-- Amount -->
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                  <%= number_to_currency(payment.amount, unit: "$") %>
+                </td>
+
+                <!-- Status Badge -->
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full
+                    <%= case payment.status
+                        when 'succeeded' then 'bg-green-100 text-green-800'
+                        when 'pending' then 'bg-yellow-100 text-yellow-800'
+                        when 'failed' then 'bg-red-100 text-red-800'
+                        when 'refunded' then 'bg-purple-100 text-purple-800'
+                        else 'bg-gray-100 text-gray-800'
+                        end %>">
+                    <%= payment.status.titleize %>
+                  </span>
+
+                  <% if payment.refunded? && payment.refunded_at.present? %>
+                    <span class="block text-xs text-gray-500 mt-1">
+                      <%= payment.refunded_at.strftime("%b %d, %Y") %>
+                    </span>
+                  <% elsif payment.succeeded? && payment.paid_at.present? %>
+                    <span class="block text-xs text-gray-500 mt-1">
+                      <%= payment.paid_at.strftime("%b %d, %Y") %>
+                    </span>
+                  <% end %>
+                </td>
+
+                <!-- Actions -->
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                  <%= link_to "View Details",
+                              appointment_path(payment.appointment),
+                              class: "text-blue-600 hover:text-blue-700 font-medium" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <% if @payments.respond_to?(:total_pages) && @payments.total_pages > 1 %>
+        <div class="bg-gray-50 px-6 py-4 border-t border-gray-200">
+          <div class="flex items-center justify-between">
+            <div class="text-sm text-gray-700">
+              Showing
+              <span class="font-medium"><%= @payments.offset_value + 1 %></span>
+              to
+              <span class="font-medium"><%= [@payments.offset_value + @payments.length, @payments.total_count].min %></span>
+              of
+              <span class="font-medium"><%= @payments.total_count %></span>
+              payments
+            </div>
+
+            <div class="flex gap-2">
+              <% if @payments.prev_page %>
+                <%= link_to "Previous",
+                            payments_path(page: @payments.prev_page, status: params[:status], start_date: params[:start_date], end_date: params[:end_date]),
+                            class: "px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50" %>
+              <% else %>
+                <span class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-400 bg-gray-100 cursor-not-allowed">
+                  Previous
+                </span>
+              <% end %>
+
+              <% if @payments.next_page %>
+                <%= link_to "Next",
+                            payments_path(page: @payments.next_page, status: params[:status], start_date: params[:start_date], end_date: params[:end_date]),
+                            class: "px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50" %>
+              <% else %>
+                <span class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-400 bg-gray-100 cursor-not-allowed">
+                  Next
+                </span>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    <% else %>
+      <!-- Empty State -->
+      <div class="text-center py-12">
+        <div class="bg-gray-100 rounded-full w-16 h-16 mx-auto flex items-center justify-center mb-4">
+          <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+
+        <% if params[:status].present? || params[:start_date].present? || params[:end_date].present? %>
+          <p class="text-gray-500 mb-2 font-medium">No payments found with current filters</p>
+          <p class="text-gray-400 text-sm mb-4">Try adjusting your filter criteria</p>
+          <%= link_to "Clear Filters", payments_path, class: "text-blue-600 hover:text-blue-700 font-medium" %>
+        <% else %>
+          <p class="text-gray-500 mb-2 font-medium">
+            <% if current_user.provider? %>
+              No payments received yet
+            <% else %>
+              No payments made yet
+            <% end %>
+          </p>
+          <p class="text-gray-400 text-sm">
+            <% if current_user.provider? %>
+              Payments from your appointments will appear here
+            <% else %>
+              Payments for your appointments will appear here
+            <% end %>
+          </p>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Summary Statistics (if payments exist) -->
+  <% if @payments.any? %>
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
+      <!-- Total Payments -->
+      <div class="bg-white rounded-lg shadow-md p-4">
+        <p class="text-sm text-gray-600 mb-1">Total Payments</p>
+        <p class="text-2xl font-bold text-gray-900">
+          <%= @payments.unscope(:limit, :offset).count %>
+        </p>
+      </div>
+
+      <!-- Total Amount -->
+      <div class="bg-white rounded-lg shadow-md p-4">
+        <p class="text-sm text-gray-600 mb-1">
+          <% if current_user.provider? %>
+            Total Received
+          <% else %>
+            Total Paid
+          <% end %>
+        </p>
+        <p class="text-2xl font-bold text-gray-900">
+          <%= number_to_currency(@payments.unscope(:limit, :offset).where(status: :succeeded).sum(:amount), unit: "$") %>
+        </p>
+      </div>
+
+      <!-- Successful Payments -->
+      <div class="bg-white rounded-lg shadow-md p-4">
+        <p class="text-sm text-gray-600 mb-1">Successful</p>
+        <p class="text-2xl font-bold text-green-600">
+          <%= @payments.unscope(:limit, :offset).where(status: :succeeded).count %>
+        </p>
+      </div>
+
+      <!-- Refunded Payments -->
+      <div class="bg-white rounded-lg shadow-md p-4">
+        <p class="text-sm text-gray-600 mb-1">Refunded</p>
+        <p class="text-2xl font-bold text-purple-600">
+          <%= @payments.unscope(:limit, :offset).where(status: :refunded).count %>
+        </p>
+      </div>
+    </div>
+  <% end %>
+</div>

@@ -99,4 +99,34 @@ Rails.application.configure do
   #
   # Skip DNS rebinding protection for the default health check endpoint.
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+
+  # Content Security Policy (CSP) configuration
+  # Protects against XSS, clickjacking, and other code injection attacks
+  config.content_security_policy do |policy|
+    policy.default_src :self, :https
+    policy.font_src    :self, :https, :data
+    policy.img_src     :self, :https, :data, :blob
+    policy.object_src  :none
+    policy.script_src  :self, :https
+    policy.style_src   :self, :https
+    # Specify URI for violation reports (optional - can be configured later)
+    # policy.report_uri "/csp-violation-report-endpoint"
+
+    # Allow @vite/client for development (if using Vite)
+    # policy.connect_src :self, :https, "http://localhost:3036", "ws://localhost:3036" if Rails.env.development?
+
+    # For Turbo Streams and Action Cable
+    policy.connect_src :self, :https, "wss:"
+
+    # Frame ancestors to prevent clickjacking
+    policy.frame_ancestors :none
+  end
+
+  # Generate session nonces for permitted importmap, inline scripts, and inline styles
+  # This allows specific inline scripts/styles while maintaining CSP protection
+  config.content_security_policy_nonce_generator = ->(request) { request.session.id.to_s }
+  config.content_security_policy_nonce_directives = %w[script-src style-src]
+
+  # Report CSP violations to a specified URI (can be enabled when monitoring endpoint is ready)
+  # config.content_security_policy_report_only = false
 end

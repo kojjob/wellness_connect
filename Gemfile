@@ -34,6 +34,9 @@ gem "kaminari"
 # Payment processing with Stripe
 gem "stripe"
 
+# Rate limiting and request throttling
+gem "rack-attack"
+
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[ windows jruby ]
 

@@ -29,6 +29,24 @@ class DashboardController < ApplicationController
     @total_availability_slots = @provider_profile.availabilities.where(is_booked: false).where("start_time >= ?", Time.current).count
     @appointments = current_user.appointments_as_provider.order(start_time: :desc).limit(10)
 
+    # Revenue statistics
+    @total_earnings = Payment.joins(:appointment)
+                             .where(appointments: { provider_id: current_user.id })
+                             .where(status: :succeeded)
+                             .sum(:amount)
+
+    @earnings_this_month = Payment.joins(:appointment)
+                                  .where(appointments: { provider_id: current_user.id })
+                                  .where(status: :succeeded)
+                                  .where("payments.created_at >= ?", Time.current.beginning_of_month)
+                                  .sum(:amount)
+
+    @recent_payments = Payment.joins(:appointment)
+                              .where(appointments: { provider_id: current_user.id })
+                              .where(status: [ :succeeded, :refunded ])
+                              .order(created_at: :desc)
+                              .limit(5)
+
     render :provider_dashboard
   end
 
