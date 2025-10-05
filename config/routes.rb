@@ -14,6 +14,9 @@ Rails.application.routes.draw do
   get "become-a-provider", to: "pages#become_provider", as: :become_provider
   get "about", to: "pages#about", as: :about
 
+  # Lead capture
+  resources :leads, only: [:create]
+
   resources :provider_profiles do
     resources :services
     resources :availabilities

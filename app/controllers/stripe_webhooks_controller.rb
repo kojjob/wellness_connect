@@ -1,5 +1,6 @@
 class StripeWebhooksController < ApplicationController
-  # Skip CSRF verification for Stripe webhooks
+  # Skip authentication and CSRF verification for Stripe webhooks
+  skip_before_action :authenticate_user!
   skip_before_action :verify_authenticity_token
 
   def create
@@ -102,7 +103,7 @@ class StripeWebhooksController < ApplicationController
 
             # Cancel the appointment
             appointment.update!(
-              status: :cancelled_by_patient,
+              status: :cancelled_by_system,
               cancellation_reason: "Payment failed"
             )
 

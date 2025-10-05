@@ -1,5 +1,5 @@
 class Service < ApplicationRecord
-  belongs_to :provider_profile
+  belongs_to :provider_profile, counter_cache: true
 
   has_many :appointments, dependent: :destroy
 

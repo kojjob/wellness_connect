@@ -9,3 +9,13 @@ appointment_one:
   status: 0
   cancellation_reason:
   video_session_id:
+
+scheduled_appointment:
+  patient: patient_user
+  provider: provider_user
+  service: service_one
+  start_time: <%= 1.day.from_now.change(hour: 9, min: 0) %>
+  end_time: <%= 1.day.from_now.change(hour: 10, min: 0) %>
+  status: payment_pending
+  cancellation_reason:
+  video_session_id:

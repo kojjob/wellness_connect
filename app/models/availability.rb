@@ -1,5 +1,5 @@
 class Availability < ApplicationRecord
-  belongs_to :provider_profile
+  belongs_to :provider_profile, counter_cache: true
 
   # Validations
   validates :start_time, presence: true
