@@ -1,10 +1,18 @@
 <% content_for :title, "WellnessConnect - Connect with Qualified Service Providers" %>
-<% content_for :head do %>
+<parameter name="head do %>
   <meta name="description" content="WellnessConnect connects you with qualified service providers for virtual consultations. Book wellness coaches, business consultants, legal advisors, and more.">
   <meta name="keywords" content="wellness, coaching, consulting, virtual appointments, professional services">
   <meta property="og:title" content="WellnessConnect - Professional Services Marketplace">
   <meta property="og:description" content="Connect with qualified service providers for virtual consultations and professional services.">
   <meta property="og:type" content="website">
+
+  <!-- Structured Data / Schema.org for SEO -->
+  <script type="application/ld+json">
+    <%= organization_schema %>
+  </script>
+  <script type="application/ld+json">
+    <%= website_schema %>
+  </script>
 <% end %>
 
 <div class="w-full">
@@ -77,19 +85,50 @@
             </div>
           </div>
 
-          <!-- Stats -->
-          <div class="grid grid-cols-3 gap-6 max-w-md">
+          <!-- Stats with Animated Counters -->
+          <div class="grid grid-cols-3 gap-6 max-w-md mb-8" data-controller="counter-animation">
             <div>
-              <div class="text-3xl font-bold text-indigo-600">5K+</div>
+              <div class="text-3xl font-bold text-indigo-600"
+                   data-counter-animation-target="number"
+                   data-counter-animation-end-value="5000"
+                   data-counter-animation-suffix-value="+">0</div>
               <div class="text-sm text-gray-600">Providers</div>
             </div>
             <div>
-              <div class="text-3xl font-bold text-indigo-600">50K+</div>
+              <div class="text-3xl font-bold text-indigo-600"
+                   data-counter-animation-target="number"
+                   data-counter-animation-end-value="50000"
+                   data-counter-animation-suffix-value="+">0</div>
               <div class="text-sm text-gray-600">Sessions</div>
             </div>
             <div>
-              <div class="text-3xl font-bold text-indigo-600">4.9</div>
+              <div class="text-3xl font-bold text-indigo-600"
+                   data-counter-animation-target="number"
+                   data-counter-animation-end-value="4.9"
+                   data-counter-animation-decimals-value="1">0</div>
               <div class="text-sm text-gray-600">Avg Rating</div>
+            </div>
+          </div>
+
+          <!-- Trust Badges -->
+          <div class="flex items-center gap-4 flex-wrap opacity-70 hover:opacity-100 transition-opacity">
+            <div class="flex items-center gap-2 px-3 py-2 bg-white rounded-lg shadow-sm border border-gray-200" title="SSL Secure">
+              <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"/>
+              </svg>
+              <span class="text-xs font-semibold text-gray-700">SSL Secure</span>
+            </div>
+            <div class="flex items-center gap-2 px-3 py-2 bg-white rounded-lg shadow-sm border border-gray-200" title="Verified Providers">
+              <svg class="w-5 h-5 text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+              </svg>
+              <span class="text-xs font-semibold text-gray-700">Verified Providers</span>
+            </div>
+            <div class="flex items-center gap-2 px-3 py-2 bg-white rounded-lg shadow-sm border border-gray-200" title="Secure Payments">
+              <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+              </svg>
+              <span class="text-xs font-semibold text-gray-700">Secure Payments</span>
             </div>
           </div>
         </div>
@@ -212,6 +251,40 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
             </svg>
           </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Email Capture Section with Lead Magnet -->
+  <section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-3xl p-8 md:p-12">
+        <div class="max-w-3xl mx-auto text-center">
+          <div class="inline-flex items-center px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full mb-6">
+            <svg class="w-5 h-5 text-white mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+              <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+            </svg>
+            <span class="text-sm font-semibold">Limited Time Offer</span>
+          </div>
+
+          <h3 class="text-3xl md:text-4xl font-bold mb-4">Get 10% Off Your First Session</h3>
+          <p class="text-xl text-indigo-100 mb-8">
+            Join 10,000+ professionals who found the right expert. Plus, get our free
+            <span class="font-semibold text-white">"Ultimate Guide to Choosing the Right Professional"</span>
+          </p>
+
+          <div id="lead-form-wrapper">
+            <%= render 'leads/form', lead: Lead.new %>
+          </div>
+
+          <p class="text-sm text-indigo-200 mt-4 flex items-center justify-center gap-2">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"/>
+            </svg>
+            No spam. Unsubscribe anytime. Your privacy is protected.
+          </p>
         </div>
       </div>
     </div>
@@ -392,6 +465,58 @@
               <div class="bg-white rounded-xl p-4 shadow">
                 <div class="text-2xl font-bold text-purple-600">4.9</div>
                 <div class="text-sm text-gray-600">Average Rating</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 100% Satisfaction Guarantee Section -->
+  <section class="py-16 bg-white">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-3xl p-8 md:p-12">
+        <div class="flex flex-col md:flex-row items-start gap-6">
+          <div class="flex-shrink-0">
+            <div class="w-20 h-20 bg-green-600 rounded-2xl flex items-center justify-center shadow-lg">
+              <svg class="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+              </svg>
+            </div>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">100% Satisfaction Guarantee</h3>
+            <p class="text-lg text-gray-700 mb-6 leading-relaxed">
+              If you're not completely satisfied with your first session, we'll refund you in full or match you with a different provider—no questions asked. Your success is our priority.
+            </p>
+            <div class="grid sm:grid-cols-3 gap-4">
+              <div class="flex items-start gap-2">
+                <svg class="w-6 h-6 text-green-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                </svg>
+                <div>
+                  <div class="font-semibold text-gray-900">Full Refund</div>
+                  <div class="text-sm text-gray-600">Within 24 hours</div>
+                </div>
+              </div>
+              <div class="flex items-start gap-2">
+                <svg class="w-6 h-6 text-green-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                </svg>
+                <div>
+                  <div class="font-semibold text-gray-900">Free Rematch</div>
+                  <div class="text-sm text-gray-600">Different provider</div>
+                </div>
+              </div>
+              <div class="flex items-start gap-2">
+                <svg class="w-6 h-6 text-green-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                </svg>
+                <div>
+                  <div class="font-semibold text-gray-900">No Questions</div>
+                  <div class="text-sm text-gray-600">Simple process</div>
+                </div>
               </div>
             </div>
           </div>
@@ -598,6 +723,102 @@
       </div>
     </div>
   </footer>
+
+  <!-- Sticky CTA Bar (appears on scroll) -->
+  <div class="fixed bottom-0 inset-x-0 bg-white shadow-2xl border-t-2 border-indigo-200 transform translate-y-full transition-transform duration-300 z-50"
+       data-controller="sticky-cta"
+       data-sticky-cta-threshold-value="800">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="text-center sm:text-left">
+        <div class="font-bold text-gray-900 text-lg">Ready to find your perfect professional?</div>
+        <div class="text-sm text-gray-600">5,000+ verified providers • Average response time: 2 hours</div>
+      </div>
+      <div class="flex items-center gap-3">
+        <%= link_to "Browse Providers", providers_path, class: "px-6 py-3 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 transition shadow-lg whitespace-nowrap" %>
+        <button data-action="click->sticky-cta#close" class="text-gray-400 hover:text-gray-600 p-2" aria-label="Close">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Live Activity Feed (bottom-left corner) -->
+  <div class="fixed bottom-6 left-6 z-40 max-w-sm hidden md:block" data-controller="live-activity">
+    <div data-live-activity-target="notification"
+         class="transform translate-x-full opacity-0 transition-all duration-500 ease-out">
+      <!-- Notification content will be injected here -->
+    </div>
+  </div>
+
+  <!-- Exit-Intent Popup -->
+  <div class="hidden fixed inset-0 z-50" data-controller="exit-intent" data-exit-intent-delay-value="5000">
+    <!-- Overlay -->
+    <div class="fixed inset-0 bg-gray-900 opacity-0 transition-opacity duration-300"
+         data-exit-intent-target="overlay"
+         data-action="click->exit-intent#closeOnOverlay"></div>
+
+    <!-- Modal -->
+    <div class="fixed inset-0 flex items-center justify-center p-4">
+      <div class="relative bg-white rounded-3xl shadow-2xl max-w-2xl w-full opacity-0 scale-95 transition-all duration-300 transform"
+           data-exit-intent-target="modal">
+        <!-- Close button -->
+        <button class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 z-10"
+                data-action="click->exit-intent#close"
+                aria-label="Close">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"/>
+          </svg>
+        </button>
+
+        <!-- Content -->
+        <div class="p-8 md:p-12">
+          <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full mb-6">
+              <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+              </svg>
+            </div>
+            <h3 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Wait! Before You Go...</h3>
+            <p class="text-xl text-gray-600 mb-2">Get <span class="font-bold text-indigo-600">15% OFF</span> Your First Session</p>
+            <p class="text-gray-500">Join thousands who've found the perfect professional</p>
+          </div>
+
+          <div class="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl p-6 mb-6">
+            <div class="grid sm:grid-cols-3 gap-4 text-center">
+              <div>
+                <div class="text-3xl font-bold text-indigo-600 mb-1">5,000+</div>
+                <div class="text-sm text-gray-600">Verified Providers</div>
+              </div>
+              <div>
+                <div class="text-3xl font-bold text-indigo-600 mb-1">92%</div>
+                <div class="text-sm text-gray-600">Satisfaction Rate</div>
+              </div>
+              <div>
+                <div class="text-3xl font-bold text-indigo-600 mb-1">2 Hours</div>
+                <div class="text-sm text-gray-600">Avg Response Time</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <%= link_to providers_path, class: "block w-full px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold rounded-xl hover:from-indigo-700 hover:to-purple-700 transition shadow-lg text-center text-lg" do %>
+              Claim My 15% Discount Now
+            <% end %>
+            <button data-action="click->exit-intent#close" class="block w-full px-8 py-3 text-gray-600 hover:text-gray-900 font-semibold text-center">
+              No thanks, I'll pay full price
+            </button>
+          </div>
+
+          <p class="text-xs text-gray-500 text-center mt-6">
+            Limited time offer. Use code <span class="font-mono font-bold">WELCOME15</span> at checkout.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <style>

@@ -1,0 +1,13 @@
+<%= form_with model: lead, url: leads_path, method: :post, id: "lead-form", class: "flex flex-col sm:flex-row gap-3" do |f| %>
+  <%= f.email_field :email, 
+      placeholder: "Enter your email", 
+      required: true,
+      class: "flex-1 px-6 py-4 rounded-xl text-gray-900 text-lg focus:ring-4 focus:ring-white/50 focus:outline-none" %>
+  <%= f.hidden_field :source, value: params[:source] || 'landing_page' %>
+  <%= f.hidden_field :utm_campaign, value: params[:utm_campaign] %>
+  <%= f.hidden_field :utm_source, value: params[:utm_source] %>
+  <%= f.hidden_field :utm_medium, value: params[:utm_medium] %>
+  <%= f.submit "Get My Discount", 
+      class: "px-8 py-4 bg-white text-indigo-600 font-bold rounded-xl hover:bg-gray-100 transition shadow-xl cursor-pointer" %>
+<% end %>
+
