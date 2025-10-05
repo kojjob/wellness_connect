@@ -1,0 +1,109 @@
+<tr class="hover:bg-gray-50 transition-colors">
+  <%# Date %>
+  <td class="px-6 py-4 whitespace-nowrap">
+    <div class="text-sm font-medium text-gray-900">
+      <%= payment.created_at.strftime("%b %d, %Y") %>
+    </div>
+    <div class="text-xs text-gray-500">
+      <%= payment.created_at.strftime("%I:%M %p") %>
+    </div>
+  </td>
+
+  <%# Client/Provider Name with Avatar %>
+  <td class="px-6 py-4 whitespace-nowrap">
+    <div class="flex items-center gap-3">
+      <% user = current_user.provider? ? payment.appointment.patient : payment.appointment.provider %>
+      <% if user.avatar.attached? %>
+        <%= image_tag user.avatar.variant(resize_to_limit: [40, 40]),
+                      alt: user.full_name,
+                      class: "w-10 h-10 rounded-full object-cover ring-2 ring-gray-200" %>
+      <% else %>
+        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-teal-500 to-teal-600 flex items-center justify-center ring-2 ring-gray-200">
+          <span class="text-white text-sm font-semibold">
+            <%= user.full_name.split.map(&:first).join.upcase %>
+          </span>
+        </div>
+      <% end %>
+      <div>
+        <div class="text-sm font-medium text-gray-900">
+          <%= user.full_name %>
+        </div>
+        <% if !current_user.provider? && user.provider_profile %>
+          <div class="text-xs text-gray-500">
+            <%= user.provider_profile.specialty %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </td>
+
+  <%# Service Name %>
+  <td class="px-6 py-4">
+    <div class="text-sm text-gray-900 font-medium">
+      <%= truncate(payment.appointment.service.name, length: 40) %>
+    </div>
+    <div class="text-xs text-gray-500">
+      <%= payment.appointment.start_time.strftime("%b %d, %Y at %I:%M %p") %>
+    </div>
+  </td>
+
+  <%# Amount %>
+  <td class="px-6 py-4 whitespace-nowrap">
+    <div class="text-sm font-bold text-gray-900">
+      <%= number_to_currency(payment.amount, unit: "$") %>
+    </div>
+    <% if payment.stripe_payment_intent_id.present? %>
+      <div class="text-xs text-gray-500 font-mono">
+        <%= truncate(payment.stripe_payment_intent_id, length: 20) %>
+      </div>
+    <% end %>
+  </td>
+
+  <%# Status Badge %>
+  <td class="px-6 py-4 whitespace-nowrap">
+    <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full
+      <%= case payment.status
+          when 'succeeded' then 'bg-green-100 text-green-800'
+          when 'pending' then 'bg-yellow-100 text-yellow-800'
+          when 'failed' then 'bg-red-100 text-red-800'
+          when 'refunded' then 'bg-purple-100 text-purple-800'
+          else 'bg-gray-100 text-gray-800'
+          end %>">
+      <%= payment.status.titleize %>
+    </span>
+
+    <% if payment.refunded? && payment.refunded_at.present? %>
+      <div class="text-xs text-gray-500 mt-1">
+        Refunded: <%= payment.refunded_at.strftime("%b %d, %Y") %>
+      </div>
+    <% elsif payment.succeeded? && payment.paid_at.present? %>
+      <div class="text-xs text-gray-500 mt-1">
+        Paid: <%= payment.paid_at.strftime("%b %d, %Y") %>
+      </div>
+    <% end %>
+  </td>
+
+  <%# Actions %>
+  <td class="px-6 py-4 whitespace-nowrap text-sm">
+    <div class="flex items-center gap-2">
+      <%= link_to appointment_path(payment.appointment),
+                  class: "text-teal-600 hover:text-teal-700 font-medium transition-colors" do %>
+        <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+        </svg>
+        View
+      <% end %>
+
+      <% if payment.succeeded? %>
+        <button data-action="click->payments#downloadReceipt" data-payment-id="<%= payment.id %>" class="text-gray-600 hover:text-gray-700 font-medium transition-colors">
+          <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+          Receipt
+        </button>
+      <% end %>
+    </div>
+  </td>
+</tr>
+
