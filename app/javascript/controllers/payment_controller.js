@@ -101,8 +101,36 @@ export default class extends Controller {
         this.submitButtonTarget.disabled = false
         this.submitButtonTarget.textContent = 'Confirm Booking'
       } else if (paymentIntent.status === 'succeeded') {
-        // Payment succeeded - redirect to dashboard
-        window.location.href = '/dashboard?payment_success=true'
+        // Payment succeeded with Stripe - now confirm with our backend
+        try {
+          const confirmResponse = await fetch(`/payments/${data.payment_id}/confirm`, {
+            method: 'PATCH',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+              'X-CSRF-Token': document.querySelector('[name="csrf-token"]').content
+            },
+            body: JSON.stringify({
+              payment_intent_id: paymentIntent.id
+            })
+          })
+
+          const confirmData = await confirmResponse.json()
+
+          if (!confirmResponse.ok) {
+            throw new Error(confirmData.message || 'Failed to confirm payment')
+          }
+
+          // Payment fully confirmed - redirect to dashboard
+          window.location.href = '/dashboard?payment_success=true'
+        } catch (confirmError) {
+          // Even if backend confirmation fails, the payment succeeded with Stripe
+          // Webhook will eventually sync the status
+          this.showCardError('Payment succeeded but confirmation delayed. Please check your dashboard.')
+          setTimeout(() => {
+            window.location.href = '/dashboard'
+          }, 3000)
+        }
       } else {
         // Payment is processing or requires additional action
         this.showCardError('Payment is being processed. Please check your email for confirmation.')
