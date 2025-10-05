@@ -1,4 +1,6 @@
 <div class="min-h-screen bg-gray-50" data-controller="smooth-scroll">
+  <!-- Cache hero section - changes infrequently (profile updates) -->
+  <% cache [ "provider_hero", @provider_profile ], expires_in: 1.hour do %>
   <!-- Hero/Header Section -->
   <section class="relative bg-gradient-to-br from-indigo-600 via-purple-600 to-indigo-800 text-white overflow-hidden">
     <!-- Decorative background elements -->
@@ -124,6 +126,7 @@
       </svg>
     </div>
   </section>
+  <% end %>
 
   <!-- Navigation Tabs -->
   <div class="sticky top-16 z-40 bg-white border-b border-gray-200 shadow-sm">
