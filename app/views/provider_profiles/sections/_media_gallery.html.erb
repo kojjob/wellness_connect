@@ -1,0 +1,197 @@
+<section id="media" class="bg-white rounded-2xl shadow-lg p-8" data-controller="gallery" data-action="keydown@window->gallery#handleKeydown">
+  <h2 class="text-3xl font-bold text-gray-900 mb-6 flex items-center">
+    <svg class="w-8 h-8 mr-3 text-indigo-600" fill="currentColor" viewBox="0 0 24 24">
+      <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+    </svg>
+    Media Gallery
+  </h2>
+
+  <% if @provider_profile.gallery_images.attached? || @provider_profile.gallery_videos.attached? || @provider_profile.documents.attached? %>
+    <!-- Tabs for different media types -->
+    <div class="mb-6" data-controller="tabs">
+      <div class="border-b border-gray-200">
+        <nav class="-mb-px flex space-x-8" aria-label="Media tabs" role="tablist">
+          <% if @provider_profile.gallery_images.attached? %>
+            <button data-tabs-target="tab" 
+                    data-tab-id="photos"
+                    data-action="click->tabs#selectTab keydown->tabs#handleKeydown"
+                    role="tab"
+                    aria-selected="true"
+                    class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
+              <span class="flex items-center gap-2">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                </svg>
+                Photos (<%= @provider_profile.gallery_images.count %>)
+              </span>
+            </button>
+          <% end %>
+
+          <% if @provider_profile.gallery_videos.attached? %>
+            <button data-tabs-target="tab" 
+                    data-tab-id="videos"
+                    data-action="click->tabs#selectTab keydown->tabs#handleKeydown"
+                    role="tab"
+                    aria-selected="false"
+                    class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
+              <span class="flex items-center gap-2">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
+                </svg>
+                Videos (<%= @provider_profile.gallery_videos.count %>)
+              </span>
+            </button>
+          <% end %>
+
+          <% if @provider_profile.documents.attached? %>
+            <button data-tabs-target="tab" 
+                    data-tab-id="documents"
+                    data-action="click->tabs#selectTab keydown->tabs#handleKeydown"
+                    role="tab"
+                    aria-selected="false"
+                    class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
+              <span class="flex items-center gap-2">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+                </svg>
+                Documents (<%= @provider_profile.documents.count %>)
+              </span>
+            </button>
+          <% end %>
+        </nav>
+      </div>
+
+      <!-- Photos Tab Panel -->
+      <% if @provider_profile.gallery_images.attached? %>
+        <div data-tabs-target="panel" data-tab-id="photos" class="py-6" role="tabpanel" aria-hidden="false">
+          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" data-gallery-target="thumbnails">
+            <% @provider_profile.gallery_images.each_with_index do |image, index| %>
+              <button data-index="<%= index %>"
+                      data-media-type="image"
+                      data-media-src="<%= url_for(image) %>"
+                      data-caption="<%= image.filename %>"
+                      data-action="click->gallery#openLightbox"
+                      class="group relative aspect-square overflow-hidden rounded-lg bg-gray-100 hover:opacity-90 transition cursor-pointer focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                <%= image_tag image, 
+                    class: "w-full h-full object-cover group-hover:scale-105 transition-transform duration-300",
+                    alt: "Gallery image #{index + 1}",
+                    loading: "lazy" %>
+                <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition flex items-center justify-center">
+                  <svg class="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                  </svg>
+                </div>
+              </button>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- Videos Tab Panel -->
+      <% if @provider_profile.gallery_videos.attached? %>
+        <div data-tabs-target="panel" data-tab-id="videos" class="hidden py-6" role="tabpanel" aria-hidden="true">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4" data-gallery-target="thumbnails">
+            <% @provider_profile.gallery_videos.each_with_index do |video, index| %>
+              <div class="relative aspect-video overflow-hidden rounded-lg bg-gray-900">
+                <video controls class="w-full h-full" preload="metadata">
+                  <source src="<%= url_for(video) %>" type="<%= video.content_type %>">
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- Documents Tab Panel -->
+      <% if @provider_profile.documents.attached? %>
+        <div data-tabs-target="panel" data-tab-id="documents" class="hidden py-6" role="tabpanel" aria-hidden="true">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <% @provider_profile.documents.each do |document| %>
+              <div class="flex items-center gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200 hover:border-indigo-300 hover:shadow-md transition">
+                <div class="flex-shrink-0 w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
+                  <svg class="w-6 h-6 text-indigo-600" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+                  </svg>
+                </div>
+                <div class="flex-grow min-w-0">
+                  <h4 class="font-semibold text-gray-900 truncate"><%= document.filename %></h4>
+                  <p class="text-sm text-gray-500"><%= number_to_human_size(document.byte_size) %></p>
+                </div>
+                <%= link_to url_for(document), 
+                    target: "_blank",
+                    class: "flex-shrink-0 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition" do %>
+                  <span class="flex items-center gap-1">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+                    </svg>
+                    Download
+                  </span>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Lightbox Modal -->
+    <div data-gallery-target="lightbox"
+         data-action="click->gallery#closeOnBackdrop"
+         class="hidden fixed inset-0 bg-black bg-opacity-90 z-50 items-center justify-center p-4">
+      <div class="relative max-w-6xl w-full max-h-[90vh] flex items-center justify-center">
+        <!-- Close Button -->
+        <button data-action="click->gallery#closeLightbox"
+                class="absolute top-4 right-4 text-white hover:text-gray-300 z-10 bg-black bg-opacity-50 rounded-full p-2 transition">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+
+        <!-- Previous Button -->
+        <button data-action="click->gallery#previous"
+                class="absolute left-4 text-white hover:text-gray-300 bg-black bg-opacity-50 rounded-full p-3 transition">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+          </svg>
+        </button>
+
+        <!-- Next Button -->
+        <button data-action="click->gallery#next"
+                class="absolute right-4 text-white hover:text-gray-300 bg-black bg-opacity-50 rounded-full p-3 transition">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+          </svg>
+        </button>
+
+        <!-- Media Container -->
+        <div class="w-full h-full flex items-center justify-center">
+          <img data-gallery-target="lightboxImage" 
+               src="" 
+               alt="Gallery image" 
+               class="max-w-full max-h-full object-contain">
+          <video data-gallery-target="lightboxVideo" 
+                 controls 
+                 class="hidden max-w-full max-h-full">
+          </video>
+        </div>
+
+        <!-- Caption -->
+        <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-75 text-white px-6 py-3 rounded-lg">
+          <p data-gallery-target="lightboxCaption" class="text-sm"></p>
+        </div>
+      </div>
+    </div>
+
+  <% else %>
+    <!-- Empty State -->
+    <div class="text-center py-16">
+      <svg class="w-24 h-24 mx-auto text-gray-300 mb-4" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+      </svg>
+      <h3 class="text-xl font-semibold text-gray-600 mb-2">No Media Available</h3>
+      <p class="text-gray-500">This provider hasn't uploaded any photos, videos, or documents yet.</p>
+    </div>
+  <% end %>
+</section>
+
