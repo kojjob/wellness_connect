@@ -35,6 +35,7 @@ class AppointmentsController < ApplicationController
       if @appointment.save
         # Mark availability as booked to prevent double-booking during payment
         availability.update!(is_booked: true)
+<<<<<<< HEAD
 
         begin
           # Create Stripe Payment Intent
@@ -88,6 +89,16 @@ class AppointmentsController < ApplicationController
             format.json { render json: { error: e.message }, status: :unprocessable_entity }
           end
         end
+||||||| 85aa0b8
+        redirect_to dashboard_path, notice: "Appointment successfully booked!"
+=======
+
+        # Send confirmation emails
+        AppointmentMailer.booking_confirmation(@appointment).deliver_later
+        AppointmentMailer.provider_booking_notification(@appointment).deliver_later
+
+        redirect_to dashboard_path, notice: "Appointment successfully booked!"
+>>>>>>> origin/feature/toast-flash-notifications
       else
         @availability = availability
         @provider_profile = availability.provider_profile
@@ -132,9 +143,17 @@ class AppointmentsController < ApplicationController
       )
       availability&.update(is_booked: false)
 
+<<<<<<< HEAD
       # Create notification for the other party
       NotificationService.notify_appointment_cancelled(@appointment, current_user)
 
+||||||| 85aa0b8
+=======
+      # Send cancellation notifications to both patient and provider
+      AppointmentMailer.cancellation_notification(@appointment, @appointment.patient).deliver_later
+      AppointmentMailer.cancellation_notification(@appointment, @appointment.provider).deliver_later
+
+>>>>>>> origin/feature/toast-flash-notifications
       redirect_to dashboard_path, notice: "Appointment cancelled successfully"
     else
       redirect_to dashboard_path, alert: "Failed to cancel appointment"
