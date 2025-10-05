@@ -3,7 +3,7 @@ class ProviderProfilesController < ApplicationController
   before_action :set_provider_profile, only: [ :show, :edit, :update, :destroy ]
 
   def index
-    @provider_profiles = ProviderProfile.includes(:user, :services, :availabilities, :reviews).all
+    @provider_profiles = ProviderProfile.includes(:user, :services, :availabilities).all
 
     # Search by provider name, specialty, or bio
     if params[:search].present?

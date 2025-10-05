@@ -30,8 +30,8 @@ class ProviderProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     # Should display provider information
-    assert_select "div", text: /#{@provider_user.first_name} #{@provider_user.last_name}/
-    assert_select "p", text: /#{@provider_profile.specialty}/
+    assert_select "h3", text: /#{@provider_user.first_name} #{@provider_user.last_name}/
+    assert_select "span", text: /#{@provider_profile.specialty}/
   end
 
   test "should display link to view provider profile" do
@@ -73,7 +73,7 @@ class ProviderProfilesControllerTest < ActionDispatch::IntegrationTest
 
     # Provider details
     assert_select "h1", text: /#{@provider_user.first_name} #{@provider_user.last_name}/
-    assert_select "p", text: /#{@provider_profile.specialty}/
+    assert_select "span", text: /#{@provider_profile.specialty}/
     assert_select "p", text: /#{@provider_profile.bio}/
     assert_select "p", text: /#{@provider_profile.credentials}/
   end
