@@ -5,7 +5,7 @@ class AnalyticsTest < ActiveSupport::TestCase
     @provider = users(:provider_user)
     @patient1 = users(:patient_user)
     @patient2 = users(:patient_user_two)
-    @service = services(:coaching)
+    @service = services(:service_one)
 
     # Create appointments with payments for testing analytics
     @appointment1 = Appointment.create!(
