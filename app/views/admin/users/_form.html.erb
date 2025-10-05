@@ -1,4 +1,4 @@
-<%= form_with(model: [:admin, user], data: { controller: "admin-user-form", action: "submit->admin-user-form#handleSubmit" }, class: "space-y-8") do |form| %>
+<%= form_with(model: [:admin, user], data: { controller: "admin-user-form admin-user-role-form", action: "submit->admin-user-form#handleSubmit" }, class: "space-y-8") do |form| %>
   <%# Error Summary %>
   <% if user.errors.any? %>
     <div class="rounded-xl bg-red-50 border-2 border-red-200 p-6">
@@ -43,7 +43,7 @@
           required: true,
           autofocus: true,
           placeholder: "Enter first name",
-          class: "block w-full rounded-lg border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 transition-colors #{user.errors[:first_name].any? ? 'border-red-500' : ''}" %>
+          class: "py-3 px-4 block w-full rounded-lg border border-teal-500 shadow-sm focus:border-teal-500 focus:ring-teal-500 transition-colors #{user.errors[:first_name].any? ? 'border-red-500' : ''}" %>
         <% if user.errors[:first_name].any? %>
           <p class="mt-1 text-sm text-red-600"><%= user.errors[:first_name].first %></p>
         <% end %>
@@ -57,7 +57,7 @@
         <%= form.text_field :last_name,
           required: true,
           placeholder: "Enter last name",
-          class: "block w-full rounded-lg border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 transition-colors #{user.errors[:last_name].any? ? 'border-red-500' : ''}" %>
+          class: "py-3 px-4 block w-full rounded-lg border border-teal-500 shadow-sm focus:border-teal-500 focus:ring-teal-500 transition-colors #{user.errors[:last_name].any? ? 'border-red-500' : ''}" %>
         <% if user.errors[:last_name].any? %>
           <p class="mt-1 text-sm text-red-600"><%= user.errors[:last_name].first %></p>
         <% end %>
@@ -71,7 +71,7 @@
         <%= form.email_field :email,
           required: true,
           placeholder: "user@example.com",
-          class: "block w-full rounded-lg border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 transition-colors #{user.errors[:email].any? ? 'border-red-500' : ''}" %>
+          class: "py-3 px-4 block w-full rounded-lg border border-teal-500 shadow-sm focus:border-teal-500 focus:ring-teal-500 transition-colors #{user.errors[:email].any? ? 'border-red-500' : ''}" %>
         <% if user.errors[:email].any? %>
           <p class="mt-1 text-sm text-red-600"><%= user.errors[:email].first %></p>
         <% else %>
@@ -87,7 +87,7 @@
         <%= form.time_zone_select :time_zone,
           ActiveSupport::TimeZone.us_zones,
           { default: "UTC" },
-          class: "block w-full rounded-lg border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 transition-colors" %>
+          class: "py-3 px-4 block w-full rounded-lg border border-teal-500 shadow-sm focus:border-teal-500 focus:ring-teal-500 transition-colors" %>
         <p class="mt-1 text-sm text-gray-500">Select the user's local time zone</p>
       </div>
     </div>
@@ -113,11 +113,13 @@
           User.roles.keys.map { |role| [role.titleize, role] },
           {},
           required: true,
-          class: "block w-full rounded-lg border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 transition-colors" %>
+          data: { admin_user_role_form_target: "roleSelect", action: "change->admin-user-role-form#handleRoleChange" },
+          class: " py-3 px-4 block w-full rounded-lg border border-teal-500 shadow-sm focus:border-teal-500 focus:ring-teal-500 transition-colors" %>
         <p class="mt-1 text-sm text-gray-500">
-          <span class="font-medium">Patient:</span> Can book appointments and access services.
-          <span class="font-medium">Provider:</span> Can offer services and manage appointments.
-          <span class="font-medium">Admin:</span> Full system access.
+          <span class="font-medium">Patient:</span> Can book appointments and access services.<br>
+          <span class="font-medium">Provider:</span> Can offer services and manage appointments.<br>
+          <span class="font-medium">Admin:</span> Can view and manage system content.<br>
+          <span class="font-medium">Super Admin:</span> Full system access including user creation and management.
         </p>
       </div>
 
@@ -134,7 +136,7 @@
               minlength: 6,
               placeholder: "Enter password (minimum 6 characters)",
               data: { admin_user_form_target: "passwordInput" },
-              class: "block w-full rounded-lg border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 transition-colors pr-10 #{user.errors[:password].any? ? 'border-red-500' : ''}" %>
+              class: "py-3 px-4 block w-full rounded-lg border border-teal-500 shadow-sm focus:border-teal-500 focus:ring-teal-500 transition-colors pr-10 #{user.errors[:password].any? ? 'border-red-500' : ''}" %>
             <button type="button"
               data-action="click->admin-user-form#togglePassword"
               data-admin-user-form-target="passwordToggle"
@@ -162,7 +164,7 @@
               required: true,
               placeholder: "Re-enter password",
               data: { admin_user_form_target: "passwordConfirmInput" },
-              class: "block w-full rounded-lg border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 transition-colors pr-10 #{user.errors[:password_confirmation].any? ? 'border-red-500' : ''}" %>
+              class: "py-3 px-4 block w-full rounded-lg border border-teal-500 shadow-sm focus:border-teal-500 focus:ring-teal-500 transition-colors pr-10 #{user.errors[:password_confirmation].any? ? 'border-red-500' : ''}" %>
             <button type="button"
               data-action="click->admin-user-form#togglePasswordConfirm"
               data-admin-user-form-target="passwordConfirmToggle"
@@ -178,6 +180,79 @@
           <% end %>
         </div>
       <% end %>
+    </div>
+  </div>
+
+  <%# Role-Specific Fields Section %>
+  <div class="bg-gray-50 rounded-xl p-6 border border-gray-200" data-admin-user-role-form-target="roleSpecificSection" style="display: none;">
+    <h2 class="text-lg font-bold text-gray-900 mb-6 flex items-center">
+      <svg class="w-5 h-5 mr-2 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+      </svg>
+      <span data-admin-user-role-form-target="roleSectionTitle">Role-Specific Information</span>
+    </h2>
+
+    <%# Provider-Specific Fields %>
+    <div data-admin-user-role-form-target="providerFields" style="display: none;">
+      <p class="text-sm text-gray-600 mb-4">
+        <svg class="w-4 h-4 inline mr-1 text-blue-600" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+        </svg>
+        A provider profile will be automatically created for this user. You can complete the full profile details later.
+      </p>
+      <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <p class="text-sm text-blue-800">
+          <span class="font-semibold">Next Steps:</span> After creating this provider account, navigate to the provider profile section to add specialty, bio, credentials, consultation rate, and other professional details.
+        </p>
+      </div>
+    </div>
+
+    <%# Patient-Specific Fields %>
+    <div data-admin-user-role-form-target="patientFields" style="display: none;">
+      <p class="text-sm text-gray-600 mb-4">
+        <svg class="w-4 h-4 inline mr-1 text-blue-600" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+        </svg>
+        A patient profile will be automatically created for this user. Additional health information can be added later.
+      </p>
+      <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <p class="text-sm text-blue-800">
+          <span class="font-semibold">Note:</span> Patient profiles can include health goals, medical history, and other relevant information. These details can be updated after account creation.
+        </p>
+      </div>
+    </div>
+
+    <%# Admin/Super Admin Fields %>
+    <div data-admin-user-role-form-target="adminFields" style="display: none;">
+      <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+        <div class="flex">
+          <svg class="w-5 h-5 text-yellow-600 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+          </svg>
+          <div>
+            <p class="text-sm font-semibold text-yellow-800 mb-1">Administrative Access</p>
+            <p class="text-sm text-yellow-700">
+              This user will have administrative privileges. Admins can view and manage system content but cannot create or delete users.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div data-admin-user-role-form-target="superAdminFields" style="display: none;">
+      <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+        <div class="flex">
+          <svg class="w-5 h-5 text-red-600 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+          </svg>
+          <div>
+            <p class="text-sm font-semibold text-red-800 mb-1">Super Administrator Access</p>
+            <p class="text-sm text-red-700">
+              This user will have full system access including the ability to create, edit, and delete users. Use this role with caution.
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -264,7 +339,7 @@
       <%= link_to "Cancel",
         user.persisted? ? admin_user_path(user) : admin_users_path,
         data: { action: "click->admin-user-form#handleCancel" },
-        class: "flex-1 sm:flex-none inline-flex items-center justify-center px-6 py-3 bg-white hover:bg-gray-50 text-gray-700 font-semibold rounded-lg border-2 border-gray-300 transition-all duration-200" %>
+        class: "flex-1 sm:flex-none inline-flex items-center justify-center px-6 py-3 bg-white hover:bg-gray-50 text-gray-700 font-semibold rounded-lg border-2 border border-teal-500 transition-all duration-200" %>
     </div>
 
     <% if user.persisted? %>

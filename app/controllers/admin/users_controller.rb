@@ -5,10 +5,10 @@ module Admin
     before_action :set_user, only: [ :show, :edit, :update, :destroy, :suspend, :unsuspend, :block, :unblock, :remove_avatar ]
 
     def index
-      authorize User
+      authorize [:admin, User]
 
       # Base query
-      @users = policy_scope(User)
+      @users = policy_scope([:admin, User])
 
       # Search
       if params[:q].present?
@@ -66,19 +66,22 @@ module Admin
     end
 
     def show
-      authorize @user
+      authorize [:admin, @user]
     end
 
     def new
       @user = User.new
-      authorize @user
+      authorize [:admin, @user]
     end
 
     def create
       @user = User.new(user_params)
-      authorize @user
+      authorize [:admin, @user]
 
       if @user.save
+        # Automatically create role-specific profiles
+        create_role_profile(@user)
+
         redirect_to admin_user_path(@user), notice: "User successfully created."
       else
         render :new, status: :unprocessable_entity
@@ -86,18 +89,24 @@ module Admin
     end
 
     def edit
-      authorize @user
+      authorize [:admin, @user]
     end
 
     def update
-      authorize @user
+      authorize [:admin, @user]
 
       # Handle avatar removal if requested
       if params[:user][:remove_avatar] == "1"
         @user.avatar.purge if @user.avatar.attached?
       end
 
+      # Track if role is changing
+      role_changed = @user.role != user_params[:role]
+
       if @user.update(user_params)
+        # Create role-specific profile if role changed
+        create_role_profile(@user) if role_changed
+
         respond_to do |format|
           format.html { redirect_to admin_user_path(@user), notice: "User successfully updated." }
           format.json { render json: { success: true, message: "User successfully updated." } }
@@ -111,37 +120,37 @@ module Admin
     end
 
     def destroy
-      authorize @user
+      authorize [:admin, @user]
       @user.destroy!
       redirect_to admin_users_path, notice: "User successfully deleted."
     end
 
     def suspend
-      authorize @user
+      authorize [:admin, @user]
       @user.suspend!(params[:reason])
       redirect_to admin_user_path(@user), notice: "User successfully suspended."
     end
 
     def unsuspend
-      authorize @user
+      authorize [:admin, @user]
       @user.unsuspend!
       redirect_to admin_user_path(@user), notice: "User successfully unsuspended."
     end
 
     def block
-      authorize @user
+      authorize [:admin, @user]
       @user.block!(params[:reason])
       redirect_to admin_user_path(@user), notice: "User successfully blocked."
     end
 
     def unblock
-      authorize @user
+      authorize [:admin, @user]
       @user.unblock!
       redirect_to admin_user_path(@user), notice: "User successfully unblocked."
     end
 
     def remove_avatar
-      authorize @user
+      authorize [:admin, @user]
 
       if @user.avatar.attached?
         @user.avatar.purge
@@ -159,6 +168,28 @@ module Admin
 
     def user_params
       params.require(:user).permit(:first_name, :last_name, :email, :password, :password_confirmation, :role, :avatar)
+    end
+
+    # Create role-specific profile for provider or patient users
+    def create_role_profile(user)
+      case user.role
+      when "provider"
+        # Create provider profile with default values
+        # Full profile details can be added later through the provider profile interface
+        user.create_provider_profile!(
+          specialty: "To be determined",
+          bio: "Profile to be completed",
+          credentials: "To be added",
+          consultation_rate: 0.0
+        ) unless user.provider_profile.present?
+      when "patient"
+        # Create patient profile
+        # Additional health information can be added later
+        user.create_patient_profile! unless user.patient_profile.present?
+      end
+    rescue ActiveRecord::RecordInvalid => e
+      # Log the error but don't fail the user creation
+      Rails.logger.error("Failed to create profile for user #{user.id}: #{e.message}")
     end
   end
 end
