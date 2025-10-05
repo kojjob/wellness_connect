@@ -7,6 +7,10 @@ class AnalyticsTest < ActiveSupport::TestCase
     @patient2 = users(:patient_user_two)
     @service = services(:service_one)
 
+    # Clean up existing appointments and payments for clean test data
+    @provider.appointments_as_provider.destroy_all
+    Payment.where(payer: [@patient1, @patient2]).destroy_all
+
     # Create appointments with payments for testing analytics
     @appointment1 = Appointment.create!(
       patient: @patient1,
