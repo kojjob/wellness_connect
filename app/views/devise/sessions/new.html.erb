@@ -113,7 +113,7 @@
                     autocomplete: "email",
                     placeholder: "you@example.com",
                     class: "block w-full pl-12 pr-4 py-3.5 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition text-base",
-                    aria_label: "Email address" %>
+                    aria: { label: "Email address" } %>
               </div>
             </div>
 
@@ -131,7 +131,7 @@
                     placeholder: "Enter your password",
                     data: { password_target: "input" },
                     class: "block w-full pl-12 pr-12 py-3.5 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition text-base",
-                    aria_label: "Password" %>
+                    aria: { label: "Password" } %>
                 <button type="button"
                         data-password-target="toggle"
                         data-action="click->password#toggle"
@@ -149,7 +149,7 @@
             <div class="flex items-center justify-between">
               <% if devise_mapping.rememberable? %>
                 <div class="flex items-center">
-                  <%= f.check_box :remember_me, class: "h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded cursor-pointer", id: "remember_me" %>
+                  <%= f.check_box :remember_me, class: "h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded cursor-pointer" %>
                   <%= f.label :remember_me, "Remember me", class: "ml-2 block text-sm text-gray-700 cursor-pointer" %>
                 </div>
               <% end %>

@@ -1,0 +1,5 @@
+<%# Turbo Stream template for adding flash messages dynamically
+    Params: type (symbol), message (string) %>
+<%= turbo_stream.append "flash-container" do %>
+  <%= render partial: "shared/toast", locals: { type: type, message: message } %>
+<% end %>

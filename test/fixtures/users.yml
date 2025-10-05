@@ -39,3 +39,11 @@ software_engineer_provider:
   last_name: Chen
   role: 1 # provider
   time_zone: America/Los_Angeles
+
+patient_user_two:
+  email: patient2@example.com
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password123') %>
+  first_name: Alice
+  last_name: Williams
+  role: 0 # patient
+  time_zone: America/Denver

@@ -12,6 +12,7 @@ class Appointment < ApplicationRecord
     completed: 1,
     cancelled_by_patient: 2,
     cancelled_by_provider: 3,
-    no_show: 4
-  }, default: :scheduled
+    no_show: 4,
+    payment_pending: 5
+  }, default: :payment_pending
 end
