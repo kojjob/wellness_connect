@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_10_05_022750) do
+ActiveRecord::Schema[8.1].define(version: 2025_10_05_040519) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -168,6 +168,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_05_022750) do
   end
 
   create_table "users", force: :cascade do |t|
+    t.datetime "blocked_at"
     t.datetime "created_at", null: false
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -177,10 +178,14 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_05_022750) do
     t.datetime "reset_password_sent_at"
     t.string "reset_password_token"
     t.integer "role", default: 0, null: false
+    t.text "status_reason"
+    t.datetime "suspended_at"
     t.string "time_zone", default: "UTC"
     t.datetime "updated_at", null: false
+    t.index ["blocked_at"], name: "index_users_on_blocked_at"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+    t.index ["suspended_at"], name: "index_users_on_suspended_at"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
