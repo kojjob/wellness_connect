@@ -63,7 +63,7 @@ Rails.application.routes.draw do
         post :unblock
       end
     end
-    resources :provider_profiles, only: [ :index, :show, :edit, :update ]
+    resources :provider_profiles # Full CRUD for provider profiles
     resources :appointments, only: [ :index, :show ]
     resources :payments, only: [ :index, :show ]
   end

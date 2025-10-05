@@ -32,6 +32,14 @@
       <h2 class="text-lg font-semibold text-gray-900">All Providers</h2>
       <p class="text-sm text-gray-500 mt-1">Total: <%= @provider_profiles.total_count %> providers</p>
     </div>
+    <div>
+      <%= link_to new_admin_provider_profile_path, class: "inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium" do %>
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+        </svg>
+        Create Provider Profile
+      <% end %>
+    </div>
   </div>
 
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">

@@ -1,0 +1,131 @@
+<% content_for :admin_page_title, "Create Provider Profile" %>
+
+<!-- Back Button -->
+<div class="mb-6">
+  <%= link_to admin_provider_profiles_path, class: "inline-flex items-center text-gray-600 hover:text-gray-900" do %>
+    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+    </svg>
+    Back to Provider Profiles
+  <% end %>
+</div>
+
+<!-- Create Form -->
+<div class="max-w-3xl">
+  <div class="bg-white rounded-lg shadow overflow-hidden">
+    <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+      <h2 class="text-lg font-semibold text-gray-900">Create Provider Profile</h2>
+      <p class="text-sm text-gray-600 mt-1">Create a new provider profile for a user</p>
+    </div>
+
+    <%= form_with model: @provider_profile, url: admin_provider_profiles_path, method: :post, class: "px-6 py-6" do |f| %>
+      <!-- Error Messages -->
+      <% if @provider_profile.errors.any? %>
+        <div class="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded-md">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+              </svg>
+            </div>
+            <div class="ml-3">
+              <h3 class="text-sm font-medium text-red-800">
+                <%= pluralize(@provider_profile.errors.count, "error") %> prohibited this provider profile from being saved:
+              </h3>
+              <ul class="mt-2 text-sm text-red-700 list-disc list-inside">
+                <% @provider_profile.errors.full_messages.each do |message| %>
+                  <li><%= message %></li>
+                <% end %>
+              </ul>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- Information Notice -->
+      <% if @available_providers.empty? %>
+        <div class="mb-6 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-md">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+              </svg>
+            </div>
+            <div class="ml-3">
+              <p class="text-sm text-yellow-700">
+                <strong>No available providers:</strong> All provider users already have profiles. Please create a new provider user first.
+              </p>
+            </div>
+          </div>
+        </div>
+      <% else %>
+        <div class="mb-6 p-4 bg-indigo-50 border-l-4 border-indigo-400 rounded-md">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-indigo-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+              </svg>
+            </div>
+            <div class="ml-3">
+              <p class="text-sm text-indigo-700">
+                Select a provider user and complete their professional profile information.
+              </p>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- Form Fields -->
+      <div class="space-y-6">
+        <!-- Provider Selection -->
+        <div>
+          <%= f.label :user_id, "Select Provider User", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= f.select :user_id,
+                options_for_select(@available_providers.map { |u| ["#{u.full_name} (#{u.email})", u.id] }),
+                { prompt: "Choose a provider user..." },
+                class: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent",
+                required: true,
+                disabled: @available_providers.empty? %>
+          <p class="mt-1 text-sm text-gray-500">Select a user with provider role who doesn't have a profile yet</p>
+        </div>
+
+        <!-- Specialty -->
+        <div>
+          <%= f.label :specialty, "Specialty", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= f.text_field :specialty, class: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent", required: true, placeholder: "e.g., Business Coaching, Legal Consultation", disabled: @available_providers.empty? %>
+          <p class="mt-1 text-sm text-gray-500">Professional area of expertise</p>
+        </div>
+
+        <!-- Credentials -->
+        <div>
+          <%= f.label :credentials, "Credentials", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= f.text_field :credentials, class: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent", placeholder: "e.g., MBA, Certified Business Coach, 15 years experience", disabled: @available_providers.empty? %>
+          <p class="mt-1 text-sm text-gray-500">Certifications, licenses, degrees, and relevant experience</p>
+        </div>
+
+        <!-- Consultation Rate -->
+        <div>
+          <%= f.label :consultation_rate, "Consultation Rate (per hour)", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">$</span>
+            <%= f.number_field :consultation_rate, step: 0.01, min: 0, class: "w-full pl-7 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent", placeholder: "150.00", disabled: @available_providers.empty? %>
+          </div>
+          <p class="mt-1 text-sm text-gray-500">Default hourly rate for consultations</p>
+        </div>
+
+        <!-- Bio -->
+        <div>
+          <%= f.label :bio, "Professional Bio", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= f.text_area :bio, rows: 6, class: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent", placeholder: "Share professional background, approach, and what makes services unique...", disabled: @available_providers.empty? %>
+          <p class="mt-1 text-sm text-gray-500">Professional background and service approach</p>
+        </div>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="flex items-center justify-end gap-4 mt-8 pt-6 border-t border-gray-200">
+        <%= link_to "Cancel", admin_provider_profiles_path, class: "px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md font-medium" %>
+        <%= f.submit "Create Profile", class: "px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium #{'opacity-50 cursor-not-allowed' if @available_providers.empty?}", disabled: @available_providers.empty? %>
+      </div>
+    <% end %>
+  </div>
+</div>
