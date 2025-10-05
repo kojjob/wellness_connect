@@ -1,0 +1,200 @@
+<% content_for :admin_page_title, "Provider Profile Details" %>
+
+<!-- Back Button -->
+<div class="mb-6">
+  <%= link_to admin_provider_profiles_path, class: "inline-flex items-center text-gray-600 hover:text-gray-900" do %>
+    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+    </svg>
+    Back to Providers
+  <% end %>
+</div>
+
+<!-- Provider Profile Header -->
+<div class="bg-white rounded-lg shadow overflow-hidden mb-6">
+  <div class="px-6 py-4 bg-gradient-to-r from-purple-500 to-indigo-600">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center">
+        <div class="w-20 h-20 rounded-full bg-white text-purple-600 flex items-center justify-center text-3xl font-bold">
+          <%= @provider_profile.user.first_name.first.upcase %>
+        </div>
+        <div class="ml-4 text-white">
+          <h2 class="text-3xl font-bold"><%= @provider_profile.user.full_name %></h2>
+          <p class="text-lg text-purple-100"><%= @provider_profile.specialty %></p>
+          <p class="text-sm text-purple-200 mt-1"><%= @provider_profile.user.email %></p>
+        </div>
+      </div>
+      <div>
+        <%= link_to "Edit Profile", edit_admin_provider_profile_path(@provider_profile), class: "px-4 py-2 bg-white text-indigo-600 rounded-md hover:bg-indigo-50 font-medium" %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Profile Statistics -->
+  <div class="px-6 py-6 border-b border-gray-200">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div class="text-center">
+        <p class="text-3xl font-bold text-gray-900"><%= @provider_profile.services.count %></p>
+        <p class="text-sm text-gray-500 mt-1">Active Services</p>
+      </div>
+      <div class="text-center">
+        <p class="text-3xl font-bold text-gray-900"><%= @provider_profile.total_reviews %></p>
+        <p class="text-sm text-gray-500 mt-1">Total Reviews</p>
+      </div>
+      <div class="text-center">
+        <p class="text-3xl font-bold text-gray-900"><%= @provider_profile.display_rating %></p>
+        <p class="text-sm text-gray-500 mt-1">Average Rating</p>
+      </div>
+      <div class="text-center">
+        <p class="text-3xl font-bold text-gray-900"><%= @appointments.count %></p>
+        <p class="text-sm text-gray-500 mt-1">Total Appointments</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Profile Information -->
+  <div class="px-6 py-6">
+    <h3 class="text-lg font-semibold text-gray-900 mb-4">Profile Information</h3>
+    <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+      <div>
+        <dt class="text-sm font-medium text-gray-500">Specialty</dt>
+        <dd class="mt-1 text-sm text-gray-900"><%= @provider_profile.specialty %></dd>
+      </div>
+      <div>
+        <dt class="text-sm font-medium text-gray-500">Credentials</dt>
+        <dd class="mt-1 text-sm text-gray-900"><%= @provider_profile.credentials || "Not specified" %></dd>
+      </div>
+      <div class="md:col-span-2">
+        <dt class="text-sm font-medium text-gray-500">Bio</dt>
+        <dd class="mt-1 text-sm text-gray-900"><%= @provider_profile.bio || "No bio provided" %></dd>
+      </div>
+      <div>
+        <dt class="text-sm font-medium text-gray-500">Profile Created</dt>
+        <dd class="mt-1 text-sm text-gray-900"><%= @provider_profile.created_at.strftime("%B %d, %Y at %I:%M %p") %></dd>
+      </div>
+      <div>
+        <dt class="text-sm font-medium text-gray-500">Last Updated</dt>
+        <dd class="mt-1 text-sm text-gray-900"><%= @provider_profile.updated_at.strftime("%B %d, %Y at %I:%M %p") %></dd>
+      </div>
+    </dl>
+  </div>
+</div>
+
+<!-- Services Section -->
+<div class="bg-white rounded-lg shadow overflow-hidden mb-6">
+  <div class="px-6 py-4 border-b border-gray-200">
+    <h3 class="text-lg font-semibold text-gray-900">Services Offered</h3>
+  </div>
+  <% if @services.any? %>
+    <div class="divide-y divide-gray-200">
+      <% @services.each do |service| %>
+        <div class="px-6 py-4 hover:bg-gray-50 transition">
+          <div class="flex items-start justify-between">
+            <div class="flex-1">
+              <h4 class="text-md font-medium text-gray-900"><%= service.name %></h4>
+              <p class="text-sm text-gray-600 mt-1"><%= service.description %></p>
+              <div class="flex gap-4 mt-2 text-sm text-gray-500">
+                <span>Duration: <%= service.duration_minutes %> min</span>
+                <span>Price: $<%= number_with_precision(service.price, precision: 2) %></span>
+              </div>
+            </div>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <%= service.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' %>">
+              <%= service.is_active ? "Active" : "Inactive" %>
+            </span>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="px-6 py-8 text-center text-gray-500">
+      No services added yet
+    </div>
+  <% end %>
+</div>
+
+<!-- Recent Reviews -->
+<div class="bg-white rounded-lg shadow overflow-hidden mb-6">
+  <div class="px-6 py-4 border-b border-gray-200">
+    <h3 class="text-lg font-semibold text-gray-900">Recent Reviews</h3>
+  </div>
+  <% if @reviews.any? %>
+    <div class="divide-y divide-gray-200">
+      <% @reviews.each do |review| %>
+        <div class="px-6 py-4">
+          <div class="flex items-start justify-between">
+            <div class="flex-1">
+              <div class="flex items-center gap-2">
+                <p class="font-medium text-gray-900"><%= review.reviewer.full_name %></p>
+                <div class="flex">
+                  <% review.rating.times do %>
+                    <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                    </svg>
+                  <% end %>
+                </div>
+              </div>
+              <p class="text-sm text-gray-600 mt-2"><%= review.comment %></p>
+              <p class="text-xs text-gray-500 mt-2"><%= time_ago_in_words(review.created_at) %> ago</p>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="px-6 py-8 text-center text-gray-500">
+      No reviews yet
+    </div>
+  <% end %>
+</div>
+
+<!-- Recent Appointments -->
+<div class="bg-white rounded-lg shadow overflow-hidden">
+  <div class="px-6 py-4 border-b border-gray-200">
+    <h3 class="text-lg font-semibold text-gray-900">Recent Appointments</h3>
+  </div>
+  <% if @appointments.any? %>
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Patient</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Service</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date & Time</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <% @appointments.each do |appointment| %>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm font-medium text-gray-900"><%= appointment.patient.full_name %></div>
+                <div class="text-sm text-gray-500"><%= appointment.patient.email %></div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <%= appointment.service.name %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <%= appointment.start_time.strftime("%b %d, %Y %I:%M %p") %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                  <%= case appointment.status
+                      when 'scheduled' then 'bg-blue-100 text-blue-800'
+                      when 'completed' then 'bg-green-100 text-green-800'
+                      when 'cancelled_by_patient', 'cancelled_by_provider' then 'bg-red-100 text-red-800'
+                      else 'bg-gray-100 text-gray-800'
+                      end %>">
+                  <%= appointment.status.humanize %>
+                </span>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="px-6 py-8 text-center text-gray-500">
+      No appointments yet
+    </div>
+  <% end %>
+</div>

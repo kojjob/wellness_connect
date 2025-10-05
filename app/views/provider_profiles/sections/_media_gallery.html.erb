@@ -1,0 +1,181 @@
+<section id="media" class="bg-white rounded-2xl shadow-lg p-8 scroll-mt-24" data-controller="media-gallery">
+  <h2 class="text-3xl font-bold text-gray-900 mb-6 flex items-center">
+    <svg class="w-8 h-8 mr-3 text-indigo-600" fill="currentColor" viewBox="0 0 24 24">
+      <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+    </svg>
+    Media Gallery
+  </h2>
+
+  <!-- Gallery Grid -->
+  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+    <% media_index = 0 %>
+    
+    <!-- Images -->
+    <% if provider_profile.gallery_images.attached? %>
+      <% provider_profile.gallery_images.each do |image| %>
+        <div class="group relative aspect-square rounded-xl overflow-hidden cursor-pointer transform transition hover:scale-105 hover:shadow-xl"
+             data-index="<%= media_index %>"
+             data-type="image"
+             data-url="<%= url_for(image) %>"
+             data-caption="<%= provider_profile.full_name %> - Image <%= media_index + 1 %>"
+             data-action="click->media-gallery#openLightbox">
+          <%= image_tag image, 
+              alt: "Gallery image #{media_index + 1}",
+              class: "w-full h-full object-cover" %>
+          <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition flex items-center justify-center">
+            <svg class="w-12 h-12 text-white opacity-0 group-hover:opacity-100 transition" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+            </svg>
+          </div>
+          <div class="absolute top-2 right-2 bg-indigo-600 text-white px-2 py-1 rounded-full text-xs font-medium">
+            Photo
+          </div>
+        </div>
+        <% media_index += 1 %>
+      <% end %>
+    <% end %>
+
+    <!-- Videos -->
+    <% if provider_profile.gallery_videos.attached? %>
+      <% provider_profile.gallery_videos.each do |video| %>
+        <div class="group relative aspect-square rounded-xl overflow-hidden cursor-pointer transform transition hover:scale-105 hover:shadow-xl bg-gray-900"
+             data-index="<%= media_index %>"
+             data-type="video"
+             data-url="<%= url_for(video) %>"
+             data-caption="<%= provider_profile.full_name %> - Video <%= media_index + 1 %>"
+             data-action="click->media-gallery#openLightbox">
+          <video class="w-full h-full object-cover">
+            <source src="<%= url_for(video) %>" type="<%= video.content_type %>">
+          </video>
+          <div class="absolute inset-0 bg-black bg-opacity-30 group-hover:bg-opacity-50 transition flex items-center justify-center">
+            <svg class="w-16 h-16 text-white" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M8 5v14l11-7z"/>
+            </svg>
+          </div>
+          <div class="absolute top-2 right-2 bg-purple-600 text-white px-2 py-1 rounded-full text-xs font-medium">
+            Video
+          </div>
+        </div>
+        <% media_index += 1 %>
+      <% end %>
+    <% end %>
+
+    <!-- Audio Files -->
+    <% if provider_profile.gallery_audio.attached? %>
+      <% provider_profile.gallery_audio.each do |audio| %>
+        <div class="group relative aspect-square rounded-xl overflow-hidden cursor-pointer transform transition hover:scale-105 hover:shadow-xl bg-gradient-to-br from-pink-500 to-purple-600"
+             data-index="<%= media_index %>"
+             data-type="audio"
+             data-url="<%= url_for(audio) %>"
+             data-caption="<%= audio.filename %>"
+             data-action="click->media-gallery#openLightbox">
+          <div class="absolute inset-0 flex flex-col items-center justify-center text-white p-4">
+            <svg class="w-16 h-16 mb-2" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 3v9.28c-.47-.17-.97-.28-1.5-.28C8.01 12 6 14.01 6 16.5S8.01 21 10.5 21c2.31 0 4.2-1.75 4.45-4H15V6h4V3h-7z"/>
+            </svg>
+            <p class="text-xs text-center font-medium truncate w-full"><%= audio.filename %></p>
+          </div>
+          <div class="absolute top-2 right-2 bg-pink-600 text-white px-2 py-1 rounded-full text-xs font-medium">
+            Audio
+          </div>
+        </div>
+        <% media_index += 1 %>
+      <% end %>
+    <% end %>
+
+    <!-- PDF Documents -->
+    <% if provider_profile.documents.attached? %>
+      <% provider_profile.documents.each do |doc| %>
+        <div class="group relative aspect-square rounded-xl overflow-hidden cursor-pointer transform transition hover:scale-105 hover:shadow-xl bg-gradient-to-br from-red-500 to-orange-600"
+             data-index="<%= media_index %>"
+             data-type="pdf"
+             data-url="<%= url_for(doc) %>"
+             data-caption="<%= doc.filename %>"
+             data-action="click->media-gallery#openLightbox">
+          <div class="absolute inset-0 flex flex-col items-center justify-center text-white p-4">
+            <svg class="w-16 h-16 mb-2" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+            </svg>
+            <p class="text-xs text-center font-medium truncate w-full"><%= doc.filename %></p>
+          </div>
+          <div class="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded-full text-xs font-medium">
+            PDF
+          </div>
+        </div>
+        <% media_index += 1 %>
+      <% end %>
+    <% end %>
+  </div>
+
+  <!-- Lightbox Modal -->
+  <div data-media-gallery-target="lightbox" 
+       class="hidden fixed inset-0 z-50 bg-black bg-opacity-95 items-center justify-center p-4"
+       data-action="click->media-gallery#handleBackdropClick">
+    
+    <!-- Close Button -->
+    <button class="absolute top-4 right-4 text-white hover:text-gray-300 transition z-50"
+            data-action="click->media-gallery#closeLightbox"
+            aria-label="Close lightbox">
+      <svg class="w-10 h-10" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+      </svg>
+    </button>
+
+    <!-- Previous Button -->
+    <button class="absolute left-4 top-1/2 transform -translate-y-1/2 text-white hover:text-gray-300 transition z-50"
+            data-action="click->media-gallery#previous"
+            aria-label="Previous media">
+      <svg class="w-12 h-12" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+      </svg>
+    </button>
+
+    <!-- Next Button -->
+    <button class="absolute right-4 top-1/2 transform -translate-y-1/2 text-white hover:text-gray-300 transition z-50"
+            data-action="click->media-gallery#next"
+            aria-label="Next media">
+      <svg class="w-12 h-12" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+      </svg>
+    </button>
+
+    <!-- Media Content Container -->
+    <div class="relative max-w-6xl max-h-full flex items-center justify-center">
+      <!-- Image -->
+      <img data-media-gallery-target="lightboxImage" 
+           class="hidden max-w-full max-h-[80vh] object-contain rounded-lg"
+           alt="">
+
+      <!-- Video -->
+      <video data-media-gallery-target="lightboxVideo" 
+             class="hidden max-w-full max-h-[80vh] rounded-lg"
+             controls>
+      </video>
+
+      <!-- Audio -->
+      <div class="hidden" data-media-gallery-target="lightboxAudio">
+        <div class="bg-gradient-to-br from-pink-500 to-purple-600 rounded-2xl p-12 text-white">
+          <svg class="w-32 h-32 mx-auto mb-6" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 3v9.28c-.47-.17-.97-.28-1.5-.28C8.01 12 6 14.01 6 16.5S8.01 21 10.5 21c2.31 0 4.2-1.75 4.45-4H15V6h4V3h-7z"/>
+          </svg>
+          <audio controls class="w-full">
+            <source src="" type="audio/mpeg">
+          </audio>
+        </div>
+      </div>
+
+      <!-- PDF -->
+      <iframe data-media-gallery-target="lightboxPdf" 
+              class="hidden w-full h-[80vh] rounded-lg bg-white"
+              frameborder="0">
+      </iframe>
+    </div>
+
+    <!-- Caption and Counter -->
+    <div class="absolute bottom-4 left-0 right-0 text-center text-white">
+      <p data-media-gallery-target="caption" class="text-lg mb-2"></p>
+      <p data-media-gallery-target="counter" class="text-sm text-gray-300"></p>
+    </div>
+  </div>
+</section>
+
