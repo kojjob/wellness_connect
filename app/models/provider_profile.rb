@@ -3,6 +3,7 @@ class ProviderProfile < ApplicationRecord
 
   has_many :services, dependent: :destroy
   has_many :availabilities, dependent: :destroy
+  has_many :reviews, dependent: :destroy
 
   # Active Storage attachments
   has_one_attached :avatar
@@ -107,8 +108,17 @@ class ProviderProfile < ApplicationRecord
     user.full_name
   end
 
+  def average_rating
+    return 0.0 if reviews.empty?
+    reviews.average(:rating).to_f
+  end
+
   def display_rating
-    average_rating&.round(1) || 0.0
+    average_rating.round(1)
+  end
+
+  def total_reviews
+    reviews.count
   end
 
   def has_social_media?
