@@ -48,9 +48,17 @@ export default class extends Controller {
     if (!this.hasPriceDisplayTarget) return
 
     const min = this.priceMinTarget.value || 0
-    const max = this.priceMaxTarget.value || 500
+    const max = this.priceMaxTarget.value || ""
 
-    this.priceDisplayTarget.textContent = `$${min} - $${max}`
+    if (min && max) {
+      this.priceDisplayTarget.textContent = `$${min} - $${max}`
+    } else if (min && !max) {
+      this.priceDisplayTarget.textContent = `$${min}+`
+    } else if (!min && max) {
+      this.priceDisplayTarget.textContent = `$0 - $${max}`
+    } else {
+      this.priceDisplayTarget.textContent = `$0 - $500+`
+    }
   }
 
   clearFilters(event) {
@@ -110,4 +118,3 @@ export default class extends Controller {
     this.formTarget.submit()
   }
 }
-

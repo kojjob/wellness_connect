@@ -1,13 +1,13 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  reviewer: one
-  provider_profile: one
-  rating: 1
-  comment: MyText
+  reviewer: patient_user
+  provider_profile: provider_profile_one
+  rating: 5
+  comment: Excellent service! Very professional and helpful.
 
 two:
-  reviewer: two
-  provider_profile: two
-  rating: 1
-  comment: MyText
+  reviewer: patient_user_two
+  provider_profile: provider_profile_two
+  rating: 4
+  comment: Great consultation. Would recommend.

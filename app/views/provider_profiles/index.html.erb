@@ -19,14 +19,25 @@
         <!-- Quick Search Bar -->
         <%= form_with url: providers_path, method: :get, class: "max-w-4xl" do |form| %>
           <div class="flex flex-col md:flex-row gap-3">
-            <div class="flex-1">
+            <div class="flex-1 relative">
+              <!-- Search Icon -->
+              <div class="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
+                <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                </svg>
+              </div>
               <%= form.text_field :search,
                   value: params[:search],
                   placeholder: "Search by name, specialty, or keyword...",
-                  class: "w-full px-6 py-4 rounded-xl text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-white focus:outline-none shadow-lg" %>
+                  class: "w-full pl-14 pr-6 py-4 rounded-xl text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-white focus:outline-none shadow-lg" %>
             </div>
-            <%= form.submit "Search",
-                class: "px-8 py-4 bg-white text-indigo-600 rounded-xl font-semibold hover:bg-indigo-50 transition shadow-lg cursor-pointer" %>
+            <button type="submit"
+                    class="px-8 py-4 bg-white text-indigo-600 rounded-xl font-semibold hover:bg-indigo-50 transition shadow-lg cursor-pointer flex items-center justify-center gap-2">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+              </svg>
+              Search
+            </button>
           </div>
         <% end %>
       </div>
@@ -104,25 +115,74 @@
                   </svg>
                   Price Range
                 </label>
-                <div class="space-y-3">
-                  <div class="flex items-center gap-3">
-                    <%= form.number_field :price_min,
-                        value: params[:price_min],
-                        placeholder: "Min",
-                        min: 0,
-                        class: "flex-1 px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition",
-                        data: { filter_target: "priceMin", action: "change->filter#updatePriceDisplay" } %>
-                    <span class="text-gray-500">-</span>
-                    <%= form.number_field :price_max,
-                        value: params[:price_max],
-                        placeholder: "Max",
-                        min: 0,
-                        class: "flex-1 px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition",
-                        data: { filter_target: "priceMax", action: "change->filter#updatePriceDisplay" } %>
+                <div class="space-y-4">
+                  <!-- Price Display -->
+                  <div class="flex items-center justify-between">
+                    <div class="text-sm font-medium text-gray-700">
+                      <span data-filter-target="priceDisplay">$0 - $500+</span>
+                    </div>
+                    <button type="button"
+                            class="text-xs text-indigo-600 hover:text-indigo-700 font-medium"
+                            onclick="document.querySelector('[name=price_min]').value=''; document.querySelector('[name=price_max]').value=''; this.closest('form').querySelector('[data-filter-target=priceDisplay]').textContent='$0 - $500+';">
+                      Reset
+                    </button>
                   </div>
-                  <div class="text-sm text-gray-600" data-filter-target="priceDisplay">
-                    $0 - $500
+
+                  <!-- Price Input Fields -->
+                  <div class="grid grid-cols-2 gap-3">
+                    <div>
+                      <label class="block text-xs text-gray-600 mb-1">Min Price</label>
+                      <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500 text-sm">$</span>
+                        <%= form.number_field :price_min,
+                            value: params[:price_min],
+                            placeholder: "0",
+                            min: 0,
+                            step: 10,
+                            class: "w-full pl-7 pr-3 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition text-sm",
+                            data: { filter_target: "priceMin", action: "input->filter#updatePriceDisplay" } %>
+                      </div>
+                    </div>
+                    <div>
+                      <label class="block text-xs text-gray-600 mb-1">Max Price</label>
+                      <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500 text-sm">$</span>
+                        <%= form.number_field :price_max,
+                            value: params[:price_max],
+                            placeholder: "500",
+                            min: 0,
+                            step: 10,
+                            class: "w-full pl-7 pr-3 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition text-sm",
+                            data: { filter_target: "priceMax", action: "input->filter#updatePriceDisplay" } %>
+                      </div>
+                    </div>
                   </div>
+
+                  <!-- Quick Price Filters -->
+                  <div class="flex flex-wrap gap-2">
+                    <button type="button"
+                            onclick="document.querySelector('[name=price_min]').value=''; document.querySelector('[name=price_max]').value='100'; document.querySelector('[data-filter-target=priceDisplay]').textContent='$0 - $100';"
+                            class="px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 hover:bg-indigo-100 hover:text-indigo-700 rounded-lg transition">
+                      Under $100
+                    </button>
+                    <button type="button"
+                            onclick="document.querySelector('[name=price_min]').value='100'; document.querySelector('[name=price_max]').value='200'; document.querySelector('[data-filter-target=priceDisplay]').textContent='$100 - $200';"
+                            class="px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 hover:bg-indigo-100 hover:text-indigo-700 rounded-lg transition">
+                      $100 - $200
+                    </button>
+                    <button type="button"
+                            onclick="document.querySelector('[name=price_min]').value='200'; document.querySelector('[name=price_max]').value=''; document.querySelector('[data-filter-target=priceDisplay]').textContent='$200+';"
+                            class="px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 hover:bg-indigo-100 hover:text-indigo-700 rounded-lg transition">
+                      $200+
+                    </button>
+                  </div>
+
+                  <!-- Apply Price Filter Button -->
+                  <button type="button"
+                          data-action="click->filter#submitForm"
+                          class="w-full px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-medium rounded-lg transition text-sm">
+                    Apply Price Filter
+                  </button>
                 </div>
               </div>
 
