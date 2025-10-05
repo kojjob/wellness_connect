@@ -133,8 +133,8 @@
             <!-- Provider Info -->
             <div class="mb-6 pb-6 border-b border-gray-200">
               <div class="flex items-center space-x-3">
-                <% if @service.provider_profile.user.profile_picture.present? %>
-                  <%= image_tag @service.provider_profile.user.profile_picture,
+                <% if @service.provider_profile.user.avatar.attached? %>
+                  <%= image_tag @service.provider_profile.user.avatar,
                       class: "w-12 h-12 rounded-full object-cover",
                       alt: "#{@service.provider_profile.user.full_name}" %>
                 <% else %>

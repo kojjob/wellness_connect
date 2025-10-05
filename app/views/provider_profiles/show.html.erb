@@ -266,7 +266,7 @@
       <div class="lg:col-span-1">
         <div class="sticky top-24 space-y-6">
           <!-- Booking Widget -->
-          <div id="booking" class="bg-white rounded-2xl shadow-lg p-6">
+          <div id="booking" class="bg-white rounded-2xl shadow-lg p-6" data-controller="availability-calendar" data-availability-calendar-provider-id-value="<%= @provider_profile.id %>" data-availability-calendar-availabilities-value='<%= @provider_profile.availabilities.where(is_booked: false).where("start_time >= ?", Time.current).to_json.html_safe %>'>
             <h3 class="text-2xl font-bold text-gray-900 mb-4 flex items-center">
               <svg class="w-6 h-6 mr-2 text-indigo-600" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
@@ -275,58 +275,182 @@
             </h3>
 
             <!-- Consultation Rate -->
-            <div class="bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl p-6 text-white mb-6">
-              <p class="text-sm opacity-90 mb-1">Starting from</p>
-              <p class="text-4xl font-bold mb-1">
-                $<%= number_with_precision(@provider_profile.consultation_rate, precision: 0) %>
-              </p>
-              <p class="text-sm opacity-90">per session</p>
+            <div class="bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl p-6 text-white mb-6 relative overflow-hidden">
+              <!-- Decorative circles -->
+              <div class="absolute top-0 right-0 w-24 h-24 bg-white opacity-10 rounded-full -mr-12 -mt-12"></div>
+              <div class="absolute bottom-0 left-0 w-16 h-16 bg-white opacity-10 rounded-full -ml-8 -mb-8"></div>
+
+              <div class="relative z-10">
+                <p class="text-sm opacity-90 mb-1 flex items-center">
+                  <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.16-1.46-3.27-3.4h1.96c.1 1.05.82 1.87 2.65 1.87 1.96 0 2.4-.98 2.4-1.59 0-.83-.44-1.61-2.67-2.14-2.48-.6-4.18-1.62-4.18-3.67 0-1.72 1.39-2.84 3.11-3.21V4h2.67v1.95c1.86.45 2.79 1.86 2.85 3.39H14.3c-.05-1.11-.64-1.87-2.22-1.87-1.5 0-2.4.68-2.4 1.64 0 .84.65 1.39 2.67 1.91s4.18 1.39 4.18 3.91c-.01 1.83-1.38 2.83-3.12 3.16z"/>
+                  </svg>
+                  Starting from
+                </p>
+                <p class="text-4xl font-bold mb-1">
+                  $<%= number_with_precision(@provider_profile.consultation_rate, precision: 0) %>
+                </p>
+                <p class="text-sm opacity-90">per session</p>
+              </div>
             </div>
 
             <!-- Available Slots -->
-            <% available_slots = @provider_profile.availabilities.where(is_booked: false).where("start_time >= ?", Time.current).order(start_time: :asc).limit(5) %>
+            <% available_slots = @provider_profile.availabilities.where(is_booked: false).where("start_time >= ?", Time.current).order(start_time: :asc).limit(4) %>
 
             <% if available_slots.any? %>
               <div class="mb-6">
-                <h4 class="font-semibold text-gray-900 mb-3 flex items-center">
-                  <svg class="w-5 h-5 mr-2 text-green-500" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-                  </svg>
-                  Next Available Slots
+                <h4 class="font-semibold text-gray-900 mb-4 flex items-center justify-between">
+                  <span class="flex items-center">
+                    <svg class="w-5 h-5 mr-2 text-green-500" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                    </svg>
+                    Next Available
+                  </span>
+                  <span class="text-xs text-gray-500 font-normal"><%= @provider_profile.availabilities.where(is_booked: false).where("start_time >= ?", Time.current).count %> slots open</span>
                 </h4>
-                <div class="space-y-2">
+
+                <!-- Modern Card-Style Slots -->
+                <div class="grid grid-cols-2 gap-3 mb-4">
                   <% available_slots.each do |availability| %>
-                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
-                      <div class="flex-1">
-                        <p class="font-medium text-gray-900 text-sm">
+                    <div class="group relative bg-gradient-to-br from-gray-50 to-white border-2 border-gray-200 rounded-xl p-3 hover:border-indigo-400 hover:shadow-md transition-all duration-200">
+                      <!-- Date Badge -->
+                      <div class="flex items-center justify-center mb-2">
+                        <div class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-lg text-xs font-bold">
                           <%= availability.start_time.strftime("%b %d") %>
+                        </div>
+                      </div>
+
+                      <!-- Time Display -->
+                      <div class="text-center mb-2">
+                        <p class="text-lg font-bold text-gray-900 leading-tight">
+                          <%= availability.start_time.strftime("%I:%M") %>
                         </p>
-                        <p class="text-xs text-gray-600">
-                          <%= availability.start_time.strftime("%I:%M %p") %>
+                        <p class="text-xs text-gray-500">
+                          <%= availability.start_time.strftime("%p") %>
                         </p>
                       </div>
+
+                      <!-- Day of Week -->
+                      <p class="text-xs text-center text-gray-600 mb-2">
+                        <%= availability.start_time.strftime("%A") %>
+                      </p>
+
+                      <!-- Book Button -->
                       <% if user_signed_in? && current_user.patient? %>
-                        <%= link_to "Book", "#", class: "px-3 py-1 bg-indigo-600 text-white text-xs rounded-lg hover:bg-indigo-700 transition" %>
+                        <%= link_to new_appointment_path(provider_profile_id: @provider_profile.id, availability_id: availability.id),
+                            class: "block w-full text-center px-2 py-1.5 bg-indigo-600 text-white text-xs font-semibold rounded-lg hover:bg-indigo-700 transition opacity-0 group-hover:opacity-100" do %>
+                          Book
+                        <% end %>
                       <% end %>
                     </div>
                   <% end %>
                 </div>
               </div>
 
+              <!-- View All Availability Button -->
               <% if user_signed_in? && current_user.patient? %>
-                <%= link_to "View All Availability", "#", class: "block w-full text-center px-6 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition shadow-md mb-4" %>
+                <button data-action="click->availability-calendar#openModal"
+                        class="block w-full text-center px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold hover:from-indigo-700 hover:to-purple-700 transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 mb-4 group">
+                  <span class="flex items-center justify-center">
+                    <svg class="w-5 h-5 mr-2 group-hover:scale-110 transition" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
+                    </svg>
+                    View Full Calendar
+                  </span>
+                </button>
               <% elsif !user_signed_in? %>
-                <%= link_to "Sign In to Book", new_user_session_path, class: "block w-full text-center px-6 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition shadow-md mb-4" %>
+                <%= link_to "Sign In to Book", new_user_session_path, class: "block w-full text-center px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold hover:from-indigo-700 hover:to-purple-700 transition shadow-lg mb-4" %>
               <% end %>
             <% else %>
-              <div class="text-center py-6 mb-4">
+              <div class="text-center py-8 mb-4 bg-gray-50 rounded-xl border-2 border-dashed border-gray-300">
                 <svg class="w-16 h-16 mx-auto text-gray-300 mb-3" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
                 </svg>
-                <p class="text-gray-600 text-sm">No available slots at this time</p>
-                <p class="text-gray-500 text-xs mt-1">Check back soon</p>
+                <p class="text-gray-600 font-semibold mb-1">No availability yet</p>
+                <p class="text-sm text-gray-500">Check back soon for available time slots</p>
               </div>
             <% end %>
+
+            <!-- Calendar Modal -->
+            <div data-availability-calendar-target="modal"
+                 data-action="click->availability-calendar#closeOnBackdrop keydown@window->availability-calendar#handleKeydown"
+                 class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 items-center justify-center p-4">
+              <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden" onclick="event.stopPropagation()">
+                <!-- Modal Header -->
+                <div class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-6">
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <h3 class="text-2xl font-bold">Select a Date & Time</h3>
+                      <p class="text-sm opacity-90 mt-1">Choose from available slots below</p>
+                    </div>
+                    <button data-action="click->availability-calendar#closeModal"
+                            class="text-white hover:bg-white hover:bg-opacity-20 rounded-lg p-2 transition">
+                      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="p-6 overflow-y-auto max-h-[calc(90vh-200px)]">
+                  <div class="grid md:grid-cols-2 gap-6">
+                    <!-- Calendar Section -->
+                    <div>
+                      <div class="flex items-center justify-between mb-4">
+                        <button data-action="click->availability-calendar#previousMonth"
+                                class="p-2 hover:bg-gray-100 rounded-lg transition">
+                          <svg class="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+                          </svg>
+                        </button>
+                        <h4 data-availability-calendar-target="monthYear" class="text-lg font-bold text-gray-900">
+                          <!-- Month Year will be inserted here -->
+                        </h4>
+                        <button data-action="click->availability-calendar#nextMonth"
+                                class="p-2 hover:bg-gray-100 rounded-lg transition">
+                          <svg class="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                          </svg>
+                        </button>
+                      </div>
+
+                      <div data-availability-calendar-target="calendar">
+                        <!-- Calendar grid will be inserted here -->
+                      </div>
+
+                      <!-- Legend -->
+                      <div class="mt-4 flex flex-wrap gap-4 text-xs">
+                        <div class="flex items-center">
+                          <div class="w-4 h-4 bg-green-50 border-2 border-green-200 rounded mr-2"></div>
+                          <span class="text-gray-600">Available</span>
+                        </div>
+                        <div class="flex items-center">
+                          <div class="w-4 h-4 bg-indigo-600 rounded mr-2"></div>
+                          <span class="text-gray-600">Selected</span>
+                        </div>
+                        <div class="flex items-center">
+                          <div class="w-4 h-4 bg-gray-100 border-2 border-indigo-300 rounded mr-2"></div>
+                          <span class="text-gray-600">Today</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Time Slots Section -->
+                    <div>
+                      <h4 class="text-lg font-bold text-gray-900 mb-2">Available Times</h4>
+                      <p data-availability-calendar-target="selectedDate" class="text-sm text-gray-600 mb-4">
+                        Select a date to view available time slots
+                      </p>
+
+                      <div data-availability-calendar-target="timeSlots" class="min-h-[300px]">
+                        <p class="text-gray-500 text-center py-8">Select a date to view available time slots</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
           <!-- Contact Info -->
