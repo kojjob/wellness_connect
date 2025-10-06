@@ -1,120 +1,404 @@
 <% content_for :admin_page_title, "Appointments Management" %>
 
-<!-- Filters and Search -->
-<div class="bg-white rounded-lg shadow mb-6">
-  <div class="px-6 py-4">
-    <%= form_with url: admin_appointments_path, method: :get, class: "space-y-4" do |f| %>
-      <!-- Search and Date Range Row -->
-      <div class="flex flex-wrap gap-4 items-end">
-        <!-- Search -->
-        <div class="flex-1 min-w-[200px]">
-          <%= f.label :search, "Search", class: "block text-sm font-medium text-gray-700 mb-1" %>
-          <%= f.text_field :search, value: params[:search], placeholder: "Patient, provider, or service name...", class: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" %>
+<%# Hero Section %>
+<section class="relative bg-gradient-to-br from-green-600 via-gray-700 to-green-800 text-white overflow-hidden pt-6">
+  <%# Gradient Overlay %>
+  <div class="absolute inset-0 bg-gradient-to-r from-gray-900/95 via-gray-900/80 to-transparent" aria-hidden="true"></div>
+
+  <%# Animated Blobs %>
+  <div class="absolute inset-0 overflow-hidden" aria-hidden="true">
+    <div class="absolute top-10 right-10 w-72 h-72 bg-green-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"></div>
+    <div class="absolute bottom-10 left-10 w-72 h-72 bg-emerald-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-2000"></div>
+    <div class="absolute top-1/2 left-1/2 w-72 h-72 bg-green-600 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-4000"></div>
+  </div>
+
+  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <%# Breadcrumbs %>
+    <nav class="flex mb-6" aria-label="Breadcrumb">
+      <ol class="flex items-center space-x-2">
+        <li>
+          <%= link_to admin_root_path, class: "text-gray-300 hover:text-white transition-colors" do %>
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+              <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+            </svg>
+            <span class="sr-only">Dashboard</span>
+          <% end %>
+        </li>
+        <li>
+          <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+          </svg>
+        </li>
+        <li class="text-gray-400" aria-current="page">Appointments</li>
+      </ol>
+    </nav>
+
+    <%# Header Content %>
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+      <div class="flex-1">
+        <div class="flex items-center gap-4 mb-4">
+          <div class="p-3 bg-white/20 backdrop-blur-sm rounded-xl">
+            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+          </div>
+          <div>
+            <h1 class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-white to-green-200 bg-clip-text text-transparent mb-2">
+              Appointments Management
+            </h1>
+            <p class="text-lg text-gray-300">Manage and monitor all platform appointments</p>
+          </div>
         </div>
 
-        <!-- Start Date -->
-        <div class="w-48">
-          <%= f.label :start_date, "Start Date", class: "block text-sm font-medium text-gray-700 mb-1" %>
-          <%= f.date_field :start_date, value: params[:start_date], class: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" %>
-        </div>
-
-        <!-- End Date -->
-        <div class="w-48">
-          <%= f.label :end_date, "End Date", class: "block text-sm font-medium text-gray-700 mb-1" %>
-          <%= f.date_field :end_date, value: params[:end_date], class: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" %>
-        </div>
-
-        <!-- Status Filter -->
-        <div class="w-48">
-          <%= f.label :status, "Status", class: "block text-sm font-medium text-gray-700 mb-1" %>
-          <%= f.select :status,
-              options_for_select([
-                ['All Statuses', ''],
-                ['Scheduled', 'scheduled'],
-                ['Completed', 'completed'],
-                ['Cancelled by Patient', 'cancelled_by_patient'],
-                ['Cancelled by Provider', 'cancelled_by_provider'],
-                ['No Show', 'no_show']
-              ], params[:status]),
-              {},
-              class: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" %>
-        </div>
-
-        <!-- Submit Buttons -->
-        <div>
-          <%= f.submit "Filter", class: "px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500" %>
-          <%= link_to "Clear", admin_appointments_path, class: "ml-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300" %>
+        <div class="flex flex-wrap items-center gap-4 text-sm text-gray-300">
+          <div class="flex items-center">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+            </svg>
+            Total: <%= @appointments.total_count %> appointments
+          </div>
+          <div class="flex items-center">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            Real-time monitoring
+          </div>
         </div>
       </div>
-    <% end %>
-  </div>
-</div>
 
-<!-- Appointments Table -->
-<div class="bg-white rounded-lg shadow overflow-hidden">
-  <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-    <div>
-      <h2 class="text-lg font-semibold text-gray-900">All Appointments</h2>
-      <p class="text-sm text-gray-500 mt-1">Total: <%= @appointments.total_count %> appointments</p>
+      <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+        <%# Export Button %>
+        <%= link_to "#",
+          class: "inline-flex items-center bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-6 py-3 rounded-lg text-sm font-semibold transition-all duration-200 border border-white/20" do %>
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+          Export CSV
+        <% end %>
+      </div>
     </div>
   </div>
+</section>
 
+<%# Stats Cards %>
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-10">
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <%# Total Appointments Card (Featured) %>
+    <div class="relative bg-gradient-to-br from-green-600 to-emerald-700 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden group transform hover:-translate-y-1">
+      <%# Decorative Background Pattern %>
+      <div class="absolute inset-0 opacity-10" aria-hidden="true">
+        <div class="absolute top-0 right-0 w-32 h-32 bg-white rounded-full -mr-16 -mt-16"></div>
+        <div class="absolute bottom-0 left-0 w-24 h-24 bg-white rounded-full -ml-12 -mb-12"></div>
+      </div>
+
+      <div class="relative p-6">
+        <div class="flex items-center justify-between mb-4">
+          <div class="p-3 bg-white/20 backdrop-blur-sm rounded-xl group-hover:scale-110 transition-transform duration-300">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+          </div>
+          <div class="flex items-center space-x-1">
+            <span class="h-2 w-2 bg-green-400 rounded-full animate-pulse"></span>
+            <span class="text-xs font-medium text-white/80">Live</span>
+          </div>
+        </div>
+
+        <div>
+          <p class="text-sm font-medium text-white/80 mb-1">Total Appointments</p>
+          <p class="text-4xl font-bold text-white mb-2"><%= @appointments.total_count %></p>
+          <div class="text-xs text-white/70">
+            <span class="h-1.5 w-1.5 bg-green-400 rounded-full inline-block mr-1"></span>
+            All time appointments
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%# Scheduled Appointments %>
+    <div class="relative bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group transform hover:-translate-y-1 border border-gray-100">
+      <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-blue-600"></div>
+      <div class="p-6">
+        <div class="flex items-start justify-between mb-4">
+          <div class="p-3 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl group-hover:scale-110 transition-transform duration-300">
+            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+          <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">
+            Upcoming
+          </span>
+        </div>
+        <div>
+          <p class="text-sm font-medium text-gray-600 mb-1">Scheduled</p>
+          <p class="text-3xl font-bold text-gray-900 mb-2"><%= @appointments.where(status: 'scheduled').count %></p>
+          <div class="flex items-center text-xs text-gray-500">
+            <span class="h-1.5 w-1.5 bg-blue-500 rounded-full mr-2"></span>
+            Awaiting appointments
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%# Completed Appointments %>
+    <div class="relative bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group transform hover:-translate-y-1 border border-gray-100">
+      <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-emerald-600"></div>
+      <div class="p-6">
+        <div class="flex items-start justify-between mb-4">
+          <div class="p-3 bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl group-hover:scale-110 transition-transform duration-300">
+            <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+          <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">
+            Success
+          </span>
+        </div>
+        <div>
+          <p class="text-sm font-medium text-gray-600 mb-1">Completed</p>
+          <p class="text-3xl font-bold text-gray-900 mb-2"><%= @appointments.where(status: 'completed').count %></p>
+          <div class="flex items-center text-xs text-gray-500">
+            <span class="h-1.5 w-1.5 bg-emerald-500 rounded-full mr-2"></span>
+            Successful sessions
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%# Cancelled Appointments %>
+    <div class="relative bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group transform hover:-translate-y-1 border border-gray-100">
+      <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-red-500 to-red-600"></div>
+      <div class="p-6">
+        <div class="flex items-start justify-between mb-4">
+          <div class="p-3 bg-gradient-to-br from-red-50 to-red-100 rounded-xl group-hover:scale-110 transition-transform duration-300">
+            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+          <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800">
+            Cancelled
+          </span>
+        </div>
+        <div>
+          <p class="text-sm font-medium text-gray-600 mb-1">Cancelled</p>
+          <p class="text-3xl font-bold text-gray-900 mb-2"><%= @appointments.where(status: ['cancelled_by_patient', 'cancelled_by_provider']).count %></p>
+          <div class="flex items-center text-xs text-gray-500">
+            <span class="h-1.5 w-1.5 bg-red-500 rounded-full mr-2"></span>
+            Cancelled sessions
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%# Search and Filters Section %>
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+  <%= form_with url: admin_appointments_path, method: :get, class: "bg-white rounded-xl shadow-lg p-6" do |f| %>
+    <%# Search Bar %>
+    <div class="mb-6">
+      <label class="block text-sm font-semibold text-gray-700 mb-2">
+        <svg class="inline w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+        Search Appointments
+      </label>
+      <div class="relative">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+        </div>
+        <%= f.text_field :search, value: params[:search],
+          placeholder: "Search by patient name, provider name, or service...",
+          class: "w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200" %>
+      </div>
+    </div>
+
+    <%# Filters Grid %>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <%# Status Filter %>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+        <%= f.select :status,
+          options_for_select([
+            ['All Statuses', ''],
+            ['Scheduled', 'scheduled'],
+            ['Completed', 'completed'],
+            ['Cancelled by Patient', 'cancelled_by_patient'],
+            ['Cancelled by Provider', 'cancelled_by_provider'],
+            ['No Show', 'no_show']
+          ], params[:status]),
+          {},
+          class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200" %>
+      </div>
+
+      <%# Start Date Filter %>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Start Date</label>
+        <%= f.date_field :start_date, value: params[:start_date],
+          class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200" %>
+      </div>
+
+      <%# End Date Filter %>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">End Date</label>
+        <%= f.date_field :end_date, value: params[:end_date],
+          class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200" %>
+      </div>
+
+      <%# Quick Date Filters %>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Quick Filters</label>
+        <div class="flex flex-wrap gap-2">
+          <%= link_to "Today", admin_appointments_path(start_date: Date.current, end_date: Date.current),
+            class: "inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 hover:bg-green-200 transition-colors" %>
+          <%= link_to "This Week", admin_appointments_path(start_date: Date.current.beginning_of_week, end_date: Date.current.end_of_week),
+            class: "inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors" %>
+        </div>
+      </div>
+    </div>
+
+    <%# Action Buttons %>
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <%= f.button "Apply Filters",
+          class: "bg-gradient-to-r from-green-600 to-emerald-700 hover:from-green-700 hover:to-emerald-800 text-white px-6 py-2 rounded-lg text-sm font-semibold transition-all duration-200 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2" %>
+        <%= link_to "Clear Filters", admin_appointments_path,
+          class: "text-gray-700 hover:text-green-600 hover:bg-green-50 px-6 py-2 rounded-lg text-sm font-medium transition-all duration-200" %>
+      </div>
+
+      <div class="text-sm text-gray-600">
+        <% if params[:search].present? || params[:status].present? || params[:start_date].present? || params[:end_date].present? %>
+          Showing filtered results
+        <% else %>
+          Showing all appointments
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</section>
+
+<%# Appointments Table Section %>
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 mb-12">
   <% if @appointments.any? %>
-    <div class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
-          <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Patient</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Provider</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Service</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date & Time</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-          </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
-          <% @appointments.each do |appointment| %>
-            <tr class="hover:bg-gray-50">
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                #<%= appointment.id %>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-medium text-gray-900"><%= appointment.patient.full_name %></div>
-                <div class="text-sm text-gray-500"><%= appointment.patient.email %></div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-medium text-gray-900"><%= appointment.provider.full_name %></div>
-                <div class="text-sm text-gray-500"><%= appointment.provider.email %></div>
-              </td>
-              <td class="px-6 py-4">
-                <div class="text-sm text-gray-900"><%= appointment.service.name %></div>
-                <div class="text-sm text-gray-500"><%= appointment.service.duration_minutes %> min - $<%= number_with_precision(appointment.service.price, precision: 2) %></div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                <%= appointment.start_time.strftime("%b %d, %Y") %><br>
-                <%= appointment.start_time.strftime("%I:%M %p") %> - <%= appointment.end_time.strftime("%I:%M %p") %>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                  <%= case appointment.status
-                      when 'scheduled' then 'bg-blue-100 text-blue-800'
-                      when 'completed' then 'bg-green-100 text-green-800'
-                      when 'cancelled_by_patient', 'cancelled_by_provider' then 'bg-red-100 text-red-800'
-                      when 'no_show' then 'bg-gray-100 text-gray-800'
-                      else 'bg-gray-100 text-gray-800'
-                      end %>">
-                  <%= appointment.status.humanize %>
-                </span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                <%= link_to "View Details", admin_appointment_path(appointment), class: "text-indigo-600 hover:text-indigo-900" %>
-              </td>
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+      <%# Results Count %>
+      <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+          <h2 class="text-lg font-semibold text-gray-900">All Appointments</h2>
+          <p class="text-sm text-gray-700">
+            Showing <span class="font-semibold"><%= @appointments.offset_value + 1 %></span> to
+            <span class="font-semibold"><%= [@appointments.offset_value + @appointments.limit_value, @appointments.total_count].min %></span> of
+            <span class="font-semibold"><%= @appointments.total_count %></span> results
+          </p>
+        </div>
+      </div>
+
+      <%# Table %>
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Patient</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Provider</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Service</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date & Time</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+              <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
             </tr>
-          <% end %>
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <% @appointments.each do |appointment| %>
+              <tr class="hover:bg-gray-50 transition-colors duration-150">
+                <%# Appointment ID %>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  #<%= appointment.id %>
+                </td>
+
+                <%# Patient Info with Avatar %>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="flex items-center">
+                    <div class="flex-shrink-0 h-10 w-10">
+                      <div class="h-10 w-10 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-white font-bold text-sm">
+                        <%= appointment.patient.first_name.first.upcase %><%= appointment.patient.last_name.first.upcase %>
+                      </div>
+                    </div>
+                    <div class="ml-4">
+                      <div class="text-sm font-semibold text-gray-900"><%= appointment.patient.full_name %></div>
+                      <div class="text-sm text-gray-500"><%= appointment.patient.email %></div>
+                    </div>
+                  </div>
+                </td>
+
+                <%# Provider Info with Avatar %>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="flex items-center">
+                    <div class="flex-shrink-0 h-10 w-10">
+                      <div class="h-10 w-10 rounded-full bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center text-white font-bold text-sm">
+                        <%= appointment.provider.first_name.first.upcase %><%= appointment.provider.last_name.first.upcase %>
+                      </div>
+                    </div>
+                    <div class="ml-4">
+                      <div class="text-sm font-semibold text-gray-900"><%= appointment.provider.full_name %></div>
+                      <div class="text-sm text-gray-500"><%= appointment.provider.email %></div>
+                    </div>
+                  </div>
+                </td>
+
+                <%# Service Info %>
+                <td class="px-6 py-4">
+                  <div class="text-sm font-semibold text-gray-900"><%= appointment.service.name %></div>
+                  <div class="text-sm text-gray-500">
+                    <%= appointment.service.duration_minutes %> min •
+                    <span class="text-green-600 font-medium">$<%= number_with_precision(appointment.service.price, precision: 2) %></span>
+                  </div>
+                </td>
+
+                <%# Date & Time %>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-semibold text-gray-900"><%= appointment.start_time.strftime("%b %d, %Y") %></div>
+                  <div class="text-sm text-gray-500"><%= appointment.start_time.strftime("%I:%M %p") %> - <%= appointment.end_time.strftime("%I:%M %p") %></div>
+                </td>
+
+                <%# Status Badge %>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold <%= case appointment.status
+                    when 'scheduled' then 'bg-blue-100 text-blue-800'
+                    when 'completed' then 'bg-green-100 text-green-800'
+                    when 'cancelled_by_patient', 'cancelled_by_provider' then 'bg-red-100 text-red-800'
+                    when 'no_show' then 'bg-gray-100 text-gray-800'
+                    else 'bg-gray-100 text-gray-800'
+                  end %>">
+                    <span class="h-1.5 w-1.5 rounded-full <%= case appointment.status
+                      when 'scheduled' then 'bg-blue-600'
+                      when 'completed' then 'bg-green-600'
+                      when 'cancelled_by_patient', 'cancelled_by_provider' then 'bg-red-600'
+                      when 'no_show' then 'bg-gray-600'
+                      else 'bg-gray-600'
+                    end %> mr-1"></span>
+                    <%= appointment.status.humanize %>
+                  </span>
+                </td>
+
+                <%# Actions %>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <%= link_to admin_appointment_path(appointment),
+                    class: "inline-flex items-center text-green-600 hover:text-green-700 transition-colors",
+                    title: "View appointment details" do %>
+                    <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                    </svg>
+                    View
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
 
     <!-- Pagination -->
     <% if @appointments.total_pages > 1 %>
