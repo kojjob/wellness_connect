@@ -212,8 +212,8 @@ class CalendarModalTest < ApplicationSystemTestCase
         # Should not have green highlighting
         date_elements.each do |elem|
           parent_classes = elem[:class]
-          assert_not(parent_classes.include?('bg-green-50') || parent_classes.include?('bg-green')),
-            "Date with only booked slots should not be highlighted"
+          assert_not(parent_classes.include?('bg-green-50') || parent_classes.include?('bg-green'),
+            "Date with only booked slots should not be highlighted")
         end
       end
     end
@@ -334,7 +334,7 @@ class CalendarModalTest < ApplicationSystemTestCase
       user: provider_no_slots,
       specialty: "Test Specialty",
       consultation_rate: 100,
-      bio: "Test bio"
+      bio: "Experienced professional providing high-quality consultation services to clients worldwide."
     )
 
     Service.create!(

@@ -1,34 +1,60 @@
-<nav class="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-200 z-50" data-controller="navbar">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<!-- Modern Navigation with Animated Background -->
+<nav class="fixed top-0 left-0 right-0 bg-gradient-to-r from-white/95 via-white/98 to-teal-50/95 backdrop-blur-md shadow-lg border-b border-teal-100/50 z-50 overflow-hidden" data-controller="navbar">
+  <!-- Animated Background Blobs -->
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <div class="absolute -top-4 -right-8 w-32 h-32 bg-teal-500/5 rounded-full blur-2xl animate-blob"></div>
+    <div class="absolute -top-6 -left-4 w-24 h-24 bg-gray-500/5 rounded-full blur-xl animate-blob animation-delay-2000"></div>
+    <div class="absolute top-0 left-1/2 w-20 h-20 bg-teal-400/5 rounded-full blur-lg animate-blob animation-delay-4000"></div>
+  </div>
+
+  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex justify-between items-center h-16">
-      <!-- Logo and brand -->
+      <!-- Enhanced Logo and brand -->
       <div class="flex items-center">
-        <%= link_to root_path, class: "flex items-center space-x-2 group" do %>
-          <svg class="h-8 w-8 text-teal-600 group-hover:text-teal-700 transition-colors duration-200" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
-          </svg>
-          <span class="text-xl font-bold bg-gradient-to-r from-teal-600 to-gray-700 bg-clip-text text-transparent">WellnessConnect</span>
+        <%= link_to root_path, class: "flex items-center space-x-3 group" do %>
+          <div class="relative">
+            <div class="absolute inset-0 bg-gradient-to-br from-teal-500 to-teal-600 rounded-xl blur opacity-20 group-hover:opacity-30 transition-opacity duration-300"></div>
+            <div class="relative h-10 w-10 bg-gradient-to-br from-teal-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
+              <svg class="h-6 w-6 text-white" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
+              </svg>
+            </div>
+          </div>
+          <div class="flex flex-col">
+            <span class="text-xl font-bold bg-gradient-to-r from-teal-600 via-teal-700 to-gray-700 bg-clip-text text-transparent group-hover:from-teal-700 group-hover:to-gray-800 transition-all duration-300">WellnessConnect</span>
+            <span class="text-xs text-gray-500 font-medium -mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">Your Wellness Journey</span>
+          </div>
         <% end %>
       </div>
 
-      <!-- Desktop Navigation -->
-      <div class="hidden md:flex md:items-center md:space-x-1">
-        <%= link_to "Browse Providers", providers_path,
-            class: "text-gray-700 hover:text-teal-600 hover:bg-teal-50 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200" %>
+      <!-- Enhanced Desktop Navigation -->
+      <div class="hidden md:flex md:items-center md:space-x-2">
+        <%= link_to providers_path,
+            { class: "relative group text-gray-700 hover:text-teal-600 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 hover:bg-gradient-to-r hover:from-teal-50 hover:to-teal-100/50 hover:shadow-sm" } do %>
+          <span class="relative z-10">Browse Providers</span>
+          <div class="absolute inset-0 bg-gradient-to-r from-teal-500/10 to-teal-600/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        <% end %>
 
-        <%= link_to "About", about_path,
-            class: "text-gray-700 hover:text-teal-600 hover:bg-teal-50 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200" %>
+        <%= link_to about_path,
+            { class: "relative group text-gray-700 hover:text-teal-600 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 hover:bg-gradient-to-r hover:from-teal-50 hover:to-teal-100/50 hover:shadow-sm" } do %>
+          <span class="relative z-10">About</span>
+          <div class="absolute inset-0 bg-gradient-to-r from-teal-500/10 to-teal-600/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        <% end %>
 
-        <%= link_to "Become a Provider", become_provider_path,
-            class: "text-gray-700 hover:text-teal-600 hover:bg-teal-50 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200" %>
+        <%= link_to become_provider_path,
+            { class: "relative group text-gray-700 hover:text-teal-600 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 hover:bg-gradient-to-r hover:from-teal-50 hover:to-teal-100/50 hover:shadow-sm" } do %>
+          <span class="relative z-10">Become a Provider</span>
+          <div class="absolute inset-0 bg-gradient-to-r from-teal-500/10 to-teal-600/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        <% end %>
 
         <% if user_signed_in? && current_user.admin? %>
           <%= link_to admin_users_path,
-              class: "text-red-700 hover:text-red-600 hover:bg-red-50 px-3 py-2 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center" do %>
-            <svg class="h-4 w-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+              class: "relative group text-red-700 hover:text-red-600 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100/50 hover:shadow-sm flex items-center" do %>
+            <div class="absolute inset-0 bg-gradient-to-r from-red-500/10 to-red-600/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <svg class="h-4 w-4 mr-2 relative z-10" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
               <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
             </svg>
-            Admin
+            <span class="relative z-10">Admin Panel</span>
           <% end %>
         <% end %>
       </div>
@@ -36,22 +62,23 @@
       <!-- Right side navigation -->
       <div class="hidden md:flex md:items-center md:space-x-3">
         <% if user_signed_in? %>
-          <!-- Notifications Dropdown -->
+          <!-- Enhanced Notifications Dropdown -->
           <div class="relative" data-controller="dropdown">
             <button type="button"
                     data-dropdown-target="button"
                     data-action="click->dropdown#toggle"
-                    class="relative p-2 text-gray-600 hover:text-teal-600 hover:bg-teal-50 rounded-full transition-all duration-200 group focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
+                    class="relative group p-3 text-gray-600 hover:text-teal-600 rounded-xl transition-all duration-300 hover:bg-gradient-to-r hover:from-teal-50 hover:to-teal-100/50 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
                     aria-label="View notifications"
                     aria-haspopup="true"
                     aria-expanded="false">
-              <svg class="h-6 w-6 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <div class="absolute inset-0 bg-gradient-to-r from-teal-500/10 to-teal-600/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <svg class="h-6 w-6 relative z-10 transition-transform group-hover:scale-110 group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
               </svg>
               <% if current_user.notifications.unread.any? %>
-                <span class="absolute top-0 right-0 flex h-5 w-5">
+                <span class="absolute -top-1 -right-1 flex h-6 w-6">
                   <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
-                  <span class="relative inline-flex rounded-full h-5 w-5 bg-gradient-to-br from-teal-500 to-teal-600 items-center justify-center text-white text-xs font-bold shadow-lg">
+                  <span class="relative inline-flex rounded-full h-6 w-6 bg-gradient-to-br from-teal-500 to-teal-600 items-center justify-center text-white text-xs font-bold shadow-lg ring-2 ring-white">
                     <%= [current_user.notifications.unread.count, 9].min %>
                   </span>
                 </span>
@@ -168,19 +195,30 @@
             </div>
           </div>
 
-          <!-- User Profile Dropdown -->
+          <!-- Enhanced User Profile Dropdown -->
           <div class="relative" data-controller="dropdown">
             <button type="button"
                     data-dropdown-target="button"
                     data-action="click->dropdown#toggle"
-                    class="flex items-center space-x-2 text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 hover:opacity-90 transition-all duration-200 group"
+                    class="flex items-center space-x-3 text-sm rounded-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 hover:bg-gradient-to-r hover:from-teal-50 hover:to-teal-100/50 transition-all duration-300 group p-2"
                     aria-haspopup="true"
                     aria-expanded="false"
                     aria-label="User menu">
-              <div class="h-9 w-9 rounded-full bg-gradient-to-br from-teal-500 to-gray-600 flex items-center justify-center text-white font-bold shadow-lg ring-2 ring-white group-hover:scale-105 transition-transform duration-200">
-                <%= current_user.email[0].upcase %>
+              <div class="relative">
+                <div class="absolute inset-0 bg-gradient-to-br from-teal-500 to-gray-600 rounded-full blur opacity-20 group-hover:opacity-30 transition-opacity duration-300"></div>
+                <div class="relative h-10 w-10 rounded-full bg-gradient-to-br from-teal-500 to-gray-600 flex items-center justify-center text-white font-bold shadow-lg ring-2 ring-white group-hover:scale-105 group-hover:shadow-xl transition-all duration-300">
+                  <%= current_user.email[0].upcase %>
+                </div>
               </div>
-              <svg class="h-4 w-4 text-gray-400 group-hover:text-gray-600 transition-colors" fill="currentColor" viewBox="0 0 20 20">
+              <div class="hidden sm:block">
+                <div class="text-sm font-medium text-gray-700 group-hover:text-gray-900 transition-colors duration-300">
+                  <%= current_user.full_name.present? ? current_user.full_name : current_user.email.split('@').first.titleize %>
+                </div>
+                <div class="text-xs text-gray-500 group-hover:text-gray-600 transition-colors duration-300">
+                  <%= current_user.admin? ? "Admin" : (current_user.provider? ? "Provider" : "Patient") %>
+                </div>
+              </div>
+              <svg class="h-4 w-4 text-gray-400 group-hover:text-teal-600 transition-all duration-300 group-hover:rotate-180" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
               </svg>
             </button>
@@ -189,24 +227,34 @@
                  class="hidden absolute right-0 mt-3 w-72 rounded-xl shadow-2xl bg-white ring-1 ring-gray-200 divide-y divide-gray-100 z-50 overflow-hidden"
                  style="opacity: 0; transform: scale(0.95); transition: opacity 0.2s ease-out, transform 0.2s ease-out;"
                  role="menu">
-              <!-- User info with gradient background -->
-              <div class="px-5 py-4 bg-gradient-to-r from-indigo-500 to-purple-600">
-                <div class="flex items-center space-x-3">
-                  <div class="h-12 w-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white font-bold text-lg ring-2 ring-white/30">
-                    <%= current_user.email[0].upcase %>
+              <!-- Enhanced User info with brand gradient background -->
+              <div class="px-6 py-5 bg-gradient-to-r from-teal-600 via-teal-700 to-gray-700 relative overflow-hidden">
+                <!-- Background decoration -->
+                <div class="absolute inset-0 bg-gradient-to-r from-teal-500/20 to-gray-600/20"></div>
+                <div class="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-2xl"></div>
+
+                <div class="relative flex items-center space-x-4">
+                  <div class="relative">
+                    <div class="absolute inset-0 bg-white/30 rounded-full blur"></div>
+                    <div class="relative h-14 w-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white font-bold text-lg ring-2 ring-white/40 shadow-lg">
+                      <%= current_user.email[0].upcase %>
+                    </div>
                   </div>
                   <div class="flex-1 min-w-0">
-                    <p class="text-sm font-semibold text-white truncate"><%= current_user.email %></p>
-                    <div class="flex items-center mt-1">
-                      <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-white/20 text-white backdrop-blur-sm">
-                        <svg class="mr-1 h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
+                    <p class="text-base font-semibold text-white truncate">
+                      <%= current_user.full_name.present? ? current_user.full_name : current_user.email.split('@').first.titleize %>
+                    </p>
+                    <p class="text-sm text-teal-100 truncate"><%= current_user.email %></p>
+                    <div class="flex items-center mt-2">
+                      <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-white/20 text-white backdrop-blur-sm ring-1 ring-white/30">
+                        <svg class="mr-1.5 h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
                           <% if current_user.admin? %>
                             <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                           <% else %>
                             <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
                           <% end %>
                         </svg>
-                        <%= current_user.admin? ? "Admin" : (current_user.provider? ? "Provider" : "Patient") %>
+                        <%= current_user.admin? ? "Admin Account" : (current_user.provider? ? "Provider Account" : "Patient Account") %>
                       </span>
                     </div>
                   </div>
@@ -309,27 +357,42 @@
             </div>
           </div>
         <% else %>
-          <!-- Guest buttons -->
-          <%= link_to "Sign In", new_user_session_path,
-              class: "text-gray-700 hover:text-teal-600 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200" %>
-          <%= link_to "Get Started", new_user_registration_path,
-              class: "bg-gradient-to-r from-teal-600 to-gray-700 hover:from-teal-700 hover:to-gray-800 text-white px-6 py-2 rounded-lg text-sm font-semibold transition-all duration-200 shadow-md hover:shadow-lg" %>
+          <!-- Enhanced Guest buttons -->
+          <div class="flex items-center space-x-3">
+            <%= link_to "Sign In", new_user_session_path,
+                class: "relative group text-gray-700 hover:text-teal-600 px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 hover:bg-gradient-to-r hover:from-teal-50 hover:to-teal-100/50 hover:shadow-sm" do %>
+              <span class="relative z-10">Sign In</span>
+              <div class="absolute inset-0 bg-gradient-to-r from-teal-500/10 to-teal-600/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <% end %>
+
+            <%= link_to "Get Started", new_user_registration_path,
+                class: "relative group bg-gradient-to-r from-teal-600 to-gray-700 hover:from-teal-700 hover:to-gray-800 text-white px-6 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105" do %>
+              <span class="relative z-10 flex items-center">
+                Get Started
+                <svg class="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                </svg>
+              </span>
+              <div class="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <% end %>
+          </div>
         <% end %>
       </div>
 
-      <!-- Mobile menu button -->
+      <!-- Enhanced Mobile menu button -->
       <div class="md:hidden flex items-center">
         <button type="button"
                 data-navbar-target="mobileMenuButton"
                 data-action="click->navbar#toggleMobileMenu"
-                class="inline-flex items-center justify-center p-2 rounded-lg text-gray-400 hover:text-teal-600 hover:bg-teal-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-teal-500 transition-all duration-200"
+                class="relative group inline-flex items-center justify-center p-3 rounded-xl text-gray-600 hover:text-teal-600 transition-all duration-300 hover:bg-gradient-to-r hover:from-teal-50 hover:to-teal-100/50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-teal-500"
                 aria-controls="mobile-menu"
                 aria-expanded="false"
                 aria-label="Toggle navigation menu">
-          <svg data-navbar-target="mobileMenuIcon" class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <div class="absolute inset-0 bg-gradient-to-r from-teal-500/10 to-teal-600/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <svg data-navbar-target="mobileMenuIcon" class="relative z-10 h-6 w-6 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
           </svg>
-          <svg data-navbar-target="mobileMenuCloseIcon" class="hidden h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <svg data-navbar-target="mobileMenuCloseIcon" class="relative z-10 hidden h-6 w-6 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
           </svg>
         </button>
