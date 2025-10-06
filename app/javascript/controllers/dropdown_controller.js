@@ -108,23 +108,16 @@ export default class extends Controller {
       backgroundColor: computedStyle.backgroundColor
     })
 
-    // Add visual debugging FIRST to make sure it's visible
-    this.menuTarget.style.setProperty("border", "5px solid red", "important")
-    this.menuTarget.style.setProperty("background-color", "yellow", "important")
+    // Apply the same successful approach as the cloned dropdown
+    this.menuTarget.style.setProperty("position", "fixed", "important")
+    this.menuTarget.style.setProperty("top", "70px", "important")
+    this.menuTarget.style.setProperty("right", "20px", "important")
+    this.menuTarget.style.setProperty("left", "auto", "important")
     this.menuTarget.style.setProperty("z-index", "9999", "important")
+    this.menuTarget.style.setProperty("transform", "none", "important")
+    this.menuTarget.style.setProperty("margin", "0", "important")
 
-    // Check what's preventing visibility
-    const computedStyle2 = window.getComputedStyle(this.menuTarget)
-    console.log("=== VISIBILITY CHECK ===")
-    console.log("Display:", computedStyle2.display)
-    console.log("Visibility:", computedStyle2.visibility)
-    console.log("Opacity:", computedStyle2.opacity)
-    console.log("Position:", computedStyle2.position)
-    console.log("Z-index:", computedStyle2.zIndex)
-    console.log("Width:", computedStyle2.width)
-    console.log("Height:", computedStyle2.height)
-    console.log("Overflow:", computedStyle2.overflow)
-    console.log("Transform:", computedStyle2.transform)
+    console.log("Dropdown styles applied")
 
     // Force positioning fix with proper timing
     requestAnimationFrame(() => {
@@ -160,30 +153,7 @@ export default class extends Controller {
       console.log("Is in DOM:", document.contains(this.menuTarget))
       console.log("Is connected:", this.menuTarget.isConnected)
 
-      // Try to clone the dropdown and append it to body
-      const clonedDropdown = this.menuTarget.cloneNode(true)
-      clonedDropdown.style.cssText = `
-        position: fixed !important;
-        top: 200px !important;
-        right: 50px !important;
-        width: 300px !important;
-        height: 200px !important;
-        background: lime !important;
-        border: 5px solid purple !important;
-        z-index: 99999 !important;
-        display: block !important;
-        opacity: 1 !important;
-        visibility: visible !important;
-        transform: none !important;
-      `
-      clonedDropdown.textContent = 'CLONED DROPDOWN - This should be visible!'
-      document.body.appendChild(clonedDropdown)
-
-      setTimeout(() => {
-        if (document.body.contains(clonedDropdown)) {
-          document.body.removeChild(clonedDropdown)
-        }
-      }, 5000)
+      console.log("Dropdown positioning applied successfully")
     })
 
     // Add event listeners after a small delay to prevent immediate closing
@@ -247,20 +217,15 @@ export default class extends Controller {
   }
 
   close() {
-    console.log("Closing dropdown - before changes")
-    console.log("Menu classes before:", this.menuTarget.className)
+    console.log("Closing dropdown")
 
     this.openValue = false
     this.buttonTarget.setAttribute("aria-expanded", "false")
 
-    // Immediate hide for debugging
-    this.menuTarget.style.display = "none"
-    this.menuTarget.style.opacity = "0"
-    this.menuTarget.style.transform = "scale(0.95)"
+    // Hide the dropdown
+    this.menuTarget.style.setProperty("display", "none", "important")
     this.menuTarget.classList.add("hidden")
-    this.menuTarget.classList.remove("block", "show", "hide")
-
-    console.log("Menu classes after:", this.menuTarget.className)
+    this.menuTarget.classList.remove("block", "show", "hide", "visible")
 
     // Remove event listeners
     document.removeEventListener("click", this.boundHandleClickOutside)
