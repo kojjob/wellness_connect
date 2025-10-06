@@ -1,24 +1,61 @@
 <% content_for :admin_page_title, "Edit Provider Profile" %>
 
-<!-- Back Button -->
-<div class="mb-6">
-  <%= link_to admin_provider_profile_path(@provider_profile), class: "inline-flex items-center text-gray-600 hover:text-gray-900" do %>
-    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-    </svg>
-    Back to Profile Details
-  <% end %>
-</div>
+<!-- Modern Hero Section -->
+<section class="relative bg-gradient-to-br from-teal-600 via-gray-700 to-teal-800 text-white overflow-hidden pt-6">
+  <%# Gradient Overlay %>
+  <div class="absolute inset-0 bg-gradient-to-r from-gray-900/95 via-gray-900/80 to-transparent"></div>
 
-<!-- Edit Form -->
-<div class="max-w-3xl">
-  <div class="bg-white rounded-lg shadow overflow-hidden">
-    <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
-      <h2 class="text-lg font-semibold text-gray-900">Edit Provider Profile</h2>
-      <p class="text-sm text-gray-600 mt-1">Update provider professional information</p>
+  <%# Animated Background Blobs %>
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <div class="absolute -top-40 -right-40 w-80 h-80 bg-teal-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"></div>
+    <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-gray-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-2000"></div>
+    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-teal-600 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-4000"></div>
+  </div>
+
+  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
+    <!-- Breadcrumb Navigation -->
+    <nav class="flex items-center space-x-2 text-sm mb-6" aria-label="Breadcrumb">
+      <%= link_to admin_root_path, class: "text-white/70 hover:text-white transition-colors duration-200" do %>
+        <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+        </svg>
+      <% end %>
+      <svg class="h-4 w-4 text-white/50" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+      </svg>
+      <%= link_to "Provider Profiles", admin_provider_profiles_path, class: "text-white/70 hover:text-white transition-colors duration-200" %>
+      <svg class="h-4 w-4 text-white/50" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+      </svg>
+      <%= link_to @provider_profile.user.full_name, admin_provider_profile_path(@provider_profile), class: "text-white/70 hover:text-white transition-colors duration-200" %>
+      <svg class="h-4 w-4 text-white/50" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+      </svg>
+      <span class="text-white font-medium">Edit Profile</span>
+    </nav>
+
+    <!-- Hero Content -->
+    <div class="flex items-center justify-between">
+      <div class="flex-1">
+        <div class="flex items-center space-x-3 mb-4">
+          <div class="h-12 w-12 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
+            <svg class="h-7 w-7 text-white" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+            </svg>
+          </div>
+          <div>
+            <h1 class="text-3xl font-bold text-white">Edit Provider Profile</h1>
+            <p class="text-lg text-white/90 mt-1">Update professional information for <%= @provider_profile.user.full_name %></p>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
+</section>
 
-    <%= form_with model: @provider_profile, url: admin_provider_profile_path(@provider_profile), method: :patch, class: "px-6 py-6" do |f| %>
+<!-- Main Content -->
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <%= form_with model: @provider_profile, url: admin_provider_profile_path(@provider_profile), method: :patch, local: true, multipart: true, class: "space-y-8" do |f| %>
       <!-- Error Messages -->
       <% if @provider_profile.errors.any? %>
         <div class="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded-md">
@@ -42,70 +79,400 @@
         </div>
       <% end %>
 
-      <!-- Provider Information -->
-      <div class="mb-6 p-4 bg-indigo-50 border-l-4 border-indigo-400 rounded-md">
-        <div class="flex">
+      <!-- Provider Information Card -->
+      <div class="bg-gradient-to-r from-teal-50 to-gray-50 border-l-4 border-teal-500 rounded-xl p-6 shadow-sm">
+        <div class="flex items-start">
           <div class="flex-shrink-0">
-            <svg class="h-5 w-5 text-indigo-400" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
-            </svg>
+            <div class="h-12 w-12 rounded-xl bg-gradient-to-br from-teal-500 to-gray-600 flex items-center justify-center">
+              <svg class="h-6 w-6 text-white" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+              </svg>
+            </div>
           </div>
-          <div class="ml-3">
-            <p class="text-sm text-indigo-700">
-              <strong>Provider:</strong> <%= @provider_profile.user.full_name %>
-              (<%= @provider_profile.user.email %>)
-            </p>
+          <div class="ml-4 flex-1">
+            <h3 class="text-lg font-semibold text-gray-900">Provider Information</h3>
+            <div class="mt-2 space-y-1">
+              <p class="text-sm text-gray-700">
+                <span class="font-medium">Name:</span> <%= @provider_profile.user.full_name %>
+              </p>
+              <p class="text-sm text-gray-700">
+                <span class="font-medium">Email:</span> <%= @provider_profile.user.email %>
+              </p>
+              <p class="text-sm text-gray-700">
+                <span class="font-medium">Role:</span>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-teal-100 text-teal-800">
+                  Provider
+                </span>
+              </p>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Form Fields -->
-      <div class="space-y-6">
-        <!-- Specialty -->
-        <div>
-          <%= f.label :specialty, "Specialty", class: "block text-sm font-medium text-gray-700 mb-1" %>
-          <%= f.text_field :specialty, class: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent", required: true, placeholder: "e.g., Business Coaching, Legal Consultation" %>
-          <p class="mt-1 text-sm text-gray-500">Professional area of expertise</p>
+      <!-- Profile Statistics Card -->
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div class="bg-gradient-to-r from-teal-600 to-gray-700 px-6 py-4">
+          <h3 class="text-lg font-semibold text-white flex items-center">
+            <svg class="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/>
+            </svg>
+            Profile Statistics
+          </h3>
+          <p class="text-teal-100 text-sm mt-1">Current profile performance metrics</p>
         </div>
 
-        <!-- Credentials -->
-        <div>
-          <%= f.label :credentials, "Credentials", class: "block text-sm font-medium text-gray-700 mb-1" %>
-          <%= f.text_field :credentials, class: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent", placeholder: "e.g., MBA, Certified Business Coach, 15 years experience" %>
-          <p class="mt-1 text-sm text-gray-500">Certifications, licenses, degrees, and relevant experience</p>
-        </div>
-
-        <!-- Bio -->
-        <div>
-          <%= f.label :bio, "Professional Bio", class: "block text-sm font-medium text-gray-700 mb-1" %>
-          <%= f.text_area :bio, rows: 6, class: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent", placeholder: "Share your professional background, approach, and what makes your services unique..." %>
-          <p class="mt-1 text-sm text-gray-500">Professional background and service approach</p>
-        </div>
-
-        <!-- Statistics (Read-only) -->
-        <div class="bg-gray-50 border border-gray-200 rounded-md p-4">
-          <h4 class="text-sm font-medium text-gray-900 mb-3">Profile Statistics (Read-only)</h4>
-          <dl class="grid grid-cols-3 gap-4">
-            <div>
-              <dt class="text-xs font-medium text-gray-500">Services</dt>
-              <dd class="mt-1 text-xl font-semibold text-gray-900"><%= @provider_profile.services.count %></dd>
+        <div class="p-6">
+          <dl class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100">
+              <dt class="text-sm font-medium text-gray-600 mb-1">Total Services</dt>
+              <dd class="text-3xl font-bold text-gray-900"><%= @provider_profile.services.count %></dd>
+              <p class="text-xs text-gray-500 mt-1">Active service offerings</p>
             </div>
-            <div>
-              <dt class="text-xs font-medium text-gray-500">Reviews</dt>
-              <dd class="mt-1 text-xl font-semibold text-gray-900"><%= @provider_profile.total_reviews %></dd>
+            <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4 border border-green-100">
+              <dt class="text-sm font-medium text-gray-600 mb-1">Total Reviews</dt>
+              <dd class="text-3xl font-bold text-gray-900"><%= @provider_profile.total_reviews %></dd>
+              <p class="text-xs text-gray-500 mt-1">Client feedback received</p>
             </div>
-            <div>
-              <dt class="text-xs font-medium text-gray-500">Avg Rating</dt>
-              <dd class="mt-1 text-xl font-semibold text-gray-900"><%= @provider_profile.display_rating %></dd>
+            <div class="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl p-4 border border-yellow-100">
+              <dt class="text-sm font-medium text-gray-600 mb-1">Average Rating</dt>
+              <dd class="text-3xl font-bold text-gray-900 flex items-center">
+                <%= @provider_profile.display_rating %>
+                <svg class="h-6 w-6 text-yellow-400 ml-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                </svg>
+              </dd>
+              <p class="text-xs text-gray-500 mt-1">Client satisfaction score</p>
             </div>
           </dl>
         </div>
       </div>
 
+      <!-- Basic Information Section -->
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div class="bg-gradient-to-r from-teal-600 to-gray-700 px-6 py-4">
+          <h3 class="text-lg font-semibold text-white flex items-center">
+            <svg class="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+            </svg>
+            Basic Information
+          </h3>
+          <p class="text-teal-100 text-sm mt-1">Core professional details and specialty</p>
+        </div>
+
+        <div class="p-6 space-y-6">
+          <!-- Specialty -->
+          <div>
+            <%= f.label :specialty, "Specialty", class: "block text-sm font-semibold text-gray-900 mb-2" %>
+            <%= f.text_field :specialty,
+                  class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 text-sm",
+                  required: true,
+                  placeholder: "e.g., Business Coaching, Legal Consultation, Wellness Therapy" %>
+            <p class="mt-2 text-sm text-gray-600">Primary professional area of expertise</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Professional Details Section -->
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div class="bg-gradient-to-r from-teal-600 to-gray-700 px-6 py-4">
+          <h3 class="text-lg font-semibold text-white flex items-center">
+            <svg class="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            Professional Details
+          </h3>
+          <p class="text-teal-100 text-sm mt-1">Credentials, education, and professional background</p>
+        </div>
+
+        <div class="p-6 space-y-6">
+          <!-- Credentials -->
+          <div>
+            <%= f.label :credentials, "Credentials & Certifications", class: "block text-sm font-semibold text-gray-900 mb-2" %>
+            <%= f.text_area :credentials,
+                  rows: 3,
+                  class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 text-sm",
+                  placeholder: "e.g., MBA, Certified Business Coach, Licensed Clinical Social Worker (LCSW), 15 years experience" %>
+            <p class="mt-2 text-sm text-gray-600">Certifications, licenses, degrees, and relevant experience</p>
+          </div>
+
+          <!-- Education -->
+          <div>
+            <%= f.label :education, "Education Background", class: "block text-sm font-semibold text-gray-900 mb-2" %>
+            <%= f.text_area :education,
+                  rows: 3,
+                  class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 text-sm",
+                  placeholder: "e.g., Master of Business Administration - Harvard Business School (2010), Bachelor of Psychology - Stanford University (2008)" %>
+            <p class="mt-2 text-sm text-gray-600">Educational qualifications and institutions</p>
+          </div>
+
+          <!-- Additional Certifications -->
+          <div>
+            <%= f.label :certifications, "Additional Certifications", class: "block text-sm font-semibold text-gray-900 mb-2" %>
+            <%= f.text_area :certifications,
+                  rows: 3,
+                  class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 text-sm",
+                  placeholder: "e.g., Certified Professional Coach (ICF), Project Management Professional (PMP), Google Analytics Certified" %>
+            <p class="mt-2 text-sm text-gray-600">Professional certifications and continuing education</p>
+          </div>
+
+          <!-- Years of Experience -->
+          <div>
+            <%= f.label :years_of_experience, "Years of Experience", class: "block text-sm font-semibold text-gray-900 mb-2" %>
+            <%= f.number_field :years_of_experience,
+                  class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 text-sm",
+                  placeholder: "e.g., 15",
+                  min: 0 %>
+            <p class="mt-2 text-sm text-gray-600">Total years of professional experience</p>
+          </div>
+
+          <!-- Languages -->
+          <div>
+            <%= f.label :languages, "Languages Spoken", class: "block text-sm font-semibold text-gray-900 mb-2" %>
+            <%= f.text_field :languages,
+                  class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 text-sm",
+                  placeholder: "e.g., English (Native), Spanish (Fluent), Mandarin Chinese (Conversational)" %>
+            <p class="mt-2 text-sm text-gray-600">Languages and proficiency levels (comma-separated)</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Professional Bio Section -->
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div class="bg-gradient-to-r from-teal-600 to-gray-700 px-6 py-4">
+          <h3 class="text-lg font-semibold text-white flex items-center">
+            <svg class="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+            </svg>
+            Professional Bio & Philosophy
+          </h3>
+          <p class="text-teal-100 text-sm mt-1">Professional background, approach, and philosophy</p>
+        </div>
+
+        <div class="p-6 space-y-6">
+          <!-- Bio -->
+          <div>
+            <%= f.label :bio, "Professional Bio", class: "block text-sm font-semibold text-gray-900 mb-2" %>
+            <%= f.text_area :bio,
+                  rows: 8,
+                  class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 text-sm",
+                  placeholder: "Share your professional background, experience, approach to helping clients, and what makes your services unique. This will be displayed prominently on your profile...",
+                  required: true %>
+            <p class="mt-2 text-sm text-gray-600">Professional background and service approach (minimum 50 characters, maximum 2000)</p>
+          </div>
+
+          <!-- Philosophy -->
+          <div>
+            <%= f.label :philosophy, "Professional Philosophy", class: "block text-sm font-semibold text-gray-900 mb-2" %>
+            <%= f.text_area :philosophy,
+                  rows: 4,
+                  class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 text-sm",
+                  placeholder: "e.g., I believe in empowering clients through collaborative goal-setting and evidence-based strategies..." %>
+            <p class="mt-2 text-sm text-gray-600">Your approach and philosophy in working with clients</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Expertise & Services Section -->
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div class="bg-gradient-to-r from-teal-600 to-gray-700 px-6 py-4">
+          <h3 class="text-lg font-semibold text-white flex items-center">
+            <svg class="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+            </svg>
+            Areas of Expertise & Services
+          </h3>
+          <p class="text-teal-100 text-sm mt-1">Specializations, modalities, and service offerings</p>
+        </div>
+
+        <div class="p-6 space-y-6">
+          <!-- Areas of Expertise -->
+          <div>
+            <%= f.label :areas_of_expertise, "Areas of Expertise", class: "block text-sm font-semibold text-gray-900 mb-2" %>
+            <%= f.text_area :areas_of_expertise,
+                  rows: 3,
+                  class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 text-sm",
+                  placeholder: "e.g., Strategic Planning, Leadership Development, Team Building, Change Management, Executive Coaching" %>
+            <p class="mt-2 text-sm text-gray-600">Specific areas of expertise (comma-separated)</p>
+          </div>
+
+          <!-- Treatment Modalities -->
+          <div>
+            <%= f.label :treatment_modalities, "Treatment Modalities / Methodologies", class: "block text-sm font-semibold text-gray-900 mb-2" %>
+            <%= f.text_area :treatment_modalities,
+                  rows: 3,
+                  class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 text-sm",
+                  placeholder: "e.g., Cognitive Behavioral Therapy, LEAN Methodology, Agile Coaching, Solution-Focused Therapy" %>
+            <p class="mt-2 text-sm text-gray-600">Specific methodologies, frameworks, or treatment approaches used</p>
+          </div>
+
+          <!-- Session Formats -->
+          <div>
+            <%= f.label :session_formats, "Session Formats Offered", class: "block text-sm font-semibold text-gray-900 mb-2" %>
+            <%= f.text_area :session_formats,
+                  rows: 2,
+                  class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 text-sm",
+                  placeholder: "e.g., Individual Sessions, Group Workshops, Online Consultations, In-Person Meetings, Weekend Intensives" %>
+            <p class="mt-2 text-sm text-gray-600">Types of session formats you offer (comma-separated)</p>
+          </div>
+
+          <!-- Industries Served -->
+          <div>
+            <%= f.label :industries_served, "Industries Served", class: "block text-sm font-semibold text-gray-900 mb-2" %>
+            <%= f.text_area :industries_served,
+                  rows: 2,
+                  class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 text-sm",
+                  placeholder: "e.g., Technology, Healthcare, Finance, Non-Profit, Startups, Fortune 500 Companies" %>
+            <p class="mt-2 text-sm text-gray-600">Industries or sectors you specialize in serving (comma-separated)</p>
+          </div>
+
+          <!-- Consultation Rate -->
+          <div>
+            <%= f.label :consultation_rate, "Consultation Rate (per hour)", class: "block text-sm font-semibold text-gray-900 mb-2" %>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <span class="text-gray-500 text-sm">$</span>
+              </div>
+              <%= f.number_field :consultation_rate,
+                    class: "w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 text-sm",
+                    placeholder: "150.00",
+                    step: "0.01",
+                    min: 0 %>
+            </div>
+            <p class="mt-2 text-sm text-gray-600">Hourly consultation rate in USD</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact Information Section -->
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div class="bg-gradient-to-r from-teal-600 to-gray-700 px-6 py-4">
+          <h3 class="text-lg font-semibold text-white flex items-center">
+            <svg class="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+            </svg>
+            Contact Information
+          </h3>
+          <p class="text-teal-100 text-sm mt-1">Contact details and office information</p>
+        </div>
+
+        <div class="p-6 space-y-6">
+          <!-- Phone -->
+          <div>
+            <%= f.label :phone, "Phone Number", class: "block text-sm font-semibold text-gray-900 mb-2" %>
+            <%= f.telephone_field :phone,
+                  class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 text-sm",
+                  placeholder: "(555) 123-4567" %>
+            <p class="mt-2 text-sm text-gray-600">Primary contact phone number</p>
+          </div>
+
+          <!-- Office Address -->
+          <div>
+            <%= f.label :office_address, "Office Address", class: "block text-sm font-semibold text-gray-900 mb-2" %>
+            <%= f.text_area :office_address,
+                  rows: 3,
+                  class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 text-sm",
+                  placeholder: "123 Main Street, Suite 100, City, State 12345" %>
+            <p class="mt-2 text-sm text-gray-600">Physical office location (if applicable)</p>
+          </div>
+
+          <!-- Website -->
+          <div>
+            <%= f.label :website, "Website URL", class: "block text-sm font-semibold text-gray-900 mb-2" %>
+            <%= f.url_field :website,
+                  class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 text-sm",
+                  placeholder: "https://www.example.com" %>
+            <p class="mt-2 text-sm text-gray-600">Professional website or portfolio</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Social Media Section -->
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div class="bg-gradient-to-r from-teal-600 to-gray-700 px-6 py-4">
+          <h3 class="text-lg font-semibold text-white flex items-center">
+            <svg class="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z"/>
+              <path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z"/>
+            </svg>
+            Social Media & Professional Networks
+          </h3>
+          <p class="text-teal-100 text-sm mt-1">Professional social media profiles</p>
+        </div>
+
+        <div class="p-6 space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- LinkedIn -->
+            <div>
+              <%= f.label :linkedin_url, "LinkedIn Profile", class: "block text-sm font-semibold text-gray-900 mb-2" %>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                  </svg>
+                </div>
+                <%= f.url_field :linkedin_url,
+                      class: "w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 text-sm",
+                      placeholder: "https://linkedin.com/in/username" %>
+              </div>
+            </div>
+
+            <!-- Twitter -->
+            <div>
+              <%= f.label :twitter_url, "Twitter Profile", class: "block text-sm font-semibold text-gray-900 mb-2" %>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+                  </svg>
+                </div>
+                <%= f.url_field :twitter_url,
+                      class: "w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 text-sm",
+                      placeholder: "https://twitter.com/username" %>
+              </div>
+            </div>
+
+            <!-- Facebook -->
+            <div>
+              <%= f.label :facebook_url, "Facebook Page", class: "block text-sm font-semibold text-gray-900 mb-2" %>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                  </svg>
+                </div>
+                <%= f.url_field :facebook_url,
+                      class: "w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 text-sm",
+                      placeholder: "https://facebook.com/username" %>
+              </div>
+            </div>
+
+            <!-- Instagram -->
+            <div>
+              <%= f.label :instagram_url, "Instagram Profile", class: "block text-sm font-semibold text-gray-900 mb-2" %>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                  </svg>
+                </div>
+                <%= f.url_field :instagram_url,
+                      class: "w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 text-sm",
+                      placeholder: "https://instagram.com/username" %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Form Actions -->
-      <div class="flex items-center justify-end gap-4 mt-8 pt-6 border-t border-gray-200">
-        <%= link_to "Cancel", admin_provider_profile_path(@provider_profile), class: "px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md font-medium" %>
-        <%= f.submit "Update Profile", class: "px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium" %>
+      <div class="flex items-center justify-between gap-4 mt-8 pt-6 border-t border-gray-200">
+        <%= link_to admin_provider_profile_path(@provider_profile), class: "inline-flex items-center px-6 py-3 border border-gray-300 shadow-sm text-base font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-all duration-200" do %>
+          <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+          Cancel
+        <% end %>
+        <%= f.submit "Update Profile", class: "inline-flex items-center px-8 py-3 border border-transparent text-base font-semibold rounded-lg text-white bg-gradient-to-r from-teal-600 to-gray-700 hover:from-teal-700 hover:to-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105" %>
       </div>
     <% end %>
   </div>
