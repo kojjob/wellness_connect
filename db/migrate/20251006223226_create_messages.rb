@@ -1,8 +1,8 @@
 class CreateMessages < ActiveRecord::Migration[8.1]
   def change
     create_table :messages do |t|
-      t.references :conversation, null: false, foreign_key: true
-      t.references :sender, null: false, foreign_key: { to_table: :users }, index: false
+      t.references :conversation, null: false, foreign_key: false
+      t.references :sender, null: false, foreign_key: false, index: false
       t.text :content # Encrypted via Rails encrypts in model
       t.integer :message_type, default: 0, null: false
       t.datetime :read_at
@@ -10,6 +10,10 @@ class CreateMessages < ActiveRecord::Migration[8.1]
 
       t.timestamps
     end
+
+    # Add foreign keys with on_delete options explicitly
+    add_foreign_key :messages, :conversations, on_delete: :cascade
+    add_foreign_key :messages, :users, column: :sender_id, on_delete: :cascade
 
     # Indexes for performance
     add_index :messages, [:conversation_id, :created_at],

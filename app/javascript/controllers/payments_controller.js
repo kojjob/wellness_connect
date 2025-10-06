@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import Chart from "chart.js/auto"
+// import Chart from "chart.js/auto" // Temporarily disabled
 
 export default class extends Controller {
   static targets = ["spendingChart"]
@@ -235,4 +235,3 @@ export default class extends Controller {
     }, 500)
   }
 }
-

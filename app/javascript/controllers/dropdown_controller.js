@@ -141,14 +141,25 @@ export default class extends Controller {
     this.menuTarget.style.setProperty("transform", "none", "important")
     this.menuTarget.style.setProperty("margin", "0", "important")
 
-    // Add very visible styling for debugging
+    // Make dropdown EXTREMELY visible
     this.menuTarget.style.setProperty("background-color", "red", "important")
-    this.menuTarget.style.setProperty("border", "10px solid blue", "important")
-    this.menuTarget.style.setProperty("width", "300px", "important")
-    this.menuTarget.style.setProperty("height", "200px", "important")
+    this.menuTarget.style.setProperty("border", "20px solid blue", "important")
+    this.menuTarget.style.setProperty("width", "400px", "important")
+    this.menuTarget.style.setProperty("height", "300px", "important")
+    this.menuTarget.style.setProperty("box-shadow", "0 0 50px rgba(255,0,0,0.8)", "important")
+    this.menuTarget.style.setProperty("outline", "10px solid yellow", "important")
+
+    // Add flashing animation
+    this.menuTarget.style.setProperty("animation", "blink 1s infinite", "important")
 
     // Add text content to make it obvious
-    this.menuTarget.innerHTML = '<div style="color: white; font-size: 20px; padding: 20px;">DROPDOWN IS WORKING!</div>'
+    this.menuTarget.innerHTML = `
+      <div style="color: white; font-size: 24px; padding: 20px; text-align: center; font-weight: bold;">
+        🎉 DROPDOWN IS WORKING! 🎉<br>
+        Position: ${this.menuTarget.getBoundingClientRect().top}px, ${this.menuTarget.getBoundingClientRect().left}px<br>
+        <span style="background: yellow; color: black; padding: 5px;">YOU SHOULD SEE THIS!</span>
+      </div>
+    `
 
     console.log("Dropdown styles applied")
 

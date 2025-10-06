@@ -391,6 +391,13 @@
   transform: scale(0.95) !important;
 }
 
+/* Debug blinking animation */
+@keyframes blink {
+  0% { opacity: 1; }
+  50% { opacity: 0.3; }
+  100% { opacity: 1; }
+}
+
 /* Loading States */
 .loading-shimmer {
   background: linear-gradient(90deg, var(--gray-200) 25%, var(--gray-100) 50%, var(--gray-200) 75%);
