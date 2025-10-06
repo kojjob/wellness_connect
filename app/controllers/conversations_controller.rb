@@ -67,9 +67,9 @@ class ConversationsController < ApplicationController
     authorize @conversation
 
     if current_user.patient? && @conversation.patient_id == current_user.id
-      @conversation.update(patient_archived: true)
+      @conversation.update(archived_by_patient: true)
     elsif current_user.provider? && @conversation.provider_id == current_user.id
-      @conversation.update(provider_archived: true)
+      @conversation.update(archived_by_provider: true)
     end
 
     redirect_to conversations_path, notice: "Conversation archived."
@@ -81,9 +81,9 @@ class ConversationsController < ApplicationController
     authorize @conversation
 
     if current_user.patient? && @conversation.patient_id == current_user.id
-      @conversation.update(patient_archived: false)
+      @conversation.update(archived_by_patient: false)
     elsif current_user.provider? && @conversation.provider_id == current_user.id
-      @conversation.update(provider_archived: false)
+      @conversation.update(archived_by_provider: false)
     end
 
     redirect_to conversations_path, notice: "Conversation unarchived."

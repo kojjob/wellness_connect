@@ -81,7 +81,7 @@ class MessagesControllerTest < ActionDispatch::IntegrationTest
     other_patient = users(:patient_user_two)
     sign_in other_patient
 
-    assert_raises(Pundit::NotAuthorizedError) do
+    assert_no_difference("Message.count") do
       post conversation_messages_path(@conversation), params: {
         message: {
           content: "Should not be allowed",
@@ -89,6 +89,9 @@ class MessagesControllerTest < ActionDispatch::IntegrationTest
         }
       }
     end
+
+    assert_redirected_to root_path
+    assert_equal "You are not authorized to perform this action.", flash[:alert]
   end
 
   test "unauthenticated user cannot create message" do
@@ -172,13 +175,18 @@ class MessagesControllerTest < ActionDispatch::IntegrationTest
   test "user cannot update someone else's message" do
     sign_in @patient
 
-    assert_raises(Pundit::NotAuthorizedError) do
-      patch conversation_message_path(@conversation, @provider_message), params: {
-        message: {
-          content: "Should not be allowed"
-        }
+    original_content = @provider_message.content
+
+    patch conversation_message_path(@conversation, @provider_message), params: {
+      message: {
+        content: "Should not be allowed"
       }
-    end
+    }
+
+    @provider_message.reload
+    assert_equal original_content, @provider_message.content
+    assert_redirected_to root_path
+    assert_equal "You are not authorized to perform this action.", flash[:alert]
   end
 
   test "admin can update any message" do
@@ -228,9 +236,12 @@ class MessagesControllerTest < ActionDispatch::IntegrationTest
   test "user cannot delete someone else's message" do
     sign_in @patient
 
-    assert_raises(Pundit::NotAuthorizedError) do
+    assert_no_difference("Message.count") do
       delete conversation_message_path(@conversation, @provider_message)
     end
+
+    assert_redirected_to root_path
+    assert_equal "You are not authorized to perform this action.", flash[:alert]
   end
 
   test "admin can delete any message" do
@@ -274,18 +285,20 @@ class MessagesControllerTest < ActionDispatch::IntegrationTest
   test "sender cannot mark their own message as read" do
     sign_in @patient
 
-    assert_raises(Pundit::NotAuthorizedError) do
-      patch mark_as_read_conversation_message_path(@conversation, @patient_message)
-    end
+    patch mark_as_read_conversation_message_path(@conversation, @patient_message)
+
+    assert_redirected_to root_path
+    assert_equal "You are not authorized to perform this action.", flash[:alert]
   end
 
   test "user cannot mark as read in conversation they don't participate in" do
     other_patient = users(:patient_user_two)
     sign_in other_patient
 
-    assert_raises(Pundit::NotAuthorizedError) do
-      patch mark_as_read_conversation_message_path(@conversation, @provider_message)
-    end
+    patch mark_as_read_conversation_message_path(@conversation, @provider_message)
+
+    assert_redirected_to root_path
+    assert_equal "You are not authorized to perform this action.", flash[:alert]
   end
 
   test "marking message as read updates conversation unread count" do
