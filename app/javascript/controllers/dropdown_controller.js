@@ -77,10 +77,13 @@ export default class extends Controller {
 
     console.log("Menu classes after class changes:", this.menuTarget.className)
 
+    // Remove ALL inline styles first to clear any conflicts
+    this.menuTarget.removeAttribute("style")
+
     // Force immediate visibility with !important to override any CSS
     this.menuTarget.style.setProperty("display", "block", "important")
     this.menuTarget.style.setProperty("opacity", "1", "important")
-    this.menuTarget.style.setProperty("transform", "scale(1)", "important")
+    this.menuTarget.style.setProperty("transform", "none", "important")
     this.menuTarget.style.setProperty("visibility", "visible", "important")
 
     console.log("Menu classes after style changes:", this.menuTarget.className)
@@ -116,6 +119,15 @@ export default class extends Controller {
     this.menuTarget.style.setProperty("z-index", "9999", "important")
     this.menuTarget.style.setProperty("transform", "none", "important")
     this.menuTarget.style.setProperty("margin", "0", "important")
+
+    // Add very visible styling for debugging
+    this.menuTarget.style.setProperty("background-color", "red", "important")
+    this.menuTarget.style.setProperty("border", "10px solid blue", "important")
+    this.menuTarget.style.setProperty("width", "300px", "important")
+    this.menuTarget.style.setProperty("height", "200px", "important")
+
+    // Add text content to make it obvious
+    this.menuTarget.innerHTML = '<div style="color: white; font-size: 20px; padding: 20px;">DROPDOWN IS WORKING!</div>'
 
     console.log("Dropdown styles applied")
 

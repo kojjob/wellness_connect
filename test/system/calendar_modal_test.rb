@@ -9,43 +9,56 @@ class CalendarModalTest < ApplicationSystemTestCase
     @service = services(:service_one)
 
     # Create availabilities for testing calendar
-    # Use specific times of day to avoid timezone shift issues
-    # If it's late in the day (after 6 PM), use tomorrow as base to ensure slots are in future
-    base_date = Time.current.hour >= 18 ? Time.current.beginning_of_day + 1.day : Time.current.beginning_of_day
+    # Use Time.zone.local to explicitly create times in the application's timezone
+    # This ensures proper conversion between Rails (UTC storage) and JavaScript (local display)
+    # If it's late in the day (after 6 PM), use tomorrow to ensure slots are in future
+    base_date = Time.zone.now.hour >= 18 ? Time.zone.tomorrow.to_date : Time.zone.today
 
     @today_morning = Availability.create!(
       provider_profile: @provider_profile,
-      start_time: base_date + 9.hours,   # 9:00 AM (on base date)
-      end_time: base_date + 10.hours,    # 10:00 AM (on base date)
+      start_time: Time.zone.local(base_date.year, base_date.month, base_date.day, 9, 0, 0),
+      end_time: Time.zone.local(base_date.year, base_date.month, base_date.day, 10, 0, 0),
       is_booked: false
     )
+
+    # DEBUG: Print what we created
+    puts "\n=== AVAILABILITY DEBUG ==="
+    puts "Today is: #{Time.zone.today}"
+    puts "base_date: #{base_date}"
+    puts "@today_morning.start_time: #{@today_morning.start_time.inspect}"
+    puts "@today_morning.start_time.iso8601: #{@today_morning.start_time.iso8601}"
+    puts "@today_morning.start_time in UTC: #{@today_morning.start_time.utc}"
+    puts "========================\n"
 
     @today_afternoon = Availability.create!(
       provider_profile: @provider_profile,
-      start_time: base_date + 14.hours,  # 2:00 PM (on base date)
-      end_time: base_date + 15.hours,    # 3:00 PM (on base date)
+      start_time: Time.zone.local(base_date.year, base_date.month, base_date.day, 14, 0, 0),
+      end_time: Time.zone.local(base_date.year, base_date.month, base_date.day, 15, 0, 0),
       is_booked: false
     )
 
+    tomorrow = base_date + 1.day
     @tomorrow_slot = Availability.create!(
       provider_profile: @provider_profile,
-      start_time: base_date + 1.day + 9.hours,  # 9:00 AM (next day from base)
-      end_time: base_date + 1.day + 10.hours,   # 10:00 AM (next day from base)
+      start_time: Time.zone.local(tomorrow.year, tomorrow.month, tomorrow.day, 9, 0, 0),
+      end_time: Time.zone.local(tomorrow.year, tomorrow.month, tomorrow.day, 10, 0, 0),
       is_booked: false
     )
 
+    next_week = base_date + 7.days
     @next_week_slot = Availability.create!(
       provider_profile: @provider_profile,
-      start_time: base_date + 7.days + 9.hours,  # 9:00 AM (7 days from base)
-      end_time: base_date + 7.days + 10.hours,   # 10:00 AM (7 days from base)
+      start_time: Time.zone.local(next_week.year, next_week.month, next_week.day, 9, 0, 0),
+      end_time: Time.zone.local(next_week.year, next_week.month, next_week.day, 10, 0, 0),
       is_booked: false
     )
 
     # Create a booked slot to test it's not shown
+    day_after_tomorrow = base_date + 2.days
     @booked_slot = Availability.create!(
       provider_profile: @provider_profile,
-      start_time: base_date + 2.days + 9.hours,  # 9:00 AM (2 days from base)
-      end_time: base_date + 2.days + 10.hours,   # 10:00 AM (2 days from base)
+      start_time: Time.zone.local(day_after_tomorrow.year, day_after_tomorrow.month, day_after_tomorrow.day, 9, 0, 0),
+      end_time: Time.zone.local(day_after_tomorrow.year, day_after_tomorrow.month, day_after_tomorrow.day, 10, 0, 0),
       is_booked: true
     )
   end
