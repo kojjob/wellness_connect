@@ -12,10 +12,15 @@ export default class extends Controller {
     console.log("Availability calendar controller connected")
     this.currentDate = new Date()
     this.selectedDate = null
-    
+
     // Parse availabilities if they're passed as JSON
     if (this.hasAvailabilitiesValue) {
       this.availabilities = this.availabilitiesValue
+    }
+
+    // DEBUG: Add visible indicator that controller is connected
+    if (this.hasSelectedDateTarget) {
+      this.selectedDateTarget.innerHTML = `<p class="text-blue-500 text-xs">DEBUG: Controller connected with ${this.availabilities ? this.availabilities.length : 0} availabilities</p>`
     }
   }
 
@@ -57,46 +62,59 @@ export default class extends Controller {
   renderCalendar() {
     const year = this.currentDate.getFullYear()
     const month = this.currentDate.getMonth()
-    
+
+    // Debug: Check availabilities
+    console.log("=== RENDER CALENDAR ===")
+    console.log("Availabilities:", this.availabilities)
+    console.log("Availabilities length:", this.availabilities ? this.availabilities.length : 0)
+
     // Update month/year display
     const monthNames = ["January", "February", "March", "April", "May", "June",
                         "July", "August", "September", "October", "November", "December"]
     this.monthYearTarget.textContent = `${monthNames[month]} ${year}`
-    
+
     // Get first day of month and number of days
     const firstDay = new Date(year, month, 1).getDay()
     const daysInMonth = new Date(year, month + 1, 0).getDate()
+
+    // Use UTC date for consistent timezone handling
     const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    
-    // Build calendar HTML
-    let calendarHTML = '<div class="grid grid-cols-7 gap-2">'
-    
-    // Day headers
-    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-    dayNames.forEach(day => {
-      calendarHTML += `<div class="text-center text-xs font-semibold text-gray-600 py-2">${day}</div>`
-    })
-    
+    const todayUTC = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()))
+
+    // Build calendar HTML (just date cells, template already has grid and headers)
+    let calendarHTML = `<!-- DEBUG: Availabilities length = ${this.availabilities ? this.availabilities.length : 'undefined'} -->`
+
+    // DEBUG: Add availability dates to HTML comment
+    if (this.availabilities && this.availabilities.length > 0) {
+      const availDates = this.availabilities.map(a => new Date(a.start_time).toISOString().split('T')[0])
+      calendarHTML += `<!-- Avail dates: ${availDates.join(', ')} -->`
+    }
+
     // Empty cells for days before month starts
     for (let i = 0; i < firstDay; i++) {
       calendarHTML += '<div class="aspect-square"></div>'
     }
-    
+
     // Days of the month
     for (let day = 1; day <= daysInMonth; day++) {
-      const date = new Date(year, month, day)
-      date.setHours(0, 0, 0, 0)
-      const dateStr = date.toISOString().split('T')[0]
-      
+      // Create date in UTC to match availability timestamps
+      const dateUTC = new Date(Date.UTC(year, month, day))
+      const dateStr = dateUTC.toISOString().split('T')[0]
+
       // Check if this date has availabilities
-      const hasAvailability = this.hasAvailabilityOnDate(date)
-      const isPast = date < today
-      const isToday = date.getTime() === today.getTime()
-      const isSelected = this.selectedDate && date.toDateString() === this.selectedDate.toDateString()
-      
+      const hasAvailability = this.hasAvailabilityOnDate(dateUTC)
+      const isPast = dateUTC < todayUTC
+      const isToday = dateUTC.getTime() === todayUTC.getTime()
+      const isSelected = this.selectedDate && dateUTC.getTime() === this.selectedDate.getTime()
+
+      // Debug for dates 6, 7, 8, 13 to see timezone issue
+      if ([6, 7, 8, 13].includes(day) && month === 9) { // October = month 9
+        console.log(`Date ${day}: dateStr=${dateStr}, hasAvail=${hasAvailability}, isPast=${isPast}`)
+        calendarHTML += `<!-- Date ${day}: dateStr=${dateStr}, hasAvail=${hasAvailability}, isPast=${isPast} -->`
+      }
+
       let classes = 'aspect-square flex items-center justify-center rounded-lg text-sm font-medium transition cursor-pointer'
-      
+
       if (isPast) {
         classes += ' text-gray-300 cursor-not-allowed'
       } else if (isSelected) {
@@ -108,51 +126,96 @@ export default class extends Controller {
       } else {
         classes += ' text-gray-400 hover:bg-gray-50'
       }
-      
+
       const clickHandler = !isPast && hasAvailability ? `data-action="click->availability-calendar#selectDate" data-date="${dateStr}"` : ''
-      
+
+      // Debug click handler
+      if (day === today.getDate() && month === today.getMonth()) {
+        console.log(`  clickHandler: ${clickHandler}`)
+      }
+
       calendarHTML += `<div class="${classes}" ${clickHandler}>${day}</div>`
     }
-    
-    calendarHTML += '</div>'
-    
+
     this.calendarTarget.innerHTML = calendarHTML
+
+    // Manually bind click events to date cells since innerHTML doesn't preserve Stimulus actions
+    const dateCells = this.calendarTarget.querySelectorAll('[data-date]')
+
+    // DEBUG: Show how many date cells were found
+    if (this.hasSelectedDateTarget) {
+      this.selectedDateTarget.innerHTML = `<p class="text-purple-500 text-xs">DEBUG: Found ${dateCells.length} date cells with data-date attribute</p>`
+    }
+
+    dateCells.forEach((dateCell, index) => {
+      dateCell.addEventListener('click', (event) => {
+        // DEBUG: Update DOM to show listener was triggered
+        if (this.hasSelectedDateTarget) {
+          this.selectedDateTarget.innerHTML = `<p class="text-orange-500">DEBUG: Listener ${index} triggered for ${dateCell.dataset.date}</p>`
+        }
+        this.selectDate(event)
+      })
+    })
   }
 
   hasAvailabilityOnDate(date) {
     if (!this.availabilities || this.availabilities.length === 0) return false
-    
+
     const dateStr = date.toISOString().split('T')[0]
-    
+
+    // DEBUG: Log comparison for dates 6, 7, 8, 13
+    const day = date.getDate()
+    if ([6, 7, 8, 13].includes(day)) {
+      console.log(`\nhasAvailabilityOnDate for day ${day}:`)
+      console.log(`  dateStr (calendar): ${dateStr}`)
+      this.availabilities.forEach(avail => {
+        const availDate = new Date(avail.start_time).toISOString().split('T')[0]
+        console.log(`  availDate: ${availDate}, matches: ${availDate === dateStr}`)
+      })
+    }
+
     return this.availabilities.some(avail => {
       const availDate = new Date(avail.start_time).toISOString().split('T')[0]
-      return availDate === dateStr && !avail.is_booked
+      return availDate === dateStr
     })
   }
 
   selectDate(event) {
     const dateStr = event.currentTarget.dataset.date
-    this.selectedDate = new Date(dateStr + 'T00:00:00')
-    
+
+    // DEBUG: Update DOM to show this method was called
+    this.selectedDateTarget.innerHTML = `<p class="text-red-500">DEBUG: selectDate called with ${dateStr}</p>`
+
+    // Create date in UTC to match how we created calendar dates
+    const [year, month, day] = dateStr.split('-').map(Number)
+    this.selectedDate = new Date(Date.UTC(year, month - 1, day))
+
     // Re-render calendar to show selection
     this.renderCalendar()
-    
+
     // Show time slots for selected date
     this.renderTimeSlots()
   }
 
   renderTimeSlots() {
+    console.log(`renderTimeSlots called, selectedDate: ${this.selectedDate}`)
+
     if (!this.selectedDate) {
       this.timeSlotsTarget.innerHTML = '<p class="text-gray-500 text-center py-8">Select a date to view available time slots</p>'
       return
     }
-    
+
     const dateStr = this.selectedDate.toISOString().split('T')[0]
+    console.log(`Looking for slots on: ${dateStr}`)
+
     const slotsForDate = this.availabilities.filter(avail => {
       const availDate = new Date(avail.start_time).toISOString().split('T')[0]
-      return availDate === dateStr && !avail.is_booked
+      console.log(`  Comparing ${availDate} === ${dateStr}: ${availDate === dateStr}`)
+      return availDate === dateStr
     })
-    
+
+    console.log(`Found ${slotsForDate.length} slots for ${dateStr}`)
+
     if (slotsForDate.length === 0) {
       this.timeSlotsTarget.innerHTML = '<p class="text-gray-500 text-center py-8">No available time slots for this date</p>'
       return

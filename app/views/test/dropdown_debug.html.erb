@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dropdown Debug</title>
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+  
+  <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+  <%= javascript_importmap_tags %>
+</head>
+
+<body class="bg-gray-100 p-8">
+  <h1 class="text-2xl font-bold mb-8">Dropdown Debug Page</h1>
+  
+  <!-- Simple test dropdown -->
+  <div class="relative mb-8" data-controller="dropdown">
+    <button type="button"
+            data-dropdown-target="button"
+            data-action="click->dropdown#toggle"
+            class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            aria-haspopup="true"
+            aria-expanded="false">
+      Test Dropdown
+    </button>
+    
+    <div data-dropdown-target="menu"
+         class="hidden absolute right-0 mt-2 w-48 rounded-lg shadow-lg bg-white ring-1 ring-gray-200 z-50"
+         style="opacity: 0; transform: scale(0.95); transition: opacity 0.2s ease-out, transform 0.2s ease-out;"
+         role="menu">
+      <div class="py-1">
+        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Option 1</a>
+        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Option 2</a>
+        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Option 3</a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Notifications-style dropdown -->
+  <div class="relative mb-8" data-controller="dropdown">
+    <button type="button"
+            data-dropdown-target="button"
+            data-action="click->dropdown#toggle"
+            class="relative group p-3 text-gray-600 hover:text-teal-600 rounded-xl transition-all duration-300 hover:bg-gradient-to-r hover:from-teal-50 hover:to-teal-100/50 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
+            aria-label="View notifications"
+            aria-haspopup="true"
+            aria-expanded="false">
+      <div class="absolute inset-0 bg-gradient-to-r from-teal-500/10 to-teal-600/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+      <svg class="h-6 w-6 relative z-10 transition-transform group-hover:scale-110 group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+      </svg>
+      <span class="absolute -top-1 -right-1 flex h-6 w-6">
+        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
+        <span class="relative inline-flex rounded-full h-6 w-6 bg-gradient-to-br from-teal-500 to-teal-600 items-center justify-center text-white text-xs font-bold shadow-lg ring-2 ring-white">
+          3
+        </span>
+      </span>
+    </button>
+
+    <!-- Notifications Dropdown Menu -->
+    <div data-dropdown-target="menu"
+         class="hidden absolute right-0 mt-3 w-96 rounded-xl shadow-2xl bg-white ring-1 ring-gray-200 z-50 overflow-hidden"
+         style="opacity: 0; transform: scale(0.95); transition: opacity 0.2s ease-out, transform 0.2s ease-out;"
+         role="menu">
+      <div class="py-1">
+        <!-- Header with gradient -->
+        <div class="px-5 py-4 bg-gradient-to-r from-teal-600 to-gray-700">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+              <div class="h-8 w-8 rounded-lg bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                <svg class="h-5 w-5 text-white" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                  <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"/>
+                </svg>
+              </div>
+              <div>
+                <h3 class="text-sm font-semibold text-white">Notifications</h3>
+                <p class="text-xs text-teal-100">3 unread messages</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notification items -->
+        <div class="max-h-80 overflow-y-auto">
+          <div class="px-4 py-3 hover:bg-gray-50 border-b border-gray-100 cursor-pointer transition-colors">
+            <div class="flex items-start space-x-3">
+              <div class="flex-shrink-0">
+                <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center">
+                  <span class="text-white text-xs font-semibold">JD</span>
+                </div>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-gray-900">Test Notification</p>
+                <p class="text-sm text-gray-500 truncate">This is a test notification message.</p>
+                <p class="text-xs text-gray-400 mt-1">2 minutes ago</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="px-4 py-3 bg-gray-50 border-t border-gray-100">
+          <a href="#" class="text-sm font-medium text-teal-600 hover:text-teal-700 transition-colors">
+            View all notifications
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="mt-8">
+    <p class="text-gray-600">Open browser console to see debug logs.</p>
+    <p class="text-gray-600">Test clicking the buttons, clicking outside, and pressing Escape.</p>
+  </div>
+
+  <script>
+    // Additional debugging
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('DOM loaded')
+      console.log('Stimulus application:', window.Stimulus)
+      
+      const dropdowns = document.querySelectorAll('[data-controller="dropdown"]')
+      console.log('Found dropdown elements:', dropdowns.length)
+      
+      dropdowns.forEach((dropdown, index) => {
+        console.log(`Dropdown ${index}:`, dropdown)
+        console.log(`  Button:`, dropdown.querySelector('[data-dropdown-target="button"]'))
+        console.log(`  Menu:`, dropdown.querySelector('[data-dropdown-target="menu"]'))
+      })
+    })
+  </script>
+</body>
+</html>

@@ -4,6 +4,9 @@ Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
   root "home#index"
 
+  # Test route for debugging
+  get "test/dropdown_debug", to: "test#dropdown_debug" if Rails.env.development?
+
   # Admin dashboard (admin-only access)
   namespace :admin do
     root to: "dashboard#index" # /admin

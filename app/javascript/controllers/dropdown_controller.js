@@ -9,6 +9,9 @@ export default class extends Controller {
 
   connect() {
     console.log("Dropdown controller connected", this.element)
+    // Store reference to controller on element for easy access
+    this.element.dropdownController = this
+
     // Bind event handlers
     this.boundHandleClickOutside = this.handleClickOutside.bind(this)
     this.boundHandleEscape = this.handleEscape.bind(this)
@@ -65,8 +68,8 @@ export default class extends Controller {
     // Find all other dropdown controllers and close them
     const otherDropdowns = document.querySelectorAll('[data-controller*="dropdown"]')
     otherDropdowns.forEach(dropdown => {
-      if (dropdown !== this.element) {
-        const controller = this.application.getControllerForElementAndIdentifier(dropdown, "dropdown")
+      if (dropdown !== this.element && dropdown.dropdownController) {
+        const controller = dropdown.dropdownController
         if (controller && controller.openValue) {
           controller.close()
         }
@@ -115,5 +118,10 @@ export default class extends Controller {
     // Clean up event listeners
     document.removeEventListener("click", this.boundHandleClickOutside)
     document.removeEventListener("keydown", this.boundHandleEscape)
+
+    // Remove controller reference
+    if (this.element.dropdownController === this) {
+      delete this.element.dropdownController
+    }
   }
 }
