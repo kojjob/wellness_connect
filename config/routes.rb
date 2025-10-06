@@ -58,6 +58,21 @@ Rails.application.routes.draw do
     end
   end
 
+  # Conversations and Messages (messaging system)
+  resources :conversations, only: [ :index, :show, :create ] do
+    member do
+      patch :archive
+      patch :unarchive
+    end
+
+    # Nested messages within conversations
+    resources :messages, only: [ :create, :update, :destroy ] do
+      member do
+        patch :mark_as_read
+      end
+    end
+  end
+
   # Stripe webhooks
   post "stripe/webhooks", to: "stripe_webhooks#create", as: :stripe_webhooks
 
