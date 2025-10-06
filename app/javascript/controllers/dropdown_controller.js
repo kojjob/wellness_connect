@@ -68,17 +68,20 @@ export default class extends Controller {
 
     this.openValue = true
 
-    // Remove hidden class and add block
-    this.menuTarget.classList.remove("hidden", "hide")
-    this.menuTarget.classList.add("block")
+    // Aggressively remove any hiding classes and add block
+    this.menuTarget.classList.remove("hidden", "hide", "invisible")
+    this.menuTarget.classList.add("block", "visible")
     this.buttonTarget.setAttribute("aria-expanded", "true")
+
+    console.log("Classes after aggressive removal:", this.menuTarget.className)
 
     console.log("Menu classes after class changes:", this.menuTarget.className)
 
-    // Force immediate visibility for debugging
-    this.menuTarget.style.display = "block"
-    this.menuTarget.style.opacity = "1"
-    this.menuTarget.style.transform = "scale(1)"
+    // Force immediate visibility with !important to override any CSS
+    this.menuTarget.style.setProperty("display", "block", "important")
+    this.menuTarget.style.setProperty("opacity", "1", "important")
+    this.menuTarget.style.setProperty("transform", "scale(1)", "important")
+    this.menuTarget.style.setProperty("visibility", "visible", "important")
 
     console.log("Menu classes after style changes:", this.menuTarget.className)
     console.log("Menu style after:", this.menuTarget.style.cssText)
@@ -105,21 +108,57 @@ export default class extends Controller {
       backgroundColor: computedStyle.backgroundColor
     })
 
-    // Quick fix: Force dropdown to appear in viewport
-    const rect = this.menuTarget.getBoundingClientRect()
-    const viewportWidth = window.innerWidth
+    // Add visual debugging FIRST to make sure it's visible
+    this.menuTarget.style.border = "5px solid red !important"
+    this.menuTarget.style.backgroundColor = "yellow !important"
+    this.menuTarget.style.zIndex = "9999 !important"
 
-    if (rect.right > viewportWidth || rect.left > viewportWidth - 100) {
-      console.log("Forcing dropdown to visible position")
-      this.menuTarget.style.position = "fixed"
-      this.menuTarget.style.top = "60px"
-      this.menuTarget.style.right = "20px"
-      this.menuTarget.style.left = "auto"
-    }
+    // Force positioning fix with proper timing
+    requestAnimationFrame(() => {
+      const rect = this.menuTarget.getBoundingClientRect()
+      const viewportWidth = window.innerWidth
 
-    // Add a temporary red border for visual debugging
-    this.menuTarget.style.border = "3px solid red"
-    this.menuTarget.style.backgroundColor = "yellow"
+      console.log("Checking positioning:", {
+        left: rect.left,
+        right: rect.right,
+        viewportWidth: viewportWidth,
+        shouldFix: rect.right > viewportWidth || rect.left > viewportWidth - 100
+      })
+
+      // Always force to visible position for debugging
+      console.log("FORCING dropdown to visible position for debugging")
+      this.menuTarget.style.position = "fixed !important"
+      this.menuTarget.style.top = "80px !important"
+      this.menuTarget.style.right = "20px !important"
+      this.menuTarget.style.left = "auto !important"
+      this.menuTarget.style.transform = "none !important"
+      this.menuTarget.style.margin = "0 !important"
+
+      console.log("Dropdown should now be visible at top-right corner")
+
+      // Final fallback: Create a test element to verify visibility
+      const testDiv = document.createElement('div')
+      testDiv.style.cssText = `
+        position: fixed !important;
+        top: 100px !important;
+        right: 100px !important;
+        width: 200px !important;
+        height: 100px !important;
+        background: red !important;
+        border: 5px solid blue !important;
+        z-index: 99999 !important;
+        color: white !important;
+        padding: 20px !important;
+        font-size: 16px !important;
+        font-weight: bold !important;
+      `
+      testDiv.textContent = 'DROPDOWN TEST - If you see this, JS is working!'
+      document.body.appendChild(testDiv)
+
+      setTimeout(() => {
+        document.body.removeChild(testDiv)
+      }, 3000)
+    })
 
     // Add event listeners after a small delay to prevent immediate closing
     setTimeout(() => {

@@ -9,18 +9,12 @@ export default class extends Controller {
   }
 
   connect() {
-    console.log("Availability calendar controller connected")
     this.currentDate = new Date()
     this.selectedDate = null
 
     // Parse availabilities if they're passed as JSON
     if (this.hasAvailabilitiesValue) {
       this.availabilities = this.availabilitiesValue
-    }
-
-    // DEBUG: Add visible indicator that controller is connected
-    if (this.hasSelectedDateTarget) {
-      this.selectedDateTarget.innerHTML = `<p class="text-blue-500 text-xs">DEBUG: Controller connected with ${this.availabilities ? this.availabilities.length : 0} availabilities</p>`
     }
   }
 
@@ -77,17 +71,19 @@ export default class extends Controller {
     const firstDay = new Date(year, month, 1).getDay()
     const daysInMonth = new Date(year, month + 1, 0).getDate()
 
-    // Use UTC date for consistent timezone handling
+    // Use local timezone for consistent date handling
     const today = new Date()
-    const todayUTC = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()))
+    const todayLocal = new Date(today.getFullYear(), today.getMonth(), today.getDate())
 
     // Build calendar HTML (just date cells, template already has grid and headers)
     let calendarHTML = `<!-- DEBUG: Availabilities length = ${this.availabilities ? this.availabilities.length : 'undefined'} -->`
 
-    // DEBUG: Add availability dates to HTML comment
+    // DEBUG: Add availability dates in both UTC and local time to HTML comment
     if (this.availabilities && this.availabilities.length > 0) {
-      const availDates = this.availabilities.map(a => new Date(a.start_time).toISOString().split('T')[0])
-      calendarHTML += `<!-- Avail dates: ${availDates.join(', ')} -->`
+      const availDatesUTC = this.availabilities.map(a => new Date(a.start_time).toISOString().split('T')[0])
+      const availDatesLocal = this.availabilities.map(a => new Date(a.start_time).toLocaleDateString('en-CA'))
+      calendarHTML += `<!-- Avail UTC dates: ${availDatesUTC.join(', ')} -->`
+      calendarHTML += `<!-- Avail LOCAL dates: ${availDatesLocal.join(', ')} -->`
     }
 
     // Empty cells for days before month starts
@@ -97,15 +93,15 @@ export default class extends Controller {
 
     // Days of the month
     for (let day = 1; day <= daysInMonth; day++) {
-      // Create date in UTC to match availability timestamps
-      const dateUTC = new Date(Date.UTC(year, month, day))
-      const dateStr = dateUTC.toISOString().split('T')[0]
+      // Create date in local timezone
+      const dateLocal = new Date(year, month, day)
+      const dateStr = dateLocal.toLocaleDateString('en-CA') // YYYY-MM-DD format
 
       // Check if this date has availabilities
-      const hasAvailability = this.hasAvailabilityOnDate(dateUTC)
-      const isPast = dateUTC < todayUTC
-      const isToday = dateUTC.getTime() === todayUTC.getTime()
-      const isSelected = this.selectedDate && dateUTC.getTime() === this.selectedDate.getTime()
+      const hasAvailability = this.hasAvailabilityOnDate(dateLocal)
+      const isPast = dateLocal < todayLocal
+      const isToday = dateLocal.toDateString() === todayLocal.toDateString()
+      const isSelected = this.selectedDate && dateLocal.toDateString() === this.selectedDate.toDateString()
 
       // Debug for dates 6, 7, 8, 13 to see timezone issue
       if ([6, 7, 8, 13].includes(day) && month === 9) { // October = month 9
@@ -161,7 +157,8 @@ export default class extends Controller {
   hasAvailabilityOnDate(date) {
     if (!this.availabilities || this.availabilities.length === 0) return false
 
-    const dateStr = date.toISOString().split('T')[0]
+    // Use local timezone for date comparison (consistent with renderTimeSlots)
+    const dateStr = date.toLocaleDateString('en-CA') // YYYY-MM-DD format
 
     // DEBUG: Log comparison for dates 6, 7, 8, 13
     const day = date.getDate()
@@ -169,13 +166,13 @@ export default class extends Controller {
       console.log(`\nhasAvailabilityOnDate for day ${day}:`)
       console.log(`  dateStr (calendar): ${dateStr}`)
       this.availabilities.forEach(avail => {
-        const availDate = new Date(avail.start_time).toISOString().split('T')[0]
+        const availDate = new Date(avail.start_time).toLocaleDateString('en-CA')
         console.log(`  availDate: ${availDate}, matches: ${availDate === dateStr}`)
       })
     }
 
     return this.availabilities.some(avail => {
-      const availDate = new Date(avail.start_time).toISOString().split('T')[0]
+      const availDate = new Date(avail.start_time).toLocaleDateString('en-CA')
       return availDate === dateStr
     })
   }
@@ -186,9 +183,9 @@ export default class extends Controller {
     // DEBUG: Update DOM to show this method was called
     this.selectedDateTarget.innerHTML = `<p class="text-red-500">DEBUG: selectDate called with ${dateStr}</p>`
 
-    // Create date in UTC to match how we created calendar dates
+    // Create date in local timezone
     const [year, month, day] = dateStr.split('-').map(Number)
-    this.selectedDate = new Date(Date.UTC(year, month - 1, day))
+    this.selectedDate = new Date(year, month - 1, day)
 
     // Re-render calendar to show selection
     this.renderCalendar()
@@ -205,16 +202,26 @@ export default class extends Controller {
       return
     }
 
-    const dateStr = this.selectedDate.toISOString().split('T')[0]
-    console.log(`Looking for slots on: ${dateStr}`)
+    // Compare dates in local timezone using YYYY-MM-DD format
+    const selectedDateStr = this.selectedDate.toLocaleDateString('en-CA') // YYYY-MM-DD format
+    console.log(`Looking for slots on: ${selectedDateStr}`)
+
+    // DEBUG: Show what we're comparing
+    let debugInfo = `<p class="text-sm text-blue-600">Selected: ${selectedDateStr}</p>`
 
     const slotsForDate = this.availabilities.filter(avail => {
-      const availDate = new Date(avail.start_time).toISOString().split('T')[0]
-      console.log(`  Comparing ${availDate} === ${dateStr}: ${availDate === dateStr}`)
-      return availDate === dateStr
+      const availDate = new Date(avail.start_time)
+      const availDateStr = availDate.toLocaleDateString('en-CA')
+      const matches = availDateStr === selectedDateStr
+      debugInfo += `<p class="text-xs ${matches ? 'text-green-600' : 'text-red-600'}">${avail.start_time} → ${availDateStr} ${matches ? '✓' : '✗'}</p>`
+      console.log(`  Comparing ${availDateStr} === ${selectedDateStr}: ${matches}`)
+      return matches
     })
 
-    console.log(`Found ${slotsForDate.length} slots for ${dateStr}`)
+    // Show debug info temporarily
+    this.selectedDateTarget.innerHTML = debugInfo
+
+    console.log(`Found ${slotsForDate.length} slots for ${selectedDateStr}`)
 
     if (slotsForDate.length === 0) {
       this.timeSlotsTarget.innerHTML = '<p class="text-gray-500 text-center py-8">No available time slots for this date</p>'
@@ -257,8 +264,7 @@ export default class extends Controller {
     return date.toLocaleTimeString('en-US', {
       hour: 'numeric',
       minute: '2-digit',
-      hour12: true,
-      timeZone: 'UTC'
+      hour12: true
     })
   }
 
