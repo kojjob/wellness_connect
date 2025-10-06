@@ -11,8 +11,9 @@ class CalendarModalTest < ApplicationSystemTestCase
     # Create availabilities for testing calendar
     # Use Time.zone.local to explicitly create times in the application's timezone
     # This ensures proper conversion between Rails (UTC storage) and JavaScript (local display)
-    # Use today's date - since availabilities are at 9 AM and 2 PM, they're always in future
-    base_date = Time.zone.today
+    # Use tomorrow if current UTC hour is past our scheduled times (ensures slots are in future)
+    current_utc_hour = Time.current.utc.hour
+    base_date = current_utc_hour >= 8 ? Time.zone.tomorrow : Time.zone.today
 
     @today_morning = Availability.create!(
       provider_profile: @provider_profile,

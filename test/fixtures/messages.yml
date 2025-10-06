@@ -1,0 +1,43 @@
+# Message test fixtures
+
+# Simple text message
+text_message:
+  conversation: general_conversation
+  sender: patient_user
+  content: "Hello, I have a question about my upcoming appointment."
+  message_type: 0  # text
+  read_at: <%= 1.hour.ago %>
+
+# Unread message from provider
+unread_provider_message:
+  conversation: general_conversation
+  sender: provider_user
+  content: "I'd be happy to help! What would you like to know?"
+  message_type: 0  # text
+  read_at: nil
+
+# System message
+system_message:
+  conversation: appointment_conversation
+  sender: provider_user
+  content: "Appointment confirmed for tomorrow at 3:00 PM"
+  message_type: 3  # system
+  read_at: <%= 30.minutes.ago %>
+
+# Recent editable message
+recent_message:
+  conversation: general_conversation
+  sender: patient_user
+  content: "I just sent this message"
+  message_type: 0  # text
+  created_at: <%= 2.minutes.ago %>
+  read_at: nil
+
+# Old non-editable message
+old_message:
+  conversation: general_conversation
+  sender: provider_user
+  content: "This message is too old to edit"
+  message_type: 0  # text
+  created_at: <%= 1.hour.ago %>
+  read_at: <%= 45.minutes.ago %>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_10_05_225938) do
+ActiveRecord::Schema[8.1].define(version: 2025_10_06_223226) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -90,6 +90,28 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_05_225938) do
     t.index ["appointment_id"], name: "index_consultation_notes_unique_appointment", unique: true, comment: "One note per appointment"
   end
 
+  create_table "conversations", force: :cascade do |t|
+    t.bigint "appointment_id"
+    t.boolean "archived_by_patient", default: false, null: false
+    t.boolean "archived_by_provider", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "last_message_at"
+    t.bigint "patient_id", null: false
+    t.integer "patient_unread_count", default: 0, null: false
+    t.bigint "provider_id", null: false
+    t.integer "provider_unread_count", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["appointment_id"], name: "index_conversations_on_appointment_id", unique: true, where: "(appointment_id IS NOT NULL)", comment: "Ensure one conversation per appointment"
+    t.index ["patient_id", "last_message_at"], name: "index_conversations_on_patient_id_and_last_message_at", order: { last_message_at: :desc }, comment: "Find patient's conversations sorted by recent activity"
+    t.index ["patient_id", "provider_id"], name: "index_conversations_on_patient_id_and_provider_id", comment: "Find conversation between two users"
+    t.index ["patient_id"], name: "index_conversations_on_patient_id"
+    t.index ["provider_id", "last_message_at"], name: "index_conversations_on_provider_id_and_last_message_at", order: { last_message_at: :desc }, comment: "Find provider's conversations sorted by recent activity"
+    t.index ["provider_id"], name: "index_conversations_on_provider_id"
+    t.check_constraint "patient_id <> provider_id", name: "conversations_different_participants"
+    t.check_constraint "patient_unread_count >= 0", name: "conversations_patient_unread_non_negative"
+    t.check_constraint "provider_unread_count >= 0", name: "conversations_provider_unread_non_negative"
+  end
+
   create_table "leads", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email"
@@ -99,6 +121,22 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_05_225938) do
     t.string "utm_campaign"
     t.string "utm_medium"
     t.string "utm_source"
+  end
+
+  create_table "messages", force: :cascade do |t|
+    t.text "content"
+    t.bigint "conversation_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "edited_at"
+    t.integer "message_type", default: 0, null: false
+    t.datetime "read_at"
+    t.bigint "sender_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["conversation_id", "created_at"], name: "index_messages_on_conversation_id_and_created_at", comment: "Find conversation messages sorted chronologically"
+    t.index ["conversation_id"], name: "index_messages_on_conversation_id"
+    t.index ["message_type"], name: "index_messages_on_message_type", comment: "Filter messages by type"
+    t.index ["read_at"], name: "index_messages_on_read_at", where: "(read_at IS NULL)", comment: "Find unread messages"
+    t.index ["sender_id"], name: "index_messages_on_sender_id", comment: "Find messages by sender"
   end
 
   create_table "notifications", force: :cascade do |t|
@@ -247,6 +285,11 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_05_225938) do
   add_foreign_key "appointments", "users", column: "provider_id"
   add_foreign_key "availabilities", "provider_profiles"
   add_foreign_key "consultation_notes", "appointments"
+  add_foreign_key "conversations", "appointments"
+  add_foreign_key "conversations", "users", column: "patient_id"
+  add_foreign_key "conversations", "users", column: "provider_id"
+  add_foreign_key "messages", "conversations"
+  add_foreign_key "messages", "users", column: "sender_id"
   add_foreign_key "notifications", "users"
   add_foreign_key "patient_profiles", "users"
   add_foreign_key "payments", "appointments"

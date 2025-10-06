@@ -2,6 +2,6 @@
 
 availability_one:
   provider_profile: provider_profile_one
-  start_time: <%= 2.days.from_now.change(hour: 9, min: 0) %>
-  end_time: <%= 2.days.from_now.change(hour: 10, min: 0) %>
+  start_time: <%= (Time.current.utc.hour >= 8 ? 3.days.from_now : 2.days.from_now).beginning_of_day + 9.hours %>
+  end_time: <%= (Time.current.utc.hour >= 8 ? 3.days.from_now : 2.days.from_now).beginning_of_day + 10.hours %>
   is_booked: false

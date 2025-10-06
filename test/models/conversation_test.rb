@@ -5,7 +5,7 @@ class ConversationTest < ActiveSupport::TestCase
   def setup
     @patient = users(:patient_user)
     @provider = users(:provider_user)
-    @appointment = appointments(:scheduled_appointment)
+    @appointment = appointments(:appointment_one)
   end
 
   # Associations Tests

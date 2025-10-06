@@ -3,7 +3,7 @@ class CreateConversations < ActiveRecord::Migration[8.1]
     create_table :conversations do |t|
       t.references :patient, null: false, foreign_key: { to_table: :users }
       t.references :provider, null: false, foreign_key: { to_table: :users }
-      t.references :appointment, null: true, foreign_key: true
+      t.references :appointment, null: true, foreign_key: { on_delete: :nullify }, index: false
       t.datetime :last_message_at
       t.integer :patient_unread_count, default: 0, null: false
       t.integer :provider_unread_count, default: 0, null: false

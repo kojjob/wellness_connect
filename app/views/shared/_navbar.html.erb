@@ -61,6 +61,32 @@
 
       <!-- Right side navigation -->
       <div class="hidden md:flex md:items-center md:space-x-3">
+        <!-- DEBUG: User signed in status -->
+        <div style="background: yellow; padding: 10px; margin: 10px; border: 2px solid red;">
+          User signed in: <%= user_signed_in? ? "YES" : "NO" %>
+          <% if user_signed_in? %>
+            | User: <%= current_user.email %>
+          <% end %>
+        </div>
+
+        <!-- TEST DROPDOWN - Always visible for debugging -->
+        <div class="relative" data-controller="dropdown" style="background: lime; padding: 10px; border: 3px solid purple;">
+          <button type="button"
+                  data-dropdown-target="button"
+                  data-action="click->dropdown#toggle"
+                  style="background: orange; padding: 10px; border: 2px solid black;">
+            TEST DROPDOWN BUTTON
+          </button>
+
+          <div data-dropdown-target="menu"
+               class="hidden absolute right-0 mt-3 w-96 rounded-xl shadow-2xl bg-white ring-1 ring-gray-200 z-50 overflow-hidden"
+               style="opacity: 0; transform: scale(0.95); transition: opacity 0.2s ease-out, transform 0.2s ease-out;">
+            <div style="padding: 20px; background: cyan; color: black;">
+              TEST DROPDOWN CONTENT - This should appear when clicked!
+            </div>
+          </div>
+        </div>
+
         <% if user_signed_in? %>
           <!-- Enhanced Notifications Dropdown -->
           <div class="relative" data-controller="dropdown">
