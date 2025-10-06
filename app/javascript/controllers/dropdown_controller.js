@@ -114,17 +114,17 @@ export default class extends Controller {
     this.menuTarget.style.setProperty("z-index", "9999", "important")
 
     // Check what's preventing visibility
-    const computedStyle = window.getComputedStyle(this.menuTarget)
+    const computedStyle2 = window.getComputedStyle(this.menuTarget)
     console.log("=== VISIBILITY CHECK ===")
-    console.log("Display:", computedStyle.display)
-    console.log("Visibility:", computedStyle.visibility)
-    console.log("Opacity:", computedStyle.opacity)
-    console.log("Position:", computedStyle.position)
-    console.log("Z-index:", computedStyle.zIndex)
-    console.log("Width:", computedStyle.width)
-    console.log("Height:", computedStyle.height)
-    console.log("Overflow:", computedStyle.overflow)
-    console.log("Transform:", computedStyle.transform)
+    console.log("Display:", computedStyle2.display)
+    console.log("Visibility:", computedStyle2.visibility)
+    console.log("Opacity:", computedStyle2.opacity)
+    console.log("Position:", computedStyle2.position)
+    console.log("Z-index:", computedStyle2.zIndex)
+    console.log("Width:", computedStyle2.width)
+    console.log("Height:", computedStyle2.height)
+    console.log("Overflow:", computedStyle2.overflow)
+    console.log("Transform:", computedStyle2.transform)
 
     // Force positioning fix with proper timing
     requestAnimationFrame(() => {

@@ -10,42 +10,42 @@ class CalendarModalTest < ApplicationSystemTestCase
 
     # Create availabilities for testing calendar
     # Use specific times of day to avoid timezone shift issues
-    # Create slots at 9 AM and 2 PM to ensure they stay on the same day
-    today = Time.current.beginning_of_day
+    # If it's late in the day (after 6 PM), use tomorrow as base to ensure slots are in future
+    base_date = Time.current.hour >= 18 ? Time.current.beginning_of_day + 1.day : Time.current.beginning_of_day
 
     @today_morning = Availability.create!(
       provider_profile: @provider_profile,
-      start_time: today + 9.hours,   # 9:00 AM today
-      end_time: today + 10.hours,    # 10:00 AM today
+      start_time: base_date + 9.hours,   # 9:00 AM (on base date)
+      end_time: base_date + 10.hours,    # 10:00 AM (on base date)
       is_booked: false
     )
 
     @today_afternoon = Availability.create!(
       provider_profile: @provider_profile,
-      start_time: today + 14.hours,  # 2:00 PM today
-      end_time: today + 15.hours,    # 3:00 PM today
+      start_time: base_date + 14.hours,  # 2:00 PM (on base date)
+      end_time: base_date + 15.hours,    # 3:00 PM (on base date)
       is_booked: false
     )
 
     @tomorrow_slot = Availability.create!(
       provider_profile: @provider_profile,
-      start_time: today + 1.day + 9.hours,  # 9:00 AM tomorrow
-      end_time: today + 1.day + 10.hours,   # 10:00 AM tomorrow
+      start_time: base_date + 1.day + 9.hours,  # 9:00 AM (next day from base)
+      end_time: base_date + 1.day + 10.hours,   # 10:00 AM (next day from base)
       is_booked: false
     )
 
     @next_week_slot = Availability.create!(
       provider_profile: @provider_profile,
-      start_time: today + 7.days + 9.hours,  # 9:00 AM next week
-      end_time: today + 7.days + 10.hours,   # 10:00 AM next week
+      start_time: base_date + 7.days + 9.hours,  # 9:00 AM (7 days from base)
+      end_time: base_date + 7.days + 10.hours,   # 10:00 AM (7 days from base)
       is_booked: false
     )
 
     # Create a booked slot to test it's not shown
     @booked_slot = Availability.create!(
       provider_profile: @provider_profile,
-      start_time: today + 2.days + 9.hours,  # 9:00 AM in 2 days
-      end_time: today + 2.days + 10.hours,   # 10:00 AM in 2 days
+      start_time: base_date + 2.days + 9.hours,  # 9:00 AM (2 days from base)
+      end_time: base_date + 2.days + 10.hours,   # 10:00 AM (2 days from base)
       is_booked: true
     )
   end
