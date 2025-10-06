@@ -109,9 +109,22 @@ export default class extends Controller {
     })
 
     // Add visual debugging FIRST to make sure it's visible
-    this.menuTarget.style.border = "5px solid red !important"
-    this.menuTarget.style.backgroundColor = "yellow !important"
-    this.menuTarget.style.zIndex = "9999 !important"
+    this.menuTarget.style.setProperty("border", "5px solid red", "important")
+    this.menuTarget.style.setProperty("background-color", "yellow", "important")
+    this.menuTarget.style.setProperty("z-index", "9999", "important")
+
+    // Check what's preventing visibility
+    const computedStyle = window.getComputedStyle(this.menuTarget)
+    console.log("=== VISIBILITY CHECK ===")
+    console.log("Display:", computedStyle.display)
+    console.log("Visibility:", computedStyle.visibility)
+    console.log("Opacity:", computedStyle.opacity)
+    console.log("Position:", computedStyle.position)
+    console.log("Z-index:", computedStyle.zIndex)
+    console.log("Width:", computedStyle.width)
+    console.log("Height:", computedStyle.height)
+    console.log("Overflow:", computedStyle.overflow)
+    console.log("Transform:", computedStyle.transform)
 
     // Force positioning fix with proper timing
     requestAnimationFrame(() => {
@@ -136,28 +149,41 @@ export default class extends Controller {
 
       console.log("Dropdown should now be visible at top-right corner")
 
-      // Final fallback: Create a test element to verify visibility
-      const testDiv = document.createElement('div')
-      testDiv.style.cssText = `
+      // Debug the actual dropdown element
+      console.log("=== DROPDOWN ELEMENT DEBUG ===")
+      console.log("Element:", this.menuTarget)
+      console.log("Parent:", this.menuTarget.parentElement)
+      console.log("All computed styles:", window.getComputedStyle(this.menuTarget))
+      console.log("Element HTML:", this.menuTarget.outerHTML.substring(0, 200) + "...")
+
+      // Check if element is actually in the DOM
+      console.log("Is in DOM:", document.contains(this.menuTarget))
+      console.log("Is connected:", this.menuTarget.isConnected)
+
+      // Try to clone the dropdown and append it to body
+      const clonedDropdown = this.menuTarget.cloneNode(true)
+      clonedDropdown.style.cssText = `
         position: fixed !important;
-        top: 100px !important;
-        right: 100px !important;
-        width: 200px !important;
-        height: 100px !important;
-        background: red !important;
-        border: 5px solid blue !important;
+        top: 200px !important;
+        right: 50px !important;
+        width: 300px !important;
+        height: 200px !important;
+        background: lime !important;
+        border: 5px solid purple !important;
         z-index: 99999 !important;
-        color: white !important;
-        padding: 20px !important;
-        font-size: 16px !important;
-        font-weight: bold !important;
+        display: block !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: none !important;
       `
-      testDiv.textContent = 'DROPDOWN TEST - If you see this, JS is working!'
-      document.body.appendChild(testDiv)
+      clonedDropdown.textContent = 'CLONED DROPDOWN - This should be visible!'
+      document.body.appendChild(clonedDropdown)
 
       setTimeout(() => {
-        document.body.removeChild(testDiv)
-      }, 3000)
+        if (document.body.contains(clonedDropdown)) {
+          document.body.removeChild(clonedDropdown)
+        }
+      }, 5000)
     })
 
     // Add event listeners after a small delay to prevent immediate closing
