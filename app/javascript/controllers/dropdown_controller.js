@@ -9,6 +9,11 @@ export default class extends Controller {
 
   connect() {
     console.log("Dropdown controller connected", this.element)
+    console.log("Has menu target:", this.hasMenuTarget)
+    console.log("Has button target:", this.hasButtonTarget)
+    console.log("Menu target:", this.hasMenuTarget ? this.menuTarget : "none")
+    console.log("Button target:", this.hasButtonTarget ? this.buttonTarget : "none")
+
     // Store reference to controller on element for easy access
     this.element.dropdownController = this
 
@@ -21,41 +26,88 @@ export default class extends Controller {
       this.menuTarget.style.opacity = "0"
       this.menuTarget.style.transform = "scale(0.95)"
       this.menuTarget.classList.add("hidden")
+      console.log("Menu initialized as hidden")
+    } else {
+      console.error("No menu target found!")
+    }
+
+    if (!this.hasButtonTarget) {
+      console.error("No button target found!")
     }
   }
 
   toggle(event) {
+    console.log("Toggle method called", event)
     event.preventDefault()
     event.stopPropagation()
 
-    console.log("Dropdown toggle clicked", this.openValue)
+    console.log("Dropdown toggle clicked, current state:", this.openValue)
+    console.log("Has targets:", { menu: this.hasMenuTarget, button: this.hasButtonTarget })
+
+    if (!this.hasMenuTarget || !this.hasButtonTarget) {
+      console.error("Missing required targets for dropdown")
+      return
+    }
 
     if (this.openValue) {
+      console.log("Closing dropdown")
       this.close()
     } else {
+      console.log("Opening dropdown")
       this.open()
     }
   }
 
   open() {
-    console.log("Opening dropdown")
+    console.log("Opening dropdown - before changes")
+    console.log("Menu classes before:", this.menuTarget.className)
+    console.log("Menu style before:", this.menuTarget.style.cssText)
 
     // Close any other open dropdowns
     this.closeOtherDropdowns()
 
     this.openValue = true
+
+    // Remove hidden class and add block
     this.menuTarget.classList.remove("hidden", "hide")
     this.menuTarget.classList.add("block")
     this.buttonTarget.setAttribute("aria-expanded", "true")
 
-    // Trigger animation with proper timing
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        this.menuTarget.classList.add("show")
-        this.menuTarget.style.opacity = "1"
-        this.menuTarget.style.transform = "scale(1)"
-      })
+    console.log("Menu classes after class changes:", this.menuTarget.className)
+
+    // Force immediate visibility for debugging
+    this.menuTarget.style.display = "block"
+    this.menuTarget.style.opacity = "1"
+    this.menuTarget.style.transform = "scale(1)"
+
+    console.log("Menu classes after style changes:", this.menuTarget.className)
+    console.log("Menu style after:", this.menuTarget.style.cssText)
+    console.log("Menu computed style:", window.getComputedStyle(this.menuTarget).display)
+
+    // Check positioning and visibility
+    const rect = this.menuTarget.getBoundingClientRect()
+    console.log("Menu position:", {
+      top: rect.top,
+      left: rect.left,
+      width: rect.width,
+      height: rect.height,
+      bottom: rect.bottom,
+      right: rect.right
     })
+
+    const computedStyle = window.getComputedStyle(this.menuTarget)
+    console.log("Menu computed styles:", {
+      display: computedStyle.display,
+      visibility: computedStyle.visibility,
+      opacity: computedStyle.opacity,
+      zIndex: computedStyle.zIndex,
+      position: computedStyle.position,
+      backgroundColor: computedStyle.backgroundColor
+    })
+
+    // Add a temporary red border for visual debugging
+    this.menuTarget.style.border = "3px solid red"
+    this.menuTarget.style.backgroundColor = "yellow"
 
     // Add event listeners after a small delay to prevent immediate closing
     setTimeout(() => {
@@ -78,23 +130,20 @@ export default class extends Controller {
   }
 
   close() {
-    console.log("Closing dropdown")
+    console.log("Closing dropdown - before changes")
+    console.log("Menu classes before:", this.menuTarget.className)
+
     this.openValue = false
     this.buttonTarget.setAttribute("aria-expanded", "false")
 
-    // Trigger close animation
-    this.menuTarget.classList.remove("show")
-    this.menuTarget.classList.add("hide")
+    // Immediate hide for debugging
+    this.menuTarget.style.display = "none"
     this.menuTarget.style.opacity = "0"
     this.menuTarget.style.transform = "scale(0.95)"
+    this.menuTarget.classList.add("hidden")
+    this.menuTarget.classList.remove("block", "show", "hide")
 
-    // Wait for animation to complete before hiding
-    setTimeout(() => {
-      if (!this.openValue) { // Double check we're still closed
-        this.menuTarget.classList.add("hidden")
-        this.menuTarget.classList.remove("block", "hide")
-      }
-    }, 200)
+    console.log("Menu classes after:", this.menuTarget.className)
 
     // Remove event listeners
     document.removeEventListener("click", this.boundHandleClickOutside)
