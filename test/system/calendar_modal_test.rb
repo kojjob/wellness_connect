@@ -127,11 +127,11 @@ class CalendarModalTest < ApplicationSystemTestCase
     # Calendar should render
     within '[data-availability-calendar-target="modal"]' do
       # Today's date should have green highlighting (has unbooked availability)
-      today_element = page.find('div', text: Time.current.day.to_s, exact_text: true, match: :first)
+      today_element = page.find("div", text: Time.current.day.to_s, exact_text: true, match: :first)
       parent_classes = today_element[:class]
 
       # Should have green background classes
-      assert parent_classes.include?('bg-green-50') || parent_classes.include?('bg-green'),
+      assert parent_classes.include?("bg-green-50") || parent_classes.include?("bg-green"),
         "Today's date should be highlighted (has availability)"
     end
   end
@@ -151,7 +151,7 @@ class CalendarModalTest < ApplicationSystemTestCase
       # The calendar shows dates with availability in green with specific CSS classes
       clickable_date = page.find('div.bg-green-50[data-action="click->availability-calendar#selectDate"]',
                                   match: :first)
-      clicked_date_str = clickable_date['data-date']
+      clicked_date_str = clickable_date["data-date"]
       clicked_date = Date.parse(clicked_date_str)
 
       # Use JavaScript to trigger click event to ensure it reaches the event listener
@@ -213,12 +213,12 @@ class CalendarModalTest < ApplicationSystemTestCase
 
       # Find the date element (if it exists in current month)
       if @booked_slot.start_time.month == Time.current.month
-        date_elements = page.all('div', text: booked_date.to_s, exact_text: true)
+        date_elements = page.all("div", text: booked_date.to_s, exact_text: true)
 
         # Should not have green highlighting
         date_elements.each do |elem|
           parent_classes = elem[:class]
-          assert_not(parent_classes.include?('bg-green-50') || parent_classes.include?('bg-green'),
+          assert_not(parent_classes.include?("bg-green-50") || parent_classes.include?("bg-green"),
             "Date with only booked slots should not be highlighted")
         end
       end
@@ -291,7 +291,7 @@ class CalendarModalTest < ApplicationSystemTestCase
 
     # Click close button
     within '[data-availability-calendar-target="modal"]' do
-      find('[data-action="click->availability-calendar#closeModal"]').click
+      find('button[data-action="click->availability-calendar#closeModal"]').click
     end
 
     # Modal should be hidden
@@ -312,7 +312,7 @@ class CalendarModalTest < ApplicationSystemTestCase
     assert_selector '[data-availability-calendar-target="modal"].flex', visible: :visible
 
     # Press Escape key
-    find('[data-availability-calendar-target="modal"]').send_keys(:escape)
+    page.find('body').send_keys(:escape)
 
     # Modal should be hidden
     assert_no_selector '[data-availability-calendar-target="modal"].flex', visible: :visible
@@ -377,12 +377,12 @@ class CalendarModalTest < ApplicationSystemTestCase
         yesterday = Time.current.day - 1
 
         # Past dates should have gray/disabled styling
-        past_date_elements = page.all('div', text: yesterday.to_s, exact_text: true)
+        past_date_elements = page.all("div", text: yesterday.to_s, exact_text: true)
 
         past_date_elements.each do |elem|
           parent_classes = elem[:class]
           # Should have disabled/gray classes, not clickable green
-          assert(parent_classes.include?('text-gray-300') || parent_classes.include?('cursor-not-allowed'),
+          assert(parent_classes.include?("text-gray-300") || parent_classes.include?("cursor-not-allowed"),
             "Past dates should be disabled")
         end
       end

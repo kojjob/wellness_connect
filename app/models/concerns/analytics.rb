@@ -89,7 +89,7 @@ module Analytics
   # @param limit [Integer] Number of top services to return
   # @return [Array<Hash>] Array of hashes with service_id, service_name, and revenue
   def top_services_by_revenue(limit: 5)
-    Payment.joins(appointment: [:service, :provider])
+    Payment.joins(appointment: [ :service, :provider ])
       .where(appointments: { provider_id: id }, status: :succeeded)
       .group("services.id", "services.name")
       .select("services.id as service_id, services.name as service_name, SUM(payments.amount) as revenue")

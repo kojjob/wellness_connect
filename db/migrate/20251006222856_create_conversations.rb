@@ -19,11 +19,11 @@ class CreateConversations < ActiveRecord::Migration[8.1]
     add_foreign_key :conversations, :appointments, on_delete: :nullify
 
     # Indexes for performance
-    add_index :conversations, [:patient_id, :last_message_at],
+    add_index :conversations, [ :patient_id, :last_message_at ],
               order: { last_message_at: :desc },
               comment: "Find patient's conversations sorted by recent activity"
 
-    add_index :conversations, [:provider_id, :last_message_at],
+    add_index :conversations, [ :provider_id, :last_message_at ],
               order: { last_message_at: :desc },
               comment: "Find provider's conversations sorted by recent activity"
 
@@ -32,7 +32,7 @@ class CreateConversations < ActiveRecord::Migration[8.1]
               where: "appointment_id IS NOT NULL",
               comment: "Ensure one conversation per appointment"
 
-    add_index :conversations, [:patient_id, :provider_id],
+    add_index :conversations, [ :patient_id, :provider_id ],
               comment: "Find conversation between two users"
 
     # Check constraint: patient and provider must be different users

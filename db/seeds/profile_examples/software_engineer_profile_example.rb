@@ -102,7 +102,7 @@ end_date = start_date + 14.days
   next if date.wday == 0 || date.wday == 6
 
   # Create morning slots (9 AM - 12 PM)
-  [9, 10, 11].each do |hour|
+  [ 9, 10, 11 ].each do |hour|
     start_time = Time.zone.parse("#{date} #{hour}:00")
     end_time = start_time + 1.hour
 
@@ -114,7 +114,7 @@ end_date = start_date + 14.days
   end
 
   # Create afternoon slots (1 PM - 5 PM)
-  [13, 14, 15, 16].each do |hour|
+  [ 13, 14, 15, 16 ].each do |hour|
     start_time = Time.zone.parse("#{date} #{hour}:00")
     end_time = start_time + 1.hour
 

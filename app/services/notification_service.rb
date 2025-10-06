@@ -23,7 +23,7 @@ class NotificationService
   # Create a notification for appointment cancellation
   def self.notify_appointment_cancelled(appointment, cancelled_by)
     other_user = cancelled_by == appointment.patient ? appointment.provider : appointment.patient
-    
+
     Notification.create!(
       user: other_user,
       title: "Appointment Cancelled",
@@ -117,4 +117,3 @@ class NotificationService
     end
   end
 end
-

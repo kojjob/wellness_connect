@@ -23,7 +23,7 @@ class Conversation < ApplicationRecord
 
   # Returns array of both participants
   def participants
-    [patient, provider].compact
+    [ patient, provider ].compact
   end
 
   # Returns the other participant in the conversation

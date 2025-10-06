@@ -1,6 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Connects to data-controller="dropdown"
+// Clean dropdown controller with proper positioning
 export default class extends Controller {
   static targets = ["menu", "button"]
   static values = {
@@ -8,219 +8,57 @@ export default class extends Controller {
   }
 
   connect() {
-    console.log("=== DROPDOWN CONTROLLER CONNECTING ===")
-    console.log("Element:", this.element)
-    console.log("Element HTML:", this.element.outerHTML.substring(0, 200))
-    console.log("Has menu target:", this.hasMenuTarget)
-    console.log("Has button target:", this.hasButtonTarget)
-
-    if (this.hasMenuTarget) {
-      console.log("Menu target found:", this.menuTarget)
-      console.log("Menu target HTML:", this.menuTarget.outerHTML.substring(0, 200))
-    } else {
-      console.error("❌ NO MENU TARGET FOUND!")
-      console.log("Looking for elements with data-dropdown-target='menu':")
-      const menuElements = this.element.querySelectorAll('[data-dropdown-target="menu"]')
-      console.log("Found menu elements:", menuElements)
-    }
-
-    if (this.hasButtonTarget) {
-      console.log("Button target found:", this.buttonTarget)
-    } else {
-      console.error("❌ NO BUTTON TARGET FOUND!")
-      console.log("Looking for elements with data-dropdown-target='button':")
-      const buttonElements = this.element.querySelectorAll('[data-dropdown-target="button"]')
-      console.log("Found button elements:", buttonElements)
-    }
-
     // Store reference to controller on element for easy access
     this.element.dropdownController = this
-
+    
     // Bind event handlers
     this.boundHandleClickOutside = this.handleClickOutside.bind(this)
     this.boundHandleEscape = this.handleEscape.bind(this)
 
     // Initialize menu state
     if (this.hasMenuTarget) {
+      this.menuTarget.classList.add("hidden")
       this.menuTarget.style.opacity = "0"
       this.menuTarget.style.transform = "scale(0.95)"
-      this.menuTarget.classList.add("hidden")
-      console.log("✅ Menu initialized as hidden")
     }
   }
 
   toggle(event) {
-    console.log("🔥 TOGGLE METHOD CALLED! 🔥")
-    console.log("Event:", event)
-    console.log("Event target:", event.target)
-    console.log("Current element:", this.element)
-
     event.preventDefault()
     event.stopPropagation()
 
-    console.log("Dropdown toggle clicked, current state:", this.openValue)
-    console.log("Has targets:", { menu: this.hasMenuTarget, button: this.hasButtonTarget })
-
     if (!this.hasMenuTarget) {
-      console.error("❌ NO MENU TARGET - Cannot open dropdown")
       return
     }
 
-    if (!this.hasButtonTarget) {
-      console.error("❌ NO BUTTON TARGET - But continuing anyway")
-    }
-
     if (this.openValue) {
-      console.log("🔽 Closing dropdown")
       this.close()
     } else {
-      console.log("🔼 Opening dropdown")
       this.open()
     }
   }
 
   open() {
-    console.log("Opening dropdown - before changes")
-    console.log("Menu classes before:", this.menuTarget.className)
-    console.log("Menu style before:", this.menuTarget.style.cssText)
-
     // Close any other open dropdowns
     this.closeOtherDropdowns()
-
+    
     this.openValue = true
+    
+    // Remove hidden class and show dropdown
+    this.menuTarget.classList.remove("hidden")
+    this.menuTarget.classList.add("block")
+    
+    if (this.hasButtonTarget) {
+      this.buttonTarget.setAttribute("aria-expanded", "true")
+    }
 
-    // Aggressively remove any hiding classes and add block
-    this.menuTarget.classList.remove("hidden", "hide", "invisible")
-    this.menuTarget.classList.add("block", "visible")
-    this.buttonTarget.setAttribute("aria-expanded", "true")
+    // Position dropdown properly with fixed positioning to avoid CSS conflicts
+    this.positionDropdownCorrectly()
 
-    console.log("Classes after aggressive removal:", this.menuTarget.className)
-
-    console.log("Menu classes after class changes:", this.menuTarget.className)
-
-    // Remove ALL inline styles first to clear any conflicts
-    this.menuTarget.removeAttribute("style")
-
-    // Force immediate visibility with !important to override any CSS
-    this.menuTarget.style.setProperty("display", "block", "important")
-    this.menuTarget.style.setProperty("opacity", "1", "important")
-    this.menuTarget.style.setProperty("transform", "none", "important")
-    this.menuTarget.style.setProperty("visibility", "visible", "important")
-
-    console.log("Menu classes after style changes:", this.menuTarget.className)
-    console.log("Menu style after:", this.menuTarget.style.cssText)
-    console.log("Menu computed style:", window.getComputedStyle(this.menuTarget).display)
-
-    // Check positioning and visibility
-    const rect = this.menuTarget.getBoundingClientRect()
-    console.log("Menu position:", {
-      top: rect.top,
-      left: rect.left,
-      width: rect.width,
-      height: rect.height,
-      bottom: rect.bottom,
-      right: rect.right
-    })
-
-    const computedStyle = window.getComputedStyle(this.menuTarget)
-    console.log("Menu computed styles:", {
-      display: computedStyle.display,
-      visibility: computedStyle.visibility,
-      opacity: computedStyle.opacity,
-      zIndex: computedStyle.zIndex,
-      position: computedStyle.position,
-      backgroundColor: computedStyle.backgroundColor
-    })
-
-    // Position dropdown relative to button for proper placement
-    this.positionDropdown()
-
-    console.log("Dropdown opened successfully")
-
-    console.log("Dropdown styles applied")
-
-    // Force positioning fix with proper timing
+    // Add smooth animation
     requestAnimationFrame(() => {
-      const rect = this.menuTarget.getBoundingClientRect()
-      const viewportWidth = window.innerWidth
-
-      console.log("Checking positioning:", {
-        left: rect.left,
-        right: rect.right,
-        viewportWidth: viewportWidth,
-        shouldFix: rect.right > viewportWidth || rect.left > viewportWidth - 100
-      })
-
-      // Always force to visible position for debugging
-      console.log("FORCING dropdown to visible position for debugging")
-      this.menuTarget.style.position = "fixed !important"
-      this.menuTarget.style.top = "80px !important"
-      this.menuTarget.style.right = "20px !important"
-      this.menuTarget.style.left = "auto !important"
-      this.menuTarget.style.transform = "none !important"
-      this.menuTarget.style.margin = "0 !important"
-
-      console.log("Dropdown should now be visible at top-right corner")
-
-      // Debug the actual dropdown element
-      console.log("=== DROPDOWN ELEMENT DEBUG ===")
-      console.log("Element:", this.menuTarget)
-      console.log("Parent:", this.menuTarget.parentElement)
-
-      // Check specific computed style properties that affect visibility
-      const computed = window.getComputedStyle(this.menuTarget)
-      console.log("CRITICAL COMPUTED STYLES:")
-      console.log("display:", computed.display)
-      console.log("visibility:", computed.visibility)
-      console.log("opacity:", computed.opacity)
-      console.log("position:", computed.position)
-      console.log("top:", computed.top)
-      console.log("right:", computed.right)
-      console.log("left:", computed.left)
-      console.log("bottom:", computed.bottom)
-      console.log("z-index:", computed.zIndex)
-      console.log("width:", computed.width)
-      console.log("height:", computed.height)
-      console.log("background-color:", computed.backgroundColor)
-      console.log("border:", computed.border)
-      console.log("transform:", computed.transform)
-      console.log("clip:", computed.clip)
-      console.log("clip-path:", computed.clipPath)
-      console.log("overflow:", computed.overflow)
-
-      // Check parent element styles that might affect visibility
-      const parentComputed = window.getComputedStyle(this.menuTarget.parentElement)
-      console.log("PARENT ELEMENT STYLES:")
-      console.log("parent overflow:", parentComputed.overflow)
-      console.log("parent position:", parentComputed.position)
-      console.log("parent z-index:", parentComputed.zIndex)
-
-      // Force the dropdown to be visible with extreme measures
-      this.menuTarget.style.setProperty("position", "fixed", "important")
-      this.menuTarget.style.setProperty("top", "50px", "important")
-      this.menuTarget.style.setProperty("left", "50px", "important")
-      this.menuTarget.style.setProperty("right", "auto", "important")
-      this.menuTarget.style.setProperty("bottom", "auto", "important")
-      this.menuTarget.style.setProperty("width", "500px", "important")
-      this.menuTarget.style.setProperty("height", "400px", "important")
-      this.menuTarget.style.setProperty("background-color", "red", "important")
-      this.menuTarget.style.setProperty("border", "10px solid blue", "important")
-      this.menuTarget.style.setProperty("z-index", "999999", "important")
-      this.menuTarget.style.setProperty("display", "block", "important")
-      this.menuTarget.style.setProperty("visibility", "visible", "important")
-      this.menuTarget.style.setProperty("opacity", "1", "important")
-      this.menuTarget.style.setProperty("transform", "none", "important")
-      this.menuTarget.style.setProperty("clip", "auto", "important")
-      this.menuTarget.style.setProperty("clip-path", "none", "important")
-      this.menuTarget.style.setProperty("overflow", "visible", "important")
-
-      this.menuTarget.innerHTML = '<div style="color: white; font-size: 30px; padding: 50px; text-align: center; font-weight: bold; background: green;">🚨 EMERGENCY DROPDOWN 🚨<br>If you see this, CSS was the issue!</div>'
-
-      console.log("Emergency dropdown applied - should be at top-left corner")
-
-      // Check if element is actually in the DOM
-      console.log("Is in DOM:", document.contains(this.menuTarget))
-      console.log("Is connected:", this.menuTarget.isConnected)
+      this.menuTarget.style.opacity = "1"
+      this.menuTarget.style.transform = "scale(1)"
     })
 
     // Add event listeners after a small delay to prevent immediate closing
@@ -230,56 +68,80 @@ export default class extends Controller {
     }, 10)
   }
 
-  positionDropdown() {
-    if (!this.hasButtonTarget) return
+  close() {
+    this.openValue = false
+    
+    if (this.hasButtonTarget) {
+      this.buttonTarget.setAttribute("aria-expanded", "false")
+    }
 
+    // Hide the dropdown with animation
+    this.menuTarget.style.opacity = "0"
+    this.menuTarget.style.transform = "scale(0.95)"
+
+    // Wait for animation to complete before hiding
+    setTimeout(() => {
+      if (!this.openValue) { // Double check we're still closed
+        this.menuTarget.classList.add("hidden")
+        this.menuTarget.classList.remove("block")
+      }
+    }, 200)
+
+    // Remove event listeners
+    document.removeEventListener("click", this.boundHandleClickOutside)
+    document.removeEventListener("keydown", this.boundHandleEscape)
+  }
+
+  positionDropdownCorrectly() {
+    if (!this.hasButtonTarget) return
+    
     // Get button position
     const buttonRect = this.buttonTarget.getBoundingClientRect()
     const viewportWidth = window.innerWidth
     const viewportHeight = window.innerHeight
-
-    // Reset positioning classes and styles
-    this.menuTarget.classList.remove("right-0", "left-0")
-    this.menuTarget.style.removeProperty("right")
-    this.menuTarget.style.removeProperty("left")
-    this.menuTarget.style.removeProperty("top")
-    this.menuTarget.style.removeProperty("bottom")
-
-    // Set position to absolute for proper positioning
-    this.menuTarget.style.setProperty("position", "absolute", "important")
+    
+    // Use fixed positioning to avoid CSS conflicts
+    this.menuTarget.style.setProperty("position", "fixed", "important")
     this.menuTarget.style.setProperty("z-index", "9999", "important")
-
+    this.menuTarget.style.setProperty("display", "block", "important")
+    this.menuTarget.style.setProperty("visibility", "visible", "important")
+    
     // Calculate optimal position
-    const dropdownWidth = 288 // w-72 = 288px
+    const dropdownWidth = 288 // w-72 = 288px (or w-96 = 384px for notifications)
     const dropdownHeight = 400 // estimated height
-
-    // Default: position below and to the right of button
-    let top = buttonRect.height + 12 // mt-3 = 12px
-    let right = 0
-
+    
+    // Position below the button by default
+    let top = buttonRect.bottom + 8 // 8px gap
+    let left = buttonRect.right - dropdownWidth // align right edge with button right edge
+    
+    // Check if dropdown would go off-screen to the left
+    if (left < 20) {
+      left = 20 // 20px from left edge
+    }
+    
     // Check if dropdown would go off-screen to the right
-    if (buttonRect.right - dropdownWidth < 0) {
-      // Position to the left instead
-      this.menuTarget.style.setProperty("left", "0", "important")
-    } else {
-      // Position to the right (default)
-      this.menuTarget.style.setProperty("right", "0", "important")
+    if (left + dropdownWidth > viewportWidth - 20) {
+      left = viewportWidth - dropdownWidth - 20 // 20px from right edge
     }
-
+    
     // Check if dropdown would go off-screen at the bottom
-    if (buttonRect.bottom + dropdownHeight > viewportHeight) {
+    if (top + dropdownHeight > viewportHeight - 20) {
       // Position above the button instead
-      this.menuTarget.style.setProperty("bottom", "100%", "important")
-      this.menuTarget.style.setProperty("margin-bottom", "12px", "important")
-    } else {
-      // Position below the button (default)
-      this.menuTarget.style.setProperty("top", `${top}px`, "important")
+      top = buttonRect.top - dropdownHeight - 8 // 8px gap above
+      
+      // If still off-screen at top, position at top of viewport
+      if (top < 20) {
+        top = 20
+      }
     }
-
-    console.log("Dropdown positioned relative to button:", {
-      buttonRect,
-      dropdownPosition: this.menuTarget.getBoundingClientRect()
-    })
+    
+    // Apply the calculated position
+    this.menuTarget.style.setProperty("top", `${top}px`, "important")
+    this.menuTarget.style.setProperty("left", `${left}px`, "important")
+    this.menuTarget.style.setProperty("right", "auto", "important")
+    this.menuTarget.style.setProperty("bottom", "auto", "important")
+    this.menuTarget.style.setProperty("transform", "none", "important")
+    this.menuTarget.style.setProperty("margin", "0", "important")
   }
 
   closeOtherDropdowns() {
@@ -295,22 +157,6 @@ export default class extends Controller {
     })
   }
 
-  close() {
-    console.log("Closing dropdown")
-
-    this.openValue = false
-    this.buttonTarget.setAttribute("aria-expanded", "false")
-
-    // Hide the dropdown
-    this.menuTarget.style.setProperty("display", "none", "important")
-    this.menuTarget.classList.add("hidden")
-    this.menuTarget.classList.remove("block", "show", "hide", "visible")
-
-    // Remove event listeners
-    document.removeEventListener("click", this.boundHandleClickOutside)
-    document.removeEventListener("keydown", this.boundHandleEscape)
-  }
-
   handleClickOutside(event) {
     if (!this.element.contains(event.target)) {
       this.close()
@@ -320,7 +166,6 @@ export default class extends Controller {
   handleEscape(event) {
     if (event.key === "Escape") {
       this.close()
-      this.buttonTarget.focus()
     }
   }
 
@@ -328,7 +173,7 @@ export default class extends Controller {
     // Clean up event listeners
     document.removeEventListener("click", this.boundHandleClickOutside)
     document.removeEventListener("keydown", this.boundHandleEscape)
-
+    
     // Remove controller reference
     if (this.element.dropdownController === this) {
       delete this.element.dropdownController

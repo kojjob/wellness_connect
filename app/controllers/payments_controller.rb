@@ -17,7 +17,7 @@ class PaymentsController < ApplicationController
     # Apply search filter
     if params[:search].present?
       search_term = "%#{params[:search]}%"
-      base_payments = base_payments.joins(appointment: [:provider, :service])
+      base_payments = base_payments.joins(appointment: [ :provider, :service ])
                                    .where("users.first_name ILIKE ? OR users.last_name ILIKE ? OR services.name ILIKE ? OR payments.stripe_payment_intent_id ILIKE ?",
                                           search_term, search_term, search_term, search_term)
     end
@@ -30,15 +30,15 @@ class PaymentsController < ApplicationController
     # Apply date range filter with presets
     if params[:date_range].present?
       case params[:date_range]
-      when 'last_7_days'
+      when "last_7_days"
         base_payments = base_payments.where("payments.created_at >= ?", 7.days.ago)
-      when 'last_30_days'
+      when "last_30_days"
         base_payments = base_payments.where("payments.created_at >= ?", 30.days.ago)
-      when 'last_3_months'
+      when "last_3_months"
         base_payments = base_payments.where("payments.created_at >= ?", 3.months.ago)
-      when 'last_year'
+      when "last_year"
         base_payments = base_payments.where("payments.created_at >= ?", 1.year.ago)
-      when 'custom'
+      when "custom"
         if params[:start_date].present?
           base_payments = base_payments.where("payments.created_at >= ?", params[:start_date])
         end
@@ -50,15 +50,15 @@ class PaymentsController < ApplicationController
 
     # Apply sorting
     @payments = case params[:sort]
-                when 'amount_high'
+    when "amount_high"
                   base_payments.order(amount: :desc)
-                when 'amount_low'
+    when "amount_low"
                   base_payments.order(amount: :asc)
-                when 'oldest'
+    when "oldest"
                   base_payments.order(created_at: :asc)
-                else # 'newest' or default
+    else # 'newest' or default
                   base_payments.order(created_at: :desc)
-                end
+    end
 
     # Calculate statistics before pagination
     @total_spent = base_payments.where(status: :succeeded).sum(:amount)
@@ -78,12 +78,12 @@ class PaymentsController < ApplicationController
                                      .sort.to_h
 
     # Recent transactions for sidebar (last 5)
-    @recent_transactions = base_payments.includes(:payer, appointment: [:patient, :provider, :service])
+    @recent_transactions = base_payments.includes(:payer, appointment: [ :patient, :provider, :service ])
                                        .order(created_at: :desc)
                                        .limit(5)
 
     # Paginate main list
-    @payments = @payments.includes(:payer, appointment: [:patient, :provider, :service])
+    @payments = @payments.includes(:payer, appointment: [ :patient, :provider, :service ])
                         .page(params[:page]).per(20)
   end
 

@@ -1,6 +1,6 @@
 class AppointmentsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_appointment, only: [:show, :cancel]
+  before_action :set_appointment, only: [ :show, :cancel ]
 
   def index
     authorize Appointment

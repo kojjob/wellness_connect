@@ -16,7 +16,7 @@ class CreateMessages < ActiveRecord::Migration[8.1]
     add_foreign_key :messages, :users, column: :sender_id, on_delete: :cascade
 
     # Indexes for performance
-    add_index :messages, [:conversation_id, :created_at],
+    add_index :messages, [ :conversation_id, :created_at ],
               order: { created_at: :asc },
               comment: "Find conversation messages sorted chronologically"
 

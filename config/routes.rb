@@ -35,7 +35,7 @@ Rails.application.routes.draw do
   end
 
   # Appointments
-  resources :appointments, only: [:index, :show, :new, :create] do
+  resources :appointments, only: [ :index, :show, :new, :create ] do
     member do
       patch :cancel
     end

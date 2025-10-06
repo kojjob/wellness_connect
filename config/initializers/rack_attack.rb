@@ -96,7 +96,7 @@ class Rack::Attack
         "Content-Type" => "application/json",
         "Retry-After" => retry_after.to_s
       },
-      [{ error: "Rate limit exceeded. Please try again later." }.to_json]
+      [ { error: "Rate limit exceeded. Please try again later." }.to_json ]
     ]
   end
 
@@ -105,7 +105,7 @@ class Rack::Attack
     [
       403, # HTTP 403 Forbidden
       { "Content-Type" => "application/json" },
-      [{ error: "Forbidden" }.to_json]
+      [ { error: "Forbidden" }.to_json ]
     ]
   end
 
@@ -115,7 +115,7 @@ class Rack::Attack
   ActiveSupport::Notifications.subscribe("rack.attack") do |name, start, finish, request_id, payload|
     req = payload[:request]
 
-    if [:blocklist, :throttle].include?(req.env["rack.attack.match_type"])
+    if [ :blocklist, :throttle ].include?(req.env["rack.attack.match_type"])
       Rails.logger.warn "[Rack::Attack] #{req.env['rack.attack.match_type']}: #{req.ip} - #{req.path}"
     end
   end

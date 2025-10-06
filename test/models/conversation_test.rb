@@ -187,7 +187,7 @@ class ConversationTest < ActiveSupport::TestCase
       last_message_at: 1.hour.ago
     )
 
-    ordered_conversations = Conversation.ordered.where(id: [old_conv.id, new_conv.id])
+    ordered_conversations = Conversation.ordered.where(id: [ old_conv.id, new_conv.id ])
     assert_equal new_conv.id, ordered_conversations.first.id, "Most recent conversation should be first"
     assert_equal old_conv.id, ordered_conversations.last.id, "Oldest conversation should be last"
   end

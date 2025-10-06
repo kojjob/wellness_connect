@@ -172,7 +172,7 @@ class MessageTest < ActiveSupport::TestCase
       )
     end
 
-    ordered_messages = Message.where(id: [old_message.id, new_message.id]).ordered
+    ordered_messages = Message.where(id: [ old_message.id, new_message.id ]).ordered
     assert_equal old_message.id, ordered_messages.first.id, "Oldest message should be first"
     assert_equal new_message.id, ordered_messages.last.id, "Newest message should be last"
   end

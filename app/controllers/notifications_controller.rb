@@ -8,7 +8,7 @@ class NotificationsController < ApplicationController
   def mark_as_read
     @notification = current_user.notifications.find(params[:id])
     @notification.mark_as_read!
-    
+
     if @notification.action_url.present?
       redirect_to @notification.action_url
     else
@@ -27,4 +27,3 @@ class NotificationsController < ApplicationController
     redirect_to notifications_path, notice: "Notification deleted"
   end
 end
-
