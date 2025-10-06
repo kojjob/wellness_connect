@@ -15,8 +15,16 @@ class Conversation < ApplicationRecord
     where("patient_id = ? OR provider_id = ?", user.id, user.id)
   }
   scope :recent, -> { order(last_message_at: :desc) }
+  scope :ordered, -> { order(last_message_at: :desc) }
   scope :unarchived_for_patient, -> { where(archived_by_patient: false) }
   scope :unarchived_for_provider, -> { where(archived_by_provider: false) }
+
+  # General scopes for filtering conversations
+  scope :active, -> { where(archived_by_patient: false, archived_by_provider: false) }
+  scope :archived, -> { where("archived_by_patient = ? OR archived_by_provider = ?", true, true) }
+  scope :with_unread, -> { where("patient_unread_count > ? OR provider_unread_count > ?", 0, 0) }
+  scope :appointment_specific, -> { where.not(appointment_id: nil) }
+  scope :general, -> { where(appointment_id: nil) }
 
   # User-specific archive filtering
   scope :unarchived_for, ->(user) {
@@ -47,12 +55,13 @@ class Conversation < ApplicationRecord
 
   # Get the other participant in the conversation
   def other_participant(user)
+    return nil unless participant?(user)
     user == patient ? provider : patient
   end
 
   # Get all participants
   def participants
-    [patient, provider].compact
+    [ patient, provider ].compact
   end
 
   # Check if a user is a participant
@@ -103,12 +112,17 @@ class Conversation < ApplicationRecord
     end
   end
 
+  # Check if user has unread messages
+  def has_unread_for?(user)
+    unread_count_for(user) > 0
+  end
+
   private
 
   # Custom validation: patient and provider must be different users
   def participants_must_be_different
     if patient_id.present? && provider_id.present? && patient_id == provider_id
-      errors.add(:base, "Patient and provider must be different users")
+      errors.add(:provider_id, "cannot be the same as patient")
     end
   end
 end
