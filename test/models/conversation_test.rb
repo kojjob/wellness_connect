@@ -54,21 +54,33 @@ class ConversationTest < ActiveSupport::TestCase
   end
 
   test "should allow only one conversation per appointment" do
+    # Create a new appointment for this test to avoid fixtures conflict
+    new_appointment = Appointment.create!(
+      patient: @patient,
+      provider: @provider,
+      service: services(:service_one),
+      start_time: 2.days.from_now,
+      end_time: 2.days.from_now + 1.hour,
+      status: :scheduled
+    )
+
     # Create first conversation for appointment
     conversation1 = Conversation.create!(
       patient: @patient,
       provider: @provider,
-      appointment: @appointment
+      appointment: new_appointment
     )
 
     # Try to create second conversation for same appointment
     conversation2 = Conversation.new(
       patient: @patient,
       provider: @provider,
-      appointment: @appointment
+      appointment: new_appointment
     )
 
-    assert_not conversation2.save, "Created duplicate conversation for same appointment"
+    assert_raises ActiveRecord::RecordNotUnique do
+      conversation2.save!
+    end
   end
 
   # Scope Tests
@@ -117,10 +129,21 @@ class ConversationTest < ActiveSupport::TestCase
 
   test "appointment_specific scope should only include conversations tied to appointments" do
     general_conv = Conversation.create!(patient: @patient, provider: @provider)
+
+    # Create a new appointment for this test to avoid unique constraint issues
+    new_appointment = Appointment.create!(
+      patient: @patient,
+      provider: @provider,
+      service: services(:service_one),
+      start_time: 3.days.from_now,
+      end_time: 3.days.from_now + 1.hour,
+      status: :scheduled
+    )
+
     appointment_conv = Conversation.create!(
       patient: @patient,
       provider: @provider,
-      appointment: @appointment
+      appointment: new_appointment
     )
 
     appointment_conversations = Conversation.appointment_specific
@@ -130,10 +153,21 @@ class ConversationTest < ActiveSupport::TestCase
 
   test "general scope should only include conversations not tied to appointments" do
     general_conv = Conversation.create!(patient: @patient, provider: @provider)
+
+    # Create a new appointment for this test
+    new_appointment = Appointment.create!(
+      patient: @patient,
+      provider: users(:provider_user_two),
+      service: services(:service_one),
+      start_time: 4.days.from_now,
+      end_time: 4.days.from_now + 1.hour,
+      status: :scheduled
+    )
+
     appointment_conv = Conversation.create!(
       patient: @patient,
       provider: users(:provider_user_two),
-      appointment: appointments(:completed_appointment)
+      appointment: new_appointment
     )
 
     general_conversations = Conversation.general
@@ -153,9 +187,9 @@ class ConversationTest < ActiveSupport::TestCase
       last_message_at: 1.hour.ago
     )
 
-    ordered_conversations = Conversation.ordered
-    assert_equal new_conv, ordered_conversations.first
-    assert_equal old_conv, ordered_conversations.last
+    ordered_conversations = Conversation.ordered.where(id: [old_conv.id, new_conv.id])
+    assert_equal new_conv.id, ordered_conversations.first.id, "Most recent conversation should be first"
+    assert_equal old_conv.id, ordered_conversations.last.id, "Oldest conversation should be last"
   end
 
   # Instance Method Tests

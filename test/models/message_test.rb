@@ -152,22 +152,29 @@ class MessageTest < ActiveSupport::TestCase
 
   # Scope Tests
   test "ordered scope should sort by created_at ascending" do
-    old_message = Message.create!(
-      conversation: @conversation,
-      sender: @patient,
-      content: "Old message",
-      created_at: 1.hour.ago
-    )
-    new_message = Message.create!(
-      conversation: @conversation,
-      sender: @provider,
-      content: "New message",
-      created_at: 1.minute.ago
-    )
+    # Create messages with explicit timestamps
+    old_message = nil
+    new_message = nil
 
-    ordered_messages = Message.ordered
-    assert_equal old_message, ordered_messages.first
-    assert_equal new_message, ordered_messages.last
+    travel_to 1.hour.ago do
+      old_message = Message.create!(
+        conversation: @conversation,
+        sender: @patient,
+        content: "Old message"
+      )
+    end
+
+    travel_to 1.minute.ago do
+      new_message = Message.create!(
+        conversation: @conversation,
+        sender: @provider,
+        content: "New message"
+      )
+    end
+
+    ordered_messages = Message.where(id: [old_message.id, new_message.id]).ordered
+    assert_equal old_message.id, ordered_messages.first.id, "Oldest message should be first"
+    assert_equal new_message.id, ordered_messages.last.id, "Newest message should be last"
   end
 
   test "unread scope should only include messages where read_at is nil" do
@@ -233,7 +240,7 @@ class MessageTest < ActiveSupport::TestCase
       last_message_at: nil
     )
 
-    Timecop.freeze do
+    freeze_time do
       Message.create!(
         conversation: conversation,
         sender: @patient,
@@ -282,7 +289,7 @@ class MessageTest < ActiveSupport::TestCase
 
     assert_nil message.read_at
 
-    Timecop.freeze do
+    freeze_time do
       message.mark_as_read
       assert_in_delta Time.current, message.read_at, 1.second
     end

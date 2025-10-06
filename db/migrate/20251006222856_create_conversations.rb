@@ -3,7 +3,7 @@ class CreateConversations < ActiveRecord::Migration[8.1]
     create_table :conversations do |t|
       t.references :patient, null: false, foreign_key: { to_table: :users }
       t.references :provider, null: false, foreign_key: { to_table: :users }
-      t.references :appointment, null: true, foreign_key: { on_delete: :nullify }, index: false
+      t.references :appointment, null: true, foreign_key: false, index: false
       t.datetime :last_message_at
       t.integer :patient_unread_count, default: 0, null: false
       t.integer :provider_unread_count, default: 0, null: false
@@ -12,6 +12,9 @@ class CreateConversations < ActiveRecord::Migration[8.1]
 
       t.timestamps
     end
+
+    # Add foreign key with on_delete option explicitly
+    add_foreign_key :conversations, :appointments, on_delete: :nullify
 
     # Indexes for performance
     add_index :conversations, [:patient_id, :last_message_at],
