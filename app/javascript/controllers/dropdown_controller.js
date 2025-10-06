@@ -132,34 +132,10 @@ export default class extends Controller {
       backgroundColor: computedStyle.backgroundColor
     })
 
-    // Apply the same successful approach as the cloned dropdown
-    this.menuTarget.style.setProperty("position", "fixed", "important")
-    this.menuTarget.style.setProperty("top", "70px", "important")
-    this.menuTarget.style.setProperty("right", "20px", "important")
-    this.menuTarget.style.setProperty("left", "auto", "important")
-    this.menuTarget.style.setProperty("z-index", "9999", "important")
-    this.menuTarget.style.setProperty("transform", "none", "important")
-    this.menuTarget.style.setProperty("margin", "0", "important")
+    // Position dropdown relative to button for proper placement
+    this.positionDropdown()
 
-    // Make dropdown EXTREMELY visible
-    this.menuTarget.style.setProperty("background-color", "red", "important")
-    this.menuTarget.style.setProperty("border", "20px solid blue", "important")
-    this.menuTarget.style.setProperty("width", "400px", "important")
-    this.menuTarget.style.setProperty("height", "300px", "important")
-    this.menuTarget.style.setProperty("box-shadow", "0 0 50px rgba(255,0,0,0.8)", "important")
-    this.menuTarget.style.setProperty("outline", "10px solid yellow", "important")
-
-    // Add flashing animation
-    this.menuTarget.style.setProperty("animation", "blink 1s infinite", "important")
-
-    // Add text content to make it obvious
-    this.menuTarget.innerHTML = `
-      <div style="color: white; font-size: 24px; padding: 20px; text-align: center; font-weight: bold;">
-        🎉 DROPDOWN IS WORKING! 🎉<br>
-        Position: ${this.menuTarget.getBoundingClientRect().top}px, ${this.menuTarget.getBoundingClientRect().left}px<br>
-        <span style="background: yellow; color: black; padding: 5px;">YOU SHOULD SEE THIS!</span>
-      </div>
-    `
+    console.log("Dropdown opened successfully")
 
     console.log("Dropdown styles applied")
 
@@ -190,14 +166,61 @@ export default class extends Controller {
       console.log("=== DROPDOWN ELEMENT DEBUG ===")
       console.log("Element:", this.menuTarget)
       console.log("Parent:", this.menuTarget.parentElement)
-      console.log("All computed styles:", window.getComputedStyle(this.menuTarget))
-      console.log("Element HTML:", this.menuTarget.outerHTML.substring(0, 200) + "...")
+
+      // Check specific computed style properties that affect visibility
+      const computed = window.getComputedStyle(this.menuTarget)
+      console.log("CRITICAL COMPUTED STYLES:")
+      console.log("display:", computed.display)
+      console.log("visibility:", computed.visibility)
+      console.log("opacity:", computed.opacity)
+      console.log("position:", computed.position)
+      console.log("top:", computed.top)
+      console.log("right:", computed.right)
+      console.log("left:", computed.left)
+      console.log("bottom:", computed.bottom)
+      console.log("z-index:", computed.zIndex)
+      console.log("width:", computed.width)
+      console.log("height:", computed.height)
+      console.log("background-color:", computed.backgroundColor)
+      console.log("border:", computed.border)
+      console.log("transform:", computed.transform)
+      console.log("clip:", computed.clip)
+      console.log("clip-path:", computed.clipPath)
+      console.log("overflow:", computed.overflow)
+
+      // Check parent element styles that might affect visibility
+      const parentComputed = window.getComputedStyle(this.menuTarget.parentElement)
+      console.log("PARENT ELEMENT STYLES:")
+      console.log("parent overflow:", parentComputed.overflow)
+      console.log("parent position:", parentComputed.position)
+      console.log("parent z-index:", parentComputed.zIndex)
+
+      // Force the dropdown to be visible with extreme measures
+      this.menuTarget.style.setProperty("position", "fixed", "important")
+      this.menuTarget.style.setProperty("top", "50px", "important")
+      this.menuTarget.style.setProperty("left", "50px", "important")
+      this.menuTarget.style.setProperty("right", "auto", "important")
+      this.menuTarget.style.setProperty("bottom", "auto", "important")
+      this.menuTarget.style.setProperty("width", "500px", "important")
+      this.menuTarget.style.setProperty("height", "400px", "important")
+      this.menuTarget.style.setProperty("background-color", "red", "important")
+      this.menuTarget.style.setProperty("border", "10px solid blue", "important")
+      this.menuTarget.style.setProperty("z-index", "999999", "important")
+      this.menuTarget.style.setProperty("display", "block", "important")
+      this.menuTarget.style.setProperty("visibility", "visible", "important")
+      this.menuTarget.style.setProperty("opacity", "1", "important")
+      this.menuTarget.style.setProperty("transform", "none", "important")
+      this.menuTarget.style.setProperty("clip", "auto", "important")
+      this.menuTarget.style.setProperty("clip-path", "none", "important")
+      this.menuTarget.style.setProperty("overflow", "visible", "important")
+
+      this.menuTarget.innerHTML = '<div style="color: white; font-size: 30px; padding: 50px; text-align: center; font-weight: bold; background: green;">🚨 EMERGENCY DROPDOWN 🚨<br>If you see this, CSS was the issue!</div>'
+
+      console.log("Emergency dropdown applied - should be at top-left corner")
 
       // Check if element is actually in the DOM
       console.log("Is in DOM:", document.contains(this.menuTarget))
       console.log("Is connected:", this.menuTarget.isConnected)
-
-      console.log("Dropdown positioning applied successfully")
     })
 
     // Add event listeners after a small delay to prevent immediate closing
@@ -207,44 +230,56 @@ export default class extends Controller {
     }, 10)
   }
 
-  adjustDropdownPosition() {
-    const rect = this.menuTarget.getBoundingClientRect()
+  positionDropdown() {
+    if (!this.hasButtonTarget) return
+
+    // Get button position
+    const buttonRect = this.buttonTarget.getBoundingClientRect()
     const viewportWidth = window.innerWidth
     const viewportHeight = window.innerHeight
 
-    console.log("Viewport dimensions:", { width: viewportWidth, height: viewportHeight })
-    console.log("Dropdown rect before adjustment:", rect)
+    // Reset positioning classes and styles
+    this.menuTarget.classList.remove("right-0", "left-0")
+    this.menuTarget.style.removeProperty("right")
+    this.menuTarget.style.removeProperty("left")
+    this.menuTarget.style.removeProperty("top")
+    this.menuTarget.style.removeProperty("bottom")
 
-    // Check if dropdown is off-screen to the right
-    if (rect.right > viewportWidth) {
-      console.log("Dropdown is off-screen to the right, adjusting...")
-      // Remove right-0 and add left positioning
-      this.menuTarget.classList.remove("right-0")
-      this.menuTarget.classList.add("left-0")
-      this.menuTarget.style.right = "auto"
-      this.menuTarget.style.left = "0"
+    // Set position to absolute for proper positioning
+    this.menuTarget.style.setProperty("position", "absolute", "important")
+    this.menuTarget.style.setProperty("z-index", "9999", "important")
+
+    // Calculate optimal position
+    const dropdownWidth = 288 // w-72 = 288px
+    const dropdownHeight = 400 // estimated height
+
+    // Default: position below and to the right of button
+    let top = buttonRect.height + 12 // mt-3 = 12px
+    let right = 0
+
+    // Check if dropdown would go off-screen to the right
+    if (buttonRect.right - dropdownWidth < 0) {
+      // Position to the left instead
+      this.menuTarget.style.setProperty("left", "0", "important")
+    } else {
+      // Position to the right (default)
+      this.menuTarget.style.setProperty("right", "0", "important")
     }
 
-    // Check if dropdown is off-screen to the left
-    if (rect.left < 0) {
-      console.log("Dropdown is off-screen to the left, adjusting...")
-      this.menuTarget.classList.remove("left-0")
-      this.menuTarget.classList.add("right-0")
-      this.menuTarget.style.left = "auto"
-      this.menuTarget.style.right = "0"
+    // Check if dropdown would go off-screen at the bottom
+    if (buttonRect.bottom + dropdownHeight > viewportHeight) {
+      // Position above the button instead
+      this.menuTarget.style.setProperty("bottom", "100%", "important")
+      this.menuTarget.style.setProperty("margin-bottom", "12px", "important")
+    } else {
+      // Position below the button (default)
+      this.menuTarget.style.setProperty("top", `${top}px`, "important")
     }
 
-    // Check if dropdown is off-screen at the bottom
-    if (rect.bottom > viewportHeight) {
-      console.log("Dropdown is off-screen at bottom, adjusting...")
-      this.menuTarget.style.top = "auto"
-      this.menuTarget.style.bottom = "100%"
-      this.menuTarget.style.marginBottom = "0.75rem"
-      this.menuTarget.style.marginTop = "0"
-    }
-
-    const newRect = this.menuTarget.getBoundingClientRect()
-    console.log("Dropdown rect after adjustment:", newRect)
+    console.log("Dropdown positioned relative to button:", {
+      buttonRect,
+      dropdownPosition: this.menuTarget.getBoundingClientRect()
+    })
   }
 
   closeOtherDropdowns() {
