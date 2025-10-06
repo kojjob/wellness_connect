@@ -312,7 +312,7 @@ class CalendarModalTest < ApplicationSystemTestCase
     assert_selector '[data-availability-calendar-target="modal"].flex', visible: :visible
 
     # Press Escape key
-    page.find('body').send_keys(:escape)
+    page.find("body").send_keys(:escape)
 
     # Modal should be hidden
     assert_no_selector '[data-availability-calendar-target="modal"].flex', visible: :visible
