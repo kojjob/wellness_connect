@@ -16,8 +16,11 @@ export default class extends Controller {
   }
 
   toggleMobileMenu() {
+    console.log("Mobile menu toggle clicked")
     const isOpen = !this.mobileMenuTarget.classList.contains("hidden")
-    
+
+    console.log("Mobile menu is currently open:", isOpen)
+
     if (isOpen) {
       this.closeMobileMenu()
     } else {
@@ -57,4 +60,3 @@ export default class extends Controller {
     this.closeMobileMenu()
   }
 }
-

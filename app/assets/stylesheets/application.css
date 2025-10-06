@@ -375,6 +375,22 @@
   animation-delay: 4s;
 }
 
+/* Dropdown Animations */
+.dropdown-menu {
+  transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+  transform-origin: top right;
+}
+
+.dropdown-menu.show {
+  opacity: 1 !important;
+  transform: scale(1) !important;
+}
+
+.dropdown-menu.hide {
+  opacity: 0 !important;
+  transform: scale(0.95) !important;
+}
+
 /* Loading States */
 .loading-shimmer {
   background: linear-gradient(90deg, var(--gray-200) 25%, var(--gray-100) 50%, var(--gray-200) 75%);
