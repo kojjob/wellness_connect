@@ -1,7 +1,8 @@
 module Admin
   class UserPolicy < AdminPolicy
-    # Only super_admins can create and manage users
-    # Regular admins can view users but not create/edit/delete them
+    # Admins and super_admins can manage users
+    # Admins can view, edit, and delete users (but not themselves)
+    # Super_admins have same permissions (future: may have additional permissions)
 
     def index?
       admin_user? || super_admin_user?
@@ -11,50 +12,50 @@ module Admin
       admin_user? || super_admin_user?
     end
 
-    # Only super_admins can create users
+    # Admins can create users
     def new?
-      super_admin_user?
+      admin_user? || super_admin_user?
     end
 
     def create?
-      super_admin_user?
+      admin_user? || super_admin_user?
     end
 
-    # Only super_admins can update users
+    # Admins can update users
     def update?
-      super_admin_user?
+      admin_user? || super_admin_user?
     end
 
     def edit?
       update?
     end
 
-    # Only super_admins can delete users (and prevent deleting themselves)
+    # Admins can delete users (but not themselves)
     def destroy?
-      super_admin_user? && record.id != user.id
+      (admin_user? || super_admin_user?) && record.id != user.id
     end
 
-    # Only super_admins can change user roles
+    # Admins can change user roles
     def change_role?
-      super_admin_user?
+      admin_user? || super_admin_user?
     end
 
-    # Only super_admins can suspend/unsuspend users
+    # Admins can suspend/unsuspend users
     def suspend?
-      super_admin_user?
+      admin_user? || super_admin_user?
     end
 
     def unsuspend?
-      super_admin_user?
+      admin_user? || super_admin_user?
     end
 
-    # Only super_admins can block/unblock users
+    # Admins can block/unblock users
     def block?
-      super_admin_user?
+      admin_user? || super_admin_user?
     end
 
     def unblock?
-      super_admin_user?
+      admin_user? || super_admin_user?
     end
 
     # Scope returns all users for admins and super_admins
