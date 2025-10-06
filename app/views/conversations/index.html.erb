@@ -1,0 +1,73 @@
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+      Messages
+    </h1>
+    <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+      View and manage your conversations with <%= current_user.provider? ? "clients" : "service providers" %>
+    </p>
+  </div>
+
+  <%# Active Conversations Section %>
+  <div class="mb-12">
+    <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+      <svg class="w-5 h-5 mr-2 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+      </svg>
+      Active Conversations
+      <% if @active_conversations.any? %>
+        <span class="ml-2 px-2 py-1 text-xs font-medium bg-primary-100 text-primary-800 rounded-full">
+          <%= @active_conversations.size %>
+        </span>
+      <% end %>
+    </h2>
+
+    <% if @active_conversations.any? %>
+      <div class="bg-white dark:bg-gray-800 shadow rounded-lg divide-y divide-gray-200 dark:divide-gray-700">
+        <% @active_conversations.each do |conversation| %>
+          <%= render "conversation_item", conversation: conversation, current_user: current_user %>
+        <% end %>
+      </div>
+
+      <%# Pagination %>
+      <% if @active_conversations.respond_to?(:total_pages) && @active_conversations.total_pages > 1 %>
+        <div class="mt-6">
+          <%= paginate @active_conversations, theme: 'tailwind' %>
+        </div>
+      <% end %>
+    <% else %>
+      <div class="bg-white dark:bg-gray-800 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 p-12 text-center">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+        </svg>
+        <h3 class="mt-2 text-sm font-semibold text-gray-900 dark:text-white">
+          No active conversations
+        </h3>
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          <%= current_user.provider? ? "Your conversations with clients will appear here" : "Your conversations with service providers will appear here" %>
+        </p>
+      </div>
+    <% end %>
+  </div>
+
+  <%# Archived Conversations Section %>
+  <% if @archived_conversations.any? %>
+    <div>
+      <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+        <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+        </svg>
+        Archived Conversations
+        <span class="ml-2 px-2 py-1 text-xs font-medium bg-gray-100 text-gray-600 rounded-full">
+          <%= @archived_conversations.size %>
+        </span>
+      </h2>
+
+      <div class="bg-white dark:bg-gray-800 shadow rounded-lg divide-y divide-gray-200 dark:divide-gray-700">
+        <% @archived_conversations.each do |conversation| %>
+          <%= render "conversation_item", conversation: conversation, current_user: current_user, archived: true %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>

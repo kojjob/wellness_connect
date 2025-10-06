@@ -24,6 +24,11 @@ class User < ApplicationRecord
   has_many :notifications, dependent: :destroy
   has_many :reviews, foreign_key: "reviewer_id", dependent: :destroy
 
+  # Conversations and messaging
+  has_many :conversations_as_patient, class_name: "Conversation", foreign_key: "patient_id", dependent: :destroy
+  has_many :conversations_as_provider, class_name: "Conversation", foreign_key: "provider_id", dependent: :destroy
+  has_many :sent_messages, class_name: "Message", foreign_key: "sender_id", dependent: :destroy
+
   # Active Storage
   has_one_attached :avatar
 

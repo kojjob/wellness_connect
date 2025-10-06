@@ -1,0 +1,42 @@
+# Conversation test fixtures
+
+# General conversation between patient and provider (no appointment)
+general_conversation:
+  patient: patient_user
+  provider: provider_user
+  last_message_at: <%= 2.hours.ago %>
+  patient_unread_count: 0
+  provider_unread_count: 0
+  archived_by_patient: false
+  archived_by_provider: false
+
+# Appointment-specific conversation
+appointment_conversation:
+  patient: patient_user
+  provider: provider_user
+  appointment: appointment_one
+  last_message_at: <%= 1.hour.ago %>
+  patient_unread_count: 2
+  provider_unread_count: 0
+  archived_by_patient: false
+  archived_by_provider: false
+
+# Archived conversation
+archived_conversation:
+  patient: patient_user
+  provider: provider_user_two
+  last_message_at: <%= 3.days.ago %>
+  patient_unread_count: 0
+  provider_unread_count: 0
+  archived_by_patient: true
+  archived_by_provider: false
+
+# Conversation with unread messages for provider
+unread_for_provider:
+  patient: patient_user_two
+  provider: provider_user
+  last_message_at: <%= 30.minutes.ago %>
+  patient_unread_count: 0
+  provider_unread_count: 5
+  archived_by_patient: false
+  archived_by_provider: false

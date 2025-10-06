@@ -1,59 +1,103 @@
-<!-- Admin Sidebar -->
-<aside class="fixed left-0 top-0 h-screen w-64 bg-gray-900 z-40">
-  <!-- Logo/Brand -->
-  <div class="flex items-center justify-center h-16 bg-gray-800 border-b border-gray-700">
-    <%= link_to admin_root_path, class: "flex items-center gap-2" do %>
-      <svg class="w-8 h-8 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
-        <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zm5.99 7.176A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z"/>
-      </svg>
+<!-- Modern Admin Sidebar -->
+<aside class="fixed left-0 top-0 h-screen w-64 bg-gradient-to-b from-gray-900 via-gray-900 to-gray-800 z-40 overflow-hidden">
+  <!-- Animated Background -->
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <div class="absolute -top-10 -left-10 w-40 h-40 bg-teal-500/10 rounded-full blur-3xl animate-blob"></div>
+    <div class="absolute -bottom-10 -right-10 w-32 h-32 bg-gray-500/10 rounded-full blur-2xl animate-blob animation-delay-2000"></div>
+  </div>
+
+  <!-- Enhanced Logo/Brand -->
+  <div class="relative flex items-center justify-center h-16 bg-gradient-to-r from-gray-800/50 to-gray-900/50 backdrop-blur-sm border-b border-gray-700/50">
+    <%= link_to admin_root_path, class: "flex items-center gap-3 group" do %>
+      <div class="relative">
+        <div class="absolute inset-0 bg-gradient-to-br from-teal-500 to-teal-600 rounded-xl blur opacity-30 group-hover:opacity-50 transition-opacity duration-300"></div>
+        <div class="relative w-10 h-10 bg-gradient-to-br from-teal-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform duration-300">
+          <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
+          </svg>
+        </div>
+      </div>
       <div class="text-white">
-        <div class="text-lg font-bold">Wellness Connect</div>
-        <div class="text-xs text-gray-400">Admin Panel</div>
+        <div class="text-lg font-bold bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent group-hover:from-teal-200 group-hover:to-white transition-all duration-300">Wellness Connect</div>
+        <div class="text-xs text-gray-400 group-hover:text-teal-300 transition-colors duration-300">Admin Panel</div>
       </div>
     <% end %>
   </div>
 
-  <!-- Navigation Menu -->
-  <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+  <!-- Enhanced Navigation Menu -->
+  <nav class="relative flex-1 px-4 py-6 space-y-2 overflow-y-auto">
     <!-- Dashboard -->
-    <%= link_to admin_root_path, class: "flex items-center gap-3 px-4 py-3 text-gray-300 rounded-lg hover:bg-gray-800 hover:text-white transition #{request.path == admin_root_path ? 'bg-gray-800 text-white' : ''}" do %>
-      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+    <%= link_to admin_root_path, class: "group flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-300 relative overflow-hidden #{request.path == admin_root_path ? 'bg-gradient-to-r from-teal-600 to-teal-700 text-white shadow-lg' : 'text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-gray-800 hover:to-gray-700'}" do %>
+      <% if request.path == admin_root_path %>
+        <div class="absolute inset-0 bg-gradient-to-r from-teal-500/20 to-teal-600/20"></div>
+      <% else %>
+        <div class="absolute inset-0 bg-gradient-to-r from-teal-500/10 to-teal-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+      <% end %>
+      <svg class="w-5 h-5 relative z-10 group-hover:scale-110 transition-transform duration-300" fill="currentColor" viewBox="0 0 20 20">
         <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
       </svg>
-      <span class="font-medium">Dashboard</span>
+      <span class="relative z-10 font-medium">Dashboard</span>
     <% end %>
 
     <!-- Users Management -->
-    <%= link_to admin_users_path, class: "flex items-center gap-3 px-4 py-3 text-gray-300 rounded-lg hover:bg-gray-800 hover:text-white transition #{request.path.start_with?('/admin/users') ? 'bg-gray-800 text-white' : ''}" do %>
-      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+    <%= link_to admin_users_path, class: "group flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-300 relative overflow-hidden #{request.path.start_with?('/admin/users') ? 'bg-gradient-to-r from-teal-600 to-teal-700 text-white shadow-lg' : 'text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-gray-800 hover:to-gray-700'}" do %>
+      <% if request.path.start_with?('/admin/users') %>
+        <div class="absolute inset-0 bg-gradient-to-r from-teal-500/20 to-teal-600/20"></div>
+      <% else %>
+        <div class="absolute inset-0 bg-gradient-to-r from-teal-500/10 to-teal-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+      <% end %>
+      <svg class="w-5 h-5 relative z-10 group-hover:scale-110 transition-transform duration-300" fill="currentColor" viewBox="0 0 20 20">
         <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
       </svg>
-      <span class="font-medium">Users</span>
+      <span class="relative z-10 font-medium">Users</span>
     <% end %>
 
     <!-- Providers Management -->
-    <%= link_to admin_provider_profiles_path, class: "flex items-center gap-3 px-4 py-3 text-gray-300 rounded-lg hover:bg-gray-800 hover:text-white transition #{request.path.start_with?('/admin/provider_profiles') ? 'bg-gray-800 text-white' : ''}" do %>
-      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+    <%= link_to admin_provider_profiles_path, class: "group flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-300 relative overflow-hidden #{request.path.start_with?('/admin/provider_profiles') ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg' : 'text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-gray-800 hover:to-gray-700'}" do %>
+      <% if request.path.start_with?('/admin/provider_profiles') %>
+        <div class="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-pink-500/20"></div>
+      <% else %>
+        <div class="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+      <% end %>
+      <svg class="w-5 h-5 relative z-10 group-hover:scale-110 transition-transform duration-300" fill="currentColor" viewBox="0 0 20 20">
         <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
       </svg>
-      <span class="font-medium">Providers</span>
+      <span class="relative z-10 font-medium">Providers</span>
     <% end %>
 
     <!-- Appointments -->
-    <%= link_to admin_appointments_path, class: "flex items-center gap-3 px-4 py-3 text-gray-300 rounded-lg hover:bg-gray-800 hover:text-white transition #{request.path.start_with?('/admin/appointments') ? 'bg-gray-800 text-white' : ''}" do %>
-      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+    <%= link_to admin_appointments_path, class: "group flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-300 relative overflow-hidden #{request.path.start_with?('/admin/appointments') ? 'bg-gradient-to-r from-green-600 to-green-700 text-white shadow-lg' : 'text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-gray-800 hover:to-gray-700'}" do %>
+      <% if request.path.start_with?('/admin/appointments') %>
+        <div class="absolute inset-0 bg-gradient-to-r from-green-500/20 to-green-600/20"></div>
+      <% else %>
+        <div class="absolute inset-0 bg-gradient-to-r from-green-500/10 to-green-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+      <% end %>
+      <svg class="w-5 h-5 relative z-10 group-hover:scale-110 transition-transform duration-300" fill="currentColor" viewBox="0 0 20 20">
         <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
       </svg>
-      <span class="font-medium">Appointments</span>
+      <span class="relative z-10 font-medium">Appointments</span>
     <% end %>
 
     <!-- Payments -->
-    <%= link_to admin_payments_path, class: "flex items-center gap-3 px-4 py-3 text-gray-300 rounded-lg hover:bg-gray-800 hover:text-white transition #{request.path.start_with?('/admin/payments') ? 'bg-gray-800 text-white' : ''}" do %>
-      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+    <%= link_to admin_payments_path, class: "group flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-300 relative overflow-hidden #{request.path.start_with?('/admin/payments') ? 'bg-gradient-to-r from-yellow-600 to-orange-600 text-white shadow-lg' : 'text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-gray-800 hover:to-gray-700'}" do %>
+      <% if request.path.start_with?('/admin/payments') %>
+        <div class="absolute inset-0 bg-gradient-to-r from-yellow-500/20 to-orange-500/20"></div>
+      <% else %>
+        <div class="absolute inset-0 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+      <% end %>
+      <svg class="w-5 h-5 relative z-10 group-hover:scale-110 transition-transform duration-300" fill="currentColor" viewBox="0 0 20 20">
         <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z"/>
         <path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd"/>
       </svg>
-      <span class="font-medium">Payments</span>
+      <span class="relative z-10 font-medium">Payments</span>
     <% end %>
   </nav>
+
+  <!-- Footer -->
+  <div class="relative p-4 border-t border-gray-700/50 bg-gradient-to-r from-gray-800/50 to-gray-900/50 backdrop-blur-sm">
+    <div class="text-center">
+      <p class="text-xs text-gray-400">WellnessConnect Admin</p>
+      <p class="text-xs text-gray-500 mt-1">v1.0.0</p>
+    </div>
+  </div>
 </aside>

@@ -9,7 +9,7 @@ class AnalyticsTest < ActiveSupport::TestCase
 
     # Clean up any existing test data
     @provider.appointments_as_provider.destroy_all
-    Payment.where(payer: [@patient1, @patient2]).destroy_all
+    Payment.where(payer: [ @patient1, @patient2 ]).destroy_all
 
     # Create test appointments and payments - all within current month
     current_month_start = Time.current.beginning_of_month

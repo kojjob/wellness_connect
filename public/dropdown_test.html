@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dropdown Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module">
+        import { Application } from "https://unpkg.com/@hotwired/stimulus/dist/stimulus.js"
+        
+        // Simple dropdown controller for testing
+        class DropdownController extends EventTarget {
+            static targets = ["menu", "button"]
+            static values = { open: { type: Boolean, default: false } }
+            
+            constructor(element) {
+                super()
+                this.element = element
+                this.menuTarget = element.querySelector('[data-dropdown-target="menu"]')
+                this.buttonTarget = element.querySelector('[data-dropdown-target="button"]')
+                this.openValue = false
+                
+                console.log("Dropdown controller initialized", {
+                    element: this.element,
+                    menuTarget: this.menuTarget,
+                    buttonTarget: this.buttonTarget
+                })
+                
+                this.boundHandleClickOutside = this.handleClickOutside.bind(this)
+                this.boundHandleEscape = this.handleEscape.bind(this)
+                
+                // Initialize menu state
+                if (this.menuTarget) {
+                    this.menuTarget.style.opacity = "0"
+                    this.menuTarget.style.transform = "scale(0.95)"
+                    this.menuTarget.classList.add("hidden")
+                }
+                
+                // Bind click event
+                if (this.buttonTarget) {
+                    this.buttonTarget.addEventListener('click', (e) => this.toggle(e))
+                }
+            }
+            
+            toggle(event) {
+                event.preventDefault()
+                event.stopPropagation()
+                
+                console.log("Dropdown toggle clicked", this.openValue)
+                
+                if (this.openValue) {
+                    this.close()
+                } else {
+                    this.open()
+                }
+            }
+            
+            open() {
+                console.log("Opening dropdown")
+                this.openValue = true
+                this.menuTarget.classList.remove("hidden")
+                this.menuTarget.classList.add("block")
+                this.buttonTarget.setAttribute("aria-expanded", "true")
+                
+                // Trigger animation
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        this.menuTarget.style.opacity = "1"
+                        this.menuTarget.style.transform = "scale(1)"
+                    })
+                })
+                
+                // Add event listeners
+                setTimeout(() => {
+                    document.addEventListener("click", this.boundHandleClickOutside)
+                    document.addEventListener("keydown", this.boundHandleEscape)
+                }, 10)
+            }
+            
+            close() {
+                console.log("Closing dropdown")
+                this.openValue = false
+                this.buttonTarget.setAttribute("aria-expanded", "false")
+                
+                // Trigger close animation
+                this.menuTarget.style.opacity = "0"
+                this.menuTarget.style.transform = "scale(0.95)"
+                
+                // Wait for animation to complete before hiding
+                setTimeout(() => {
+                    if (!this.openValue) {
+                        this.menuTarget.classList.add("hidden")
+                        this.menuTarget.classList.remove("block")
+                    }
+                }, 200)
+                
+                // Remove event listeners
+                document.removeEventListener("click", this.boundHandleClickOutside)
+                document.removeEventListener("keydown", this.boundHandleEscape)
+            }
+            
+            handleClickOutside(event) {
+                if (!this.element.contains(event.target)) {
+                    this.close()
+                }
+            }
+            
+            handleEscape(event) {
+                if (event.key === "Escape") {
+                    this.close()
+                    this.buttonTarget.focus()
+                }
+            }
+        }
+        
+        // Initialize dropdowns when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("DOM loaded, initializing dropdowns")
+            const dropdowns = document.querySelectorAll('[data-controller="dropdown"]')
+            console.log("Found dropdowns:", dropdowns.length)
+            
+            dropdowns.forEach(dropdown => {
+                new DropdownController(dropdown)
+            })
+        })
+    </script>
+    <style>
+        .dropdown-menu {
+            transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+            transform-origin: top right;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-8">
+    <h1 class="text-2xl font-bold mb-8">Dropdown Test Page</h1>
+    
+    <!-- Test Dropdown 1 -->
+    <div class="relative mb-8" data-controller="dropdown">
+        <button type="button"
+                data-dropdown-target="button"
+                class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                aria-haspopup="true"
+                aria-expanded="false">
+            Test Dropdown 1
+        </button>
+        
+        <div data-dropdown-target="menu"
+             class="hidden absolute right-0 mt-2 w-48 rounded-lg shadow-lg bg-white ring-1 ring-gray-200 z-50"
+             style="opacity: 0; transform: scale(0.95); transition: opacity 0.2s ease-out, transform 0.2s ease-out;"
+             role="menu">
+            <div class="py-1">
+                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Option 1</a>
+                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Option 2</a>
+                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Option 3</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Test Dropdown 2 -->
+    <div class="relative" data-controller="dropdown">
+        <button type="button"
+                data-dropdown-target="button"
+                class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                aria-haspopup="true"
+                aria-expanded="false">
+            Test Dropdown 2
+        </button>
+        
+        <div data-dropdown-target="menu"
+             class="hidden absolute right-0 mt-2 w-48 rounded-lg shadow-lg bg-white ring-1 ring-gray-200 z-50"
+             style="opacity: 0; transform: scale(0.95); transition: opacity 0.2s ease-out, transform 0.2s ease-out;"
+             role="menu">
+            <div class="py-1">
+                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Item A</a>
+                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Item B</a>
+                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Item C</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="mt-8">
+        <p class="text-gray-600">Open browser console to see debug logs.</p>
+        <p class="text-gray-600">Test clicking the buttons, clicking outside, and pressing Escape.</p>
+    </div>
+</body>
+</html>

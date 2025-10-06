@@ -80,7 +80,19 @@ module Admin
     end
 
     def provider_profile_params
-      params.require(:provider_profile).permit(:user_id, :specialty, :bio, :credentials, :consultation_rate)
+      params.require(:provider_profile).permit(
+        :user_id, :specialty, :bio, :credentials, :consultation_rate,
+        :years_of_experience, :education, :certifications, :languages,
+        :phone, :office_address, :website,
+        :linkedin_url, :twitter_url, :facebook_url, :instagram_url,
+        :areas_of_expertise, :industries_served, :philosophy,
+        :session_formats, :treatment_modalities,
+        :avatar,
+        gallery_images: [],
+        gallery_videos: [],
+        gallery_audio: [],
+        documents: []
+      )
     end
   end
 end

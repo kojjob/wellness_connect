@@ -1,0 +1,86 @@
+<%
+  other_user = current_user.patient? ? @conversation.provider : @conversation.patient
+%>
+
+<div class="flex flex-col h-[calc(100vh-4rem)] max-w-7xl mx-auto">
+  <%# Conversation Header %>
+  <div class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-4">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center space-x-4">
+        <%# Back button %>
+        <%= link_to conversations_path, class: "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white" do %>
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+        <% end %>
+
+        <%# Participant info %>
+        <div>
+          <h1 class="text-xl font-semibold text-gray-900 dark:text-white">
+            <%= other_user.full_name %>
+          </h1>
+          <% if other_user.provider? && other_user.provider_profile&.specialty %>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              <%= other_user.provider_profile.specialty %>
+            </p>
+          <% end %>
+          <% if @conversation.appointment.present? %>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              Appointment: <%= @conversation.appointment.start_time.strftime("%b %d, %Y at %I:%M %p") %>
+            </p>
+          <% end %>
+        </div>
+      </div>
+
+      <%# Actions menu %>
+      <div class="flex items-center space-x-2">
+        <%= button_to archive_conversation_path(@conversation),
+              method: :patch,
+              class: "inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600",
+              data: { turbo_method: :patch } do %>
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+          </svg>
+          Archive
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <%# Messages Container %>
+  <div class="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900 px-4 py-6" id="conversation_messages" data-controller="scroll-to-bottom">
+    <% if @messages.any? %>
+      <div class="space-y-4">
+        <% @messages.each do |message| %>
+          <%= render "messages/message", message: message, current_user: current_user %>
+        <% end %>
+      </div>
+
+      <%# Pagination if needed %>
+      <% if @messages.respond_to?(:total_pages) && @messages.total_pages > 1 %>
+        <div class="mt-6 text-center">
+          <%= link_to "Load earlier messages", conversation_path(@conversation, page: @messages.next_page),
+                class: "inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700" if @messages.next_page %>
+        </div>
+      <% end %>
+    <% else %>
+      <%# Empty state %>
+      <div class="text-center py-12">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+        </svg>
+        <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">
+          No messages yet
+        </h3>
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          Start the conversation by sending a message below
+        </p>
+      </div>
+    <% end %>
+  </div>
+
+  <%# Message Input Form %>
+  <div class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-4 py-4" id="message_form">
+    <%= render "messages/form", conversation: @conversation, message: @new_message %>
+  </div>
+</div>

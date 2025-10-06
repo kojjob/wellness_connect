@@ -1,52 +1,79 @@
-<!-- Admin Top Navigation -->
-<nav class="fixed top-0 right-0 left-64 h-16 bg-white border-b border-gray-200 z-30">
-  <div class="flex items-center justify-between h-full px-6">
-    <!-- Page Title -->
-    <div>
-      <h1 class="text-xl font-semibold text-gray-900">
-        <%= content_for(:admin_page_title) || "Dashboard" %>
-      </h1>
+<!-- Modern Admin Top Navigation -->
+<nav class="fixed top-0 right-0 left-64 h-16 bg-gradient-to-r from-white via-gray-50/50 to-teal-50/30 backdrop-blur-md border-b border-teal-100/50 z-30 overflow-hidden">
+  <!-- Animated Background Blobs -->
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <div class="absolute -top-4 -right-8 w-32 h-32 bg-teal-500/5 rounded-full blur-2xl animate-blob"></div>
+    <div class="absolute -top-6 -left-4 w-24 h-24 bg-gray-500/5 rounded-full blur-xl animate-blob animation-delay-2000"></div>
+  </div>
+
+  <div class="relative flex items-center justify-between h-full px-6">
+    <!-- Enhanced Page Title -->
+    <div class="flex items-center space-x-3">
+      <div class="h-8 w-8 bg-gradient-to-br from-teal-500 to-teal-600 rounded-lg flex items-center justify-center shadow-md">
+        <svg class="h-5 w-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+        </svg>
+      </div>
+      <div>
+        <h1 class="text-lg font-bold bg-gradient-to-r from-teal-600 to-gray-700 bg-clip-text text-transparent">
+          <%= content_for(:admin_page_title) || "Dashboard" %>
+        </h1>
+        <p class="text-xs text-gray-500 font-medium -mt-1">Admin Panel</p>
+      </div>
     </div>
 
-    <!-- Admin User Menu -->
+    <!-- Enhanced Admin User Menu -->
     <div class="flex items-center gap-4">
-      <!-- Admin Badge -->
-      <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-          <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
-        </svg>
-        Admin
-      </span>
+      <!-- Enhanced Admin Badge -->
+      <div class="relative group">
+        <div class="absolute inset-0 bg-gradient-to-r from-teal-500 to-teal-600 rounded-full blur opacity-20 group-hover:opacity-30 transition-opacity duration-300"></div>
+        <span class="relative inline-flex items-center px-4 py-2 rounded-full text-xs font-semibold bg-gradient-to-r from-teal-500 to-teal-600 text-white shadow-lg ring-2 ring-white/20">
+          <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+          </svg>
+          Administrator
+        </span>
+      </div>
 
-      <!-- User Info -->
+      <!-- Enhanced User Info -->
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center">
-          <span class="text-white font-semibold">
-            <%= current_user.first_name.first.upcase %>
-          </span>
+        <div class="relative group">
+          <div class="absolute inset-0 bg-gradient-to-br from-teal-500 to-gray-600 rounded-full blur opacity-20 group-hover:opacity-30 transition-opacity duration-300"></div>
+          <div class="relative w-10 h-10 rounded-full bg-gradient-to-br from-teal-500 to-gray-600 flex items-center justify-center shadow-lg ring-2 ring-white/20 group-hover:scale-105 transition-transform duration-300">
+            <span class="text-white font-bold text-sm">
+              <%= current_user.email[0].upcase %>
+            </span>
+          </div>
         </div>
 
-        <div class="text-right">
-          <p class="text-sm font-medium text-gray-900"><%= current_user.full_name %></p>
+        <div class="text-right hidden sm:block">
+          <p class="text-sm font-semibold text-gray-900">
+            <%= current_user.full_name.present? ? current_user.full_name : current_user.email.split('@').first.titleize %>
+          </p>
           <p class="text-xs text-gray-500"><%= current_user.email %></p>
         </div>
       </div>
 
-      <!-- Back to Main Site -->
-      <%= link_to root_path, class: "flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-md transition" do %>
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-        </svg>
-        Back to Site
-      <% end %>
+      <!-- Enhanced Action Buttons -->
+      <div class="flex items-center gap-2">
+        <!-- Back to Main Site -->
+        <%= link_to root_path, class: "relative group flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 hover:text-teal-600 rounded-xl transition-all duration-300 hover:bg-gradient-to-r hover:from-teal-50 hover:to-teal-100/50" do %>
+          <div class="absolute inset-0 bg-gradient-to-r from-teal-500/10 to-teal-600/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <svg class="w-4 h-4 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+          </svg>
+          <span class="relative z-10 hidden sm:inline">Back to Site</span>
+        <% end %>
 
-      <!-- Sign Out -->
-      <%= button_to destroy_user_session_path, method: :delete, class: "flex items-center gap-2 px-4 py-2 text-sm text-red-700 hover:text-red-900 hover:bg-red-50 rounded-md transition" do %>
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-        </svg>
-        Sign Out
-      <% end %>
+        <!-- Sign Out -->
+        <%= button_to destroy_user_session_path, method: :delete, class: "relative group flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 hover:text-red-600 rounded-xl transition-all duration-300 hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100/50" do %>
+          <div class="absolute inset-0 bg-gradient-to-r from-red-500/10 to-red-600/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <svg class="w-4 h-4 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+          </svg>
+          <span class="relative z-10 hidden sm:inline">Sign Out</span>
+        <% end %>
+      </div>
     </div>
   </div>
 </nav>

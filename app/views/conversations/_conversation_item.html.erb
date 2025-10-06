@@ -1,0 +1,104 @@
+<%
+  # Determine the other participant based on current user's role
+  other_user = current_user.patient? ? conversation.provider : conversation.patient
+  unread_count = current_user.patient? ? conversation.patient_unread_count : conversation.provider_unread_count
+  last_message = conversation.messages.ordered.last
+  archived ||= false
+%>
+
+<div class="p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors <%= 'opacity-75' if archived %>">
+  <%= link_to conversation_path(conversation), class: "block" do %>
+    <div class="flex items-start space-x-4">
+      <%# Avatar placeholder (could use Gravatar or uploaded avatar) %>
+      <div class="flex-shrink-0">
+        <div class="h-12 w-12 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center">
+          <span class="text-xl font-semibold text-primary-700 dark:text-primary-300">
+            <%= other_user.first_name.first.upcase %><%= other_user.last_name.first.upcase %>
+          </span>
+        </div>
+      </div>
+
+      <%# Conversation details %>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-start justify-between">
+          <div class="flex-1">
+            <%# Participant name %>
+            <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">
+              <%= other_user.full_name %>
+              <% if other_user.provider? && other_user.provider_profile&.specialty %>
+                <span class="ml-2 text-xs font-normal text-gray-500 dark:text-gray-400">
+                  <%= other_user.provider_profile.specialty %>
+                </span>
+              <% end %>
+            </p>
+
+            <%# Appointment context if applicable %>
+            <% if conversation.appointment.present? %>
+              <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                Appointment: <%= conversation.appointment.start_time.strftime("%b %d, %Y at %I:%M %p") %>
+              </p>
+            <% end %>
+          </div>
+
+          <%# Timestamp %>
+          <div class="flex-shrink-0 text-right">
+            <p class="text-xs text-gray-500 dark:text-gray-400">
+              <%= time_ago_in_words(conversation.last_message_at || conversation.created_at) %> ago
+            </p>
+            <% if unread_count > 0 %>
+              <span class="mt-1 inline-flex items-center px-2 py-1 text-xs font-bold bg-primary-600 text-white rounded-full">
+                <%= unread_count %>
+              </span>
+            <% end %>
+          </div>
+        </div>
+
+        <%# Last message preview %>
+        <% if last_message.present? %>
+          <p class="mt-1 text-sm text-gray-600 dark:text-gray-300 truncate">
+            <% if last_message.sender == current_user %>
+              <span class="font-medium">You:</span>
+            <% end %>
+            <%= truncate(last_message.content, length: 100) %>
+          </p>
+        <% else %>
+          <p class="mt-1 text-sm text-gray-400 dark:text-gray-500 italic">
+            No messages yet
+          </p>
+        <% end %>
+      </div>
+
+      <%# Chevron icon %>
+      <div class="flex-shrink-0 self-center">
+        <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </div>
+    </div>
+  <% end %>
+
+  <%# Action buttons (archive/unarchive) %>
+  <div class="mt-3 flex items-center space-x-4">
+    <% if archived %>
+      <%= button_to unarchive_conversation_path(conversation),
+            method: :patch,
+            class: "text-sm text-primary-600 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-300 font-medium flex items-center",
+            data: { turbo_method: :patch } do %>
+        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+        </svg>
+        Unarchive
+      <% end %>
+    <% else %>
+      <%= button_to archive_conversation_path(conversation),
+            method: :patch,
+            class: "text-sm text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-300 font-medium flex items-center",
+            data: { turbo_method: :patch } do %>
+        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+        </svg>
+        Archive
+      <% end %>
+    <% end %>
+  </div>
+</div>

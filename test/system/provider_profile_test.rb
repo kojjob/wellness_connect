@@ -108,7 +108,7 @@ class ProviderProfileTest < ApplicationSystemTestCase
 
     within "#services" do
       assert_selector "h2", text: "Services Offered"
-      
+
       @provider_profile.services.where(is_active: true).each do |service|
         assert_text service.name
         assert_text service.description
@@ -301,4 +301,3 @@ class ProviderProfileTest < ApplicationSystemTestCase
     page.driver.browser.manage.window.resize_to(375, 667)
   end
 end
-

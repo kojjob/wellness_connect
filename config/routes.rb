@@ -4,6 +4,9 @@ Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
   root "home#index"
 
+  # Test route for debugging
+  get "test/dropdown_debug", to: "test#dropdown_debug" if Rails.env.development?
+
   # Admin dashboard (admin-only access)
   namespace :admin do
     root to: "dashboard#index" # /admin
@@ -32,7 +35,7 @@ Rails.application.routes.draw do
   end
 
   # Appointments
-  resources :appointments, only: [:index, :show, :new, :create] do
+  resources :appointments, only: [ :index, :show, :new, :create ] do
     member do
       patch :cancel
     end
@@ -52,6 +55,21 @@ Rails.application.routes.draw do
   resources :payments, only: [ :index, :create ] do
     member do
       patch :confirm
+    end
+  end
+
+  # Conversations and Messages (messaging system)
+  resources :conversations, only: [ :index, :show, :create ] do
+    member do
+      patch :archive
+      patch :unarchive
+    end
+
+    # Nested messages within conversations
+    resources :messages, only: [ :create, :edit, :update, :destroy ] do
+      member do
+        patch :mark_as_read
+      end
     end
   end
 

@@ -12,14 +12,19 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
 
   # Clean up database after each test
   teardown do
-    # Manually clean up all test data in dependency order (children first)
+    # Manually clean up all test data in dependency order (children first, parents last)
     ConsultationNote.delete_all if defined?(ConsultationNote)
     Payment.delete_all if defined?(Payment)
     Appointment.delete_all
     Availability.delete_all
     Service.delete_all
+    Review.delete_all if defined?(Review)
+    ActiveStorage::VariantRecord.delete_all if defined?(ActiveStorage::VariantRecord)
+    ActiveStorage::Attachment.delete_all
+    ActiveStorage::Blob.delete_all
     ProviderProfile.delete_all
     PatientProfile.delete_all
+    Notification.delete_all if defined?(Notification)
     User.delete_all
 
     # Reload fixtures for next test

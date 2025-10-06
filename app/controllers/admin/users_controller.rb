@@ -5,10 +5,10 @@ module Admin
     before_action :set_user, only: [ :show, :edit, :update, :destroy, :suspend, :unsuspend, :block, :unblock, :remove_avatar ]
 
     def index
-      authorize [:admin, User]
+      authorize [ :admin, User ]
 
       # Base query
-      @users = policy_scope([:admin, User])
+      @users = policy_scope([ :admin, User ])
 
       # Search
       if params[:q].present?
@@ -61,22 +61,22 @@ module Admin
 
       # Pagination
       @per_page = params[:per_page]&.to_i || 20
-      @per_page = 20 unless [20, 50, 100].include?(@per_page)
+      @per_page = 20 unless [ 20, 50, 100 ].include?(@per_page)
       @users = @users.page(params[:page]).per(@per_page)
     end
 
     def show
-      authorize [:admin, @user]
+      authorize [ :admin, @user ]
     end
 
     def new
       @user = User.new
-      authorize [:admin, @user]
+      authorize [ :admin, @user ]
     end
 
     def create
       @user = User.new(user_params)
-      authorize [:admin, @user]
+      authorize [ :admin, @user ]
 
       if @user.save
         # Automatically create role-specific profiles
@@ -89,11 +89,11 @@ module Admin
     end
 
     def edit
-      authorize [:admin, @user]
+      authorize [ :admin, @user ]
     end
 
     def update
-      authorize [:admin, @user]
+      authorize [ :admin, @user ]
 
       # Handle avatar removal if requested
       if params[:user][:remove_avatar] == "1"
@@ -120,37 +120,37 @@ module Admin
     end
 
     def destroy
-      authorize [:admin, @user]
+      authorize [ :admin, @user ]
       @user.destroy!
       redirect_to admin_users_path, notice: "User successfully deleted."
     end
 
     def suspend
-      authorize [:admin, @user]
+      authorize [ :admin, @user ]
       @user.suspend!(params[:reason])
       redirect_to admin_user_path(@user), notice: "User successfully suspended."
     end
 
     def unsuspend
-      authorize [:admin, @user]
+      authorize [ :admin, @user ]
       @user.unsuspend!
       redirect_to admin_user_path(@user), notice: "User successfully unsuspended."
     end
 
     def block
-      authorize [:admin, @user]
+      authorize [ :admin, @user ]
       @user.block!(params[:reason])
       redirect_to admin_user_path(@user), notice: "User successfully blocked."
     end
 
     def unblock
-      authorize [:admin, @user]
+      authorize [ :admin, @user ]
       @user.unblock!
       redirect_to admin_user_path(@user), notice: "User successfully unblocked."
     end
 
     def remove_avatar
-      authorize [:admin, @user]
+      authorize [ :admin, @user ]
 
       if @user.avatar.attached?
         @user.avatar.purge

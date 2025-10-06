@@ -6,6 +6,7 @@ class Appointment < ApplicationRecord
 
   has_one :payment, dependent: :destroy
   has_one :consultation_note, dependent: :destroy
+  has_one :conversation, dependent: :nullify # Conversation can exist without appointment
 
   enum :status, {
     scheduled: 0,

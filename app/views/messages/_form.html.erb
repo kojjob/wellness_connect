@@ -1,0 +1,70 @@
+<%= form_with(model: [ conversation, message ],
+              url: conversation_messages_path(conversation),
+              method: :post,
+              data: { controller: "message-form", action: "turbo:submit-end->message-form#clearForm" },
+              class: "flex items-end space-x-4") do |form| %>
+
+  <%# Hidden field for message type (default to text) %>
+  <%= form.hidden_field :message_type, value: "text" %>
+
+  <%# Message content textarea %>
+  <div class="flex-1">
+    <%= form.text_area :content,
+          placeholder: "Type your message...",
+          rows: 1,
+          required: true,
+          data: {
+            controller: "autosize",
+            action: "input->autosize#resize keydown->message-form#handleKeydown"
+          },
+          class: "block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm resize-none" %>
+
+    <%# Display validation errors if any %>
+    <% if message.errors[:content].any? %>
+      <p class="mt-2 text-sm text-red-600 dark:text-red-400">
+        <%= message.errors[:content].first %>
+      </p>
+    <% end %>
+  </div>
+
+  <%# Send button %>
+  <div class="flex-shrink-0">
+    <%= form.submit "Send",
+          data: { disable_with: "Sending..." },
+          class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed" %>
+  </div>
+<% end %>
+
+<%# Stimulus controller for form behavior %>
+<script>
+  // Auto-resize textarea controller
+  Stimulus.register("autosize", class extends Stimulus.Controller {
+    resize(event) {
+      const textarea = event.target;
+      textarea.style.height = 'auto';
+      textarea.style.height = (textarea.scrollHeight) + 'px';
+    }
+  });
+
+  // Message form controller
+  Stimulus.register("message-form", class extends Stimulus.Controller {
+    clearForm(event) {
+      if (event.detail.success) {
+        const textarea = this.element.querySelector('textarea');
+        if (textarea) {
+          textarea.value = '';
+          textarea.style.height = 'auto';
+          textarea.focus();
+        }
+      }
+    }
+
+    handleKeydown(event) {
+      // Submit form on Enter (but not Shift+Enter for multiline)
+      if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        event.target.closest('form').requestSubmit();
+      }
+    }
+  });
+</script>

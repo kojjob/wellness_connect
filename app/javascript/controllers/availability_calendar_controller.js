@@ -9,14 +9,16 @@ export default class extends Controller {
   }
 
   connect() {
-    console.log("Availability calendar controller connected")
     this.currentDate = new Date()
     this.selectedDate = null
-    
+
     // Parse availabilities if they're passed as JSON
     if (this.hasAvailabilitiesValue) {
       this.availabilities = this.availabilitiesValue
     }
+
+    // Bind the escape key handler
+    this.escapeHandler = this.handleKeydown.bind(this)
   }
 
   openModal(event) {
@@ -57,46 +59,42 @@ export default class extends Controller {
   renderCalendar() {
     const year = this.currentDate.getFullYear()
     const month = this.currentDate.getMonth()
-    
+
     // Update month/year display
     const monthNames = ["January", "February", "March", "April", "May", "June",
                         "July", "August", "September", "October", "November", "December"]
     this.monthYearTarget.textContent = `${monthNames[month]} ${year}`
-    
+
     // Get first day of month and number of days
     const firstDay = new Date(year, month, 1).getDay()
     const daysInMonth = new Date(year, month + 1, 0).getDate()
+
+    // Use local timezone for consistent date handling
     const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    
+    const todayLocal = new Date(today.getFullYear(), today.getMonth(), today.getDate())
+
     // Build calendar HTML
-    let calendarHTML = '<div class="grid grid-cols-7 gap-2">'
-    
-    // Day headers
-    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-    dayNames.forEach(day => {
-      calendarHTML += `<div class="text-center text-xs font-semibold text-gray-600 py-2">${day}</div>`
-    })
-    
+    let calendarHTML = ''
+
     // Empty cells for days before month starts
     for (let i = 0; i < firstDay; i++) {
       calendarHTML += '<div class="aspect-square"></div>'
     }
-    
+
     // Days of the month
     for (let day = 1; day <= daysInMonth; day++) {
-      const date = new Date(year, month, day)
-      date.setHours(0, 0, 0, 0)
-      const dateStr = date.toISOString().split('T')[0]
-      
+      // Create date in local timezone
+      const dateLocal = new Date(year, month, day)
+      const dateStr = dateLocal.toLocaleDateString('en-CA') // YYYY-MM-DD format
+
       // Check if this date has availabilities
-      const hasAvailability = this.hasAvailabilityOnDate(date)
-      const isPast = date < today
-      const isToday = date.getTime() === today.getTime()
-      const isSelected = this.selectedDate && date.toDateString() === this.selectedDate.toDateString()
-      
+      const hasAvailability = this.hasAvailabilityOnDate(dateLocal)
+      const isPast = dateLocal < todayLocal
+      const isToday = dateLocal.toDateString() === todayLocal.toDateString()
+      const isSelected = this.selectedDate && dateLocal.toDateString() === this.selectedDate.toDateString()
+
       let classes = 'aspect-square flex items-center justify-center rounded-lg text-sm font-medium transition cursor-pointer'
-      
+
       if (isPast) {
         classes += ' text-gray-300 cursor-not-allowed'
       } else if (isSelected) {
@@ -108,35 +106,46 @@ export default class extends Controller {
       } else {
         classes += ' text-gray-400 hover:bg-gray-50'
       }
-      
+
       const clickHandler = !isPast && hasAvailability ? `data-action="click->availability-calendar#selectDate" data-date="${dateStr}"` : ''
-      
+
       calendarHTML += `<div class="${classes}" ${clickHandler}>${day}</div>`
     }
-    
-    calendarHTML += '</div>'
-    
+
     this.calendarTarget.innerHTML = calendarHTML
+
+    // Manually bind click events to date cells since innerHTML doesn't preserve Stimulus actions
+    const dateCells = this.calendarTarget.querySelectorAll('[data-date]')
+
+    dateCells.forEach(dateCell => {
+      dateCell.addEventListener('click', (event) => {
+        this.selectDate(event)
+      })
+    })
   }
 
   hasAvailabilityOnDate(date) {
     if (!this.availabilities || this.availabilities.length === 0) return false
-    
-    const dateStr = date.toISOString().split('T')[0]
-    
+
+    // Use local timezone for date comparison (consistent with renderTimeSlots)
+    const dateStr = date.toLocaleDateString('en-CA') // YYYY-MM-DD format
+
     return this.availabilities.some(avail => {
-      const availDate = new Date(avail.start_time).toISOString().split('T')[0]
-      return availDate === dateStr && !avail.is_booked
+      const availDate = new Date(avail.start_time).toLocaleDateString('en-CA')
+      return availDate === dateStr && avail.is_booked === false
     })
   }
 
   selectDate(event) {
     const dateStr = event.currentTarget.dataset.date
-    this.selectedDate = new Date(dateStr + 'T00:00:00')
-    
+
+    // Create date in local timezone
+    const [year, month, day] = dateStr.split('-').map(Number)
+    this.selectedDate = new Date(year, month - 1, day)
+
     // Re-render calendar to show selection
     this.renderCalendar()
-    
+
     // Show time slots for selected date
     this.renderTimeSlots()
   }
@@ -146,13 +155,16 @@ export default class extends Controller {
       this.timeSlotsTarget.innerHTML = '<p class="text-gray-500 text-center py-8">Select a date to view available time slots</p>'
       return
     }
-    
-    const dateStr = this.selectedDate.toISOString().split('T')[0]
+
+    // Compare dates in local timezone using YYYY-MM-DD format
+    const selectedDateStr = this.selectedDate.toLocaleDateString('en-CA') // YYYY-MM-DD format
+
     const slotsForDate = this.availabilities.filter(avail => {
-      const availDate = new Date(avail.start_time).toISOString().split('T')[0]
-      return availDate === dateStr && !avail.is_booked
+      const availDate = new Date(avail.start_time)
+      const availDateStr = availDate.toLocaleDateString('en-CA')
+      return availDateStr === selectedDateStr && avail.is_booked === false
     })
-    
+
     if (slotsForDate.length === 0) {
       this.timeSlotsTarget.innerHTML = '<p class="text-gray-500 text-center py-8">No available time slots for this date</p>'
       return
@@ -161,9 +173,9 @@ export default class extends Controller {
     // Sort by start time
     slotsForDate.sort((a, b) => new Date(a.start_time) - new Date(b.start_time))
     
-    // Update selected date display
-    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
-    this.selectedDateTarget.textContent = this.selectedDate.toLocaleDateString('en-US', options)
+    // Update selected date display with leading zero for day (to match Rails strftime format)
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: '2-digit' }
+    this.selectedDateTarget.innerHTML = `<h4 class="text-lg font-semibold text-gray-900">${this.selectedDate.toLocaleDateString('en-US', options)}</h4>`
     
     // Render time slots
     let slotsHTML = '<div class="grid grid-cols-2 gap-3">'
@@ -191,10 +203,10 @@ export default class extends Controller {
   }
 
   formatTime(date) {
-    return date.toLocaleTimeString('en-US', { 
-      hour: 'numeric', 
+    return date.toLocaleTimeString('en-US', {
+      hour: 'numeric',
       minute: '2-digit',
-      hour12: true 
+      hour12: true
     })
   }
 

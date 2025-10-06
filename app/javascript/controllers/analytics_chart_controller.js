@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import Chart from "chart.js/auto"
+// import Chart from "chart.js/auto" // Temporarily disabled
 
 // Connects to data-controller="analytics-chart"
 export default class extends Controller {

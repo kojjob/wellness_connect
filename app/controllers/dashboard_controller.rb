@@ -71,10 +71,10 @@ class DashboardController < ApplicationController
 
     # Recent payments
     @recent_payments = current_user.payments_made
-                                   .where(status: [:succeeded, :refunded])
+                                   .where(status: [ :succeeded, :refunded ])
                                    .order(created_at: :desc)
                                    .limit(3)
-                                   .includes(appointment: [:provider, :service])
+                                   .includes(appointment: [ :provider, :service ])
 
     # Quick stats
     @total_appointments = current_user.appointments_as_patient.count

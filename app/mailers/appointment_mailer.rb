@@ -7,7 +7,7 @@ class AppointmentMailer < ApplicationMailer
     @patient = appointment.patient
     @provider = appointment.provider
     @service = appointment.service
-    @appointment_time = appointment.start_time.in_time_zone(@patient.time_zone || 'UTC')
+    @appointment_time = appointment.start_time.in_time_zone(@patient.time_zone || "UTC")
 
     mail(
       to: @patient.email,
@@ -21,7 +21,7 @@ class AppointmentMailer < ApplicationMailer
     @patient = appointment.patient
     @provider = appointment.provider
     @service = appointment.service
-    @appointment_time = appointment.start_time.in_time_zone(@provider.time_zone || 'UTC')
+    @appointment_time = appointment.start_time.in_time_zone(@provider.time_zone || "UTC")
 
     mail(
       to: @provider.email,
