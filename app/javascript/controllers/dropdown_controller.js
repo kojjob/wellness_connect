@@ -8,11 +8,30 @@ export default class extends Controller {
   }
 
   connect() {
-    console.log("Dropdown controller connected", this.element)
+    console.log("=== DROPDOWN CONTROLLER CONNECTING ===")
+    console.log("Element:", this.element)
+    console.log("Element HTML:", this.element.outerHTML.substring(0, 200))
     console.log("Has menu target:", this.hasMenuTarget)
     console.log("Has button target:", this.hasButtonTarget)
-    console.log("Menu target:", this.hasMenuTarget ? this.menuTarget : "none")
-    console.log("Button target:", this.hasButtonTarget ? this.buttonTarget : "none")
+
+    if (this.hasMenuTarget) {
+      console.log("Menu target found:", this.menuTarget)
+      console.log("Menu target HTML:", this.menuTarget.outerHTML.substring(0, 200))
+    } else {
+      console.error("❌ NO MENU TARGET FOUND!")
+      console.log("Looking for elements with data-dropdown-target='menu':")
+      const menuElements = this.element.querySelectorAll('[data-dropdown-target="menu"]')
+      console.log("Found menu elements:", menuElements)
+    }
+
+    if (this.hasButtonTarget) {
+      console.log("Button target found:", this.buttonTarget)
+    } else {
+      console.error("❌ NO BUTTON TARGET FOUND!")
+      console.log("Looking for elements with data-dropdown-target='button':")
+      const buttonElements = this.element.querySelectorAll('[data-dropdown-target="button"]')
+      console.log("Found button elements:", buttonElements)
+    }
 
     // Store reference to controller on element for easy access
     this.element.dropdownController = this
@@ -26,34 +45,36 @@ export default class extends Controller {
       this.menuTarget.style.opacity = "0"
       this.menuTarget.style.transform = "scale(0.95)"
       this.menuTarget.classList.add("hidden")
-      console.log("Menu initialized as hidden")
-    } else {
-      console.error("No menu target found!")
-    }
-
-    if (!this.hasButtonTarget) {
-      console.error("No button target found!")
+      console.log("✅ Menu initialized as hidden")
     }
   }
 
   toggle(event) {
-    console.log("Toggle method called", event)
+    console.log("🔥 TOGGLE METHOD CALLED! 🔥")
+    console.log("Event:", event)
+    console.log("Event target:", event.target)
+    console.log("Current element:", this.element)
+
     event.preventDefault()
     event.stopPropagation()
 
     console.log("Dropdown toggle clicked, current state:", this.openValue)
     console.log("Has targets:", { menu: this.hasMenuTarget, button: this.hasButtonTarget })
 
-    if (!this.hasMenuTarget || !this.hasButtonTarget) {
-      console.error("Missing required targets for dropdown")
+    if (!this.hasMenuTarget) {
+      console.error("❌ NO MENU TARGET - Cannot open dropdown")
       return
     }
 
+    if (!this.hasButtonTarget) {
+      console.error("❌ NO BUTTON TARGET - But continuing anyway")
+    }
+
     if (this.openValue) {
-      console.log("Closing dropdown")
+      console.log("🔽 Closing dropdown")
       this.close()
     } else {
-      console.log("Opening dropdown")
+      console.log("🔼 Opening dropdown")
       this.open()
     }
   }
