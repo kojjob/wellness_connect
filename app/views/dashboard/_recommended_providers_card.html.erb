@@ -1,9 +1,9 @@
 <%# Recommended Providers Card %>
-<div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
-  <div class="bg-gradient-to-r from-teal-50 to-gray-50 px-6 py-4 border-b border-gray-200">
+<div class="dashboard-card">
+  <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
     <div class="flex items-center">
-      <div class="bg-teal-100 p-2 rounded-lg mr-3">
-        <svg class="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div class="stats-card-icon stats-card-primary mr-3">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
         </svg>
       </div>
@@ -86,14 +86,14 @@
       </div>
     <% else %>
       <%# Empty State %>
-      <div class="text-center py-8">
-        <div class="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-teal-100 to-gray-100 rounded-full mb-3">
-          <svg class="w-6 h-6 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div class="empty-state py-8">
+        <div class="empty-state-icon">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
           </svg>
         </div>
-        <p class="text-sm text-gray-600 mb-3">No recommendations yet</p>
-        <%= link_to providers_path, class: "inline-flex items-center px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium rounded-lg shadow-sm hover:shadow-md transition-all duration-200" do %>
+        <p class="empty-state-description">No recommendations yet</p>
+        <%= link_to providers_path, class: "btn-primary" do %>
           <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
           </svg>
@@ -103,4 +103,3 @@
     <% end %>
   </div>
 </div>
-

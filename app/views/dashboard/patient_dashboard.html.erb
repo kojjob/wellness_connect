@@ -1,42 +1,28 @@
-<%# Patient Dashboard - Modern Teal/Gray Design System %>
+<%# Patient Dashboard - Clean Modern Design %>
 <div data-controller="patient-dashboard" class="min-h-screen bg-gray-50">
-  <%# Hero Section with Personalized Welcome %>
-  <section class="relative bg-gradient-to-br from-teal-600 via-gray-700 to-teal-800 overflow-hidden">
-    <%# Animated Background Blobs %>
-    <div class="absolute inset-0 overflow-hidden">
-      <div class="absolute -top-40 -right-40 w-80 h-80 bg-teal-400 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"></div>
-      <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-gray-400 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-2000"></div>
-      <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-teal-300 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-4000"></div>
-    </div>
-
-    <%# Gradient Overlay %>
-    <div class="absolute inset-0 bg-gradient-to-b from-gray-900/95 via-gray-900/80 to-transparent"></div>
-
-    <%# Hero Content %>
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <%# Welcome Message %>
-      <div class="text-center mb-8">
-        <h1 class="text-4xl md:text-5xl font-bold mb-4">
-          <span class="bg-gradient-to-r from-white to-teal-200 bg-clip-text text-transparent">
-            Welcome back, <%= current_user.first_name || 'there' %>! 👋
-          </span>
+  <%# Header Section %>
+  <div class="bg-white border-b border-gray-200">
+    <div class="dashboard-container">
+      <div class="dashboard-header">
+        <h1 class="dashboard-title">
+          Welcome back, <%= current_user.first_name || 'there' %>! 👋
         </h1>
-        <p class="text-gray-300 text-lg max-w-2xl mx-auto">
-          Your health journey at a glance. Manage appointments, view records, and stay connected with your providers.
+        <p class="dashboard-subtitle">
+          Manage your appointments, view health records, and stay connected with your providers.
         </p>
       </div>
 
       <%# Quick Stats Overview %>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div class="stats-grid">
         <%# Upcoming Appointments Stat %>
-        <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300">
+        <div class="stats-card stats-card-primary">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-teal-200 text-sm font-medium mb-1">Upcoming Appointments</p>
-              <p class="text-white text-3xl font-bold"><%= @upcoming_count %></p>
+              <p class="text-sm font-medium text-gray-600 mb-1">Upcoming Appointments</p>
+              <p class="text-3xl font-bold text-gray-900"><%= @upcoming_count %></p>
             </div>
-            <div class="bg-teal-500/20 p-3 rounded-xl">
-              <svg class="w-8 h-8 text-teal-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="stats-card-icon">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
               </svg>
             </div>
@@ -44,14 +30,14 @@
         </div>
 
         <%# Health Records Stat %>
-        <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300">
+        <div class="stats-card stats-card-success">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-gray-200 text-sm font-medium mb-1">Health Records</p>
-              <p class="text-white text-3xl font-bold"><%= @recent_health_records.count %></p>
+              <p class="text-sm font-medium text-gray-600 mb-1">Health Records</p>
+              <p class="text-3xl font-bold text-gray-900"><%= @recent_health_records.count %></p>
             </div>
-            <div class="bg-gray-500/20 p-3 rounded-xl">
-              <svg class="w-8 h-8 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="stats-card-icon">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
               </svg>
             </div>
@@ -59,14 +45,14 @@
         </div>
 
         <%# Messages Stat %>
-        <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300">
+        <div class="stats-card stats-card-warning">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-blue-200 text-sm font-medium mb-1">Unread Messages</p>
-              <p class="text-white text-3xl font-bold"><%= @unread_messages_count %></p>
+              <p class="text-sm font-medium text-gray-600 mb-1">Unread Messages</p>
+              <p class="text-3xl font-bold text-gray-900"><%= @unread_messages_count %></p>
             </div>
-            <div class="bg-blue-500/20 p-3 rounded-xl">
-              <svg class="w-8 h-8 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="stats-card-icon">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
               </svg>
             </div>
@@ -75,25 +61,25 @@
       </div>
 
       <%# Quick Action Buttons %>
-      <div class="flex flex-wrap gap-4 justify-center">
-        <%= link_to providers_path, class: "inline-flex items-center px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 focus:ring-offset-gray-900" do %>
+      <div class="flex flex-wrap gap-4 pb-8">
+        <%= link_to providers_path, class: "btn-primary" do %>
           <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
           </svg>
           Book Appointment
         <% end %>
 
-        <%= link_to notifications_path, class: "inline-flex items-center px-6 py-3 bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white font-semibold rounded-xl border border-white/20 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-900" do %>
+        <%= link_to notifications_path, class: "btn-secondary" do %>
           <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
           </svg>
-          View Notifications
+          Notifications
           <% if @unread_messages_count > 0 %>
             <span class="ml-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full"><%= @unread_messages_count %></span>
           <% end %>
         <% end %>
 
-        <%= link_to payments_path, class: "inline-flex items-center px-6 py-3 bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white font-semibold rounded-xl border border-white/20 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-900" do %>
+        <%= link_to payments_path, class: "btn-secondary" do %>
           <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
           </svg>
@@ -101,12 +87,12 @@
         <% end %>
       </div>
     </div>
-  </section>
+  </div>
 
   <%# Payment Success/Failed Messages %>
   <% if params[:payment_success] == 'true' %>
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6 relative z-10">
-      <div class="bg-green-50 border-l-4 border-green-400 p-4 rounded-r-lg shadow-lg">
+    <div class="dashboard-container">
+      <div class="bg-green-50 border-l-4 border-green-400 p-4 rounded-r-lg shadow-sm mb-6">
         <div class="flex items-start">
           <div class="flex-shrink-0">
             <svg class="h-5 w-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
@@ -115,7 +101,7 @@
           </div>
           <div class="ml-3 flex-1">
             <h3 class="text-sm font-medium text-green-800">Payment Successful! ✓</h3>
-            <p class="mt-2 text-sm text-green-700">Your appointment has been confirmed and payment processed successfully. You'll receive a confirmation email shortly.</p>
+            <p class="mt-2 text-sm text-green-700">Your appointment has been confirmed and payment processed successfully.</p>
           </div>
           <button data-action="click->patient-dashboard#dismissAlert" class="ml-auto flex-shrink-0 text-green-500 hover:text-green-700">
             <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
@@ -128,8 +114,8 @@
   <% end %>
 
   <% if params[:payment_failed] == 'true' %>
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6 relative z-10">
-      <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded-r-lg shadow-lg">
+    <div class="dashboard-container">
+      <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded-r-lg shadow-sm mb-6">
         <div class="flex items-start">
           <div class="flex-shrink-0">
             <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
@@ -138,7 +124,7 @@
           </div>
           <div class="ml-3 flex-1">
             <h3 class="text-sm font-medium text-red-800">Payment Failed</h3>
-            <p class="mt-2 text-sm text-red-700">Unfortunately, your payment could not be processed. Please try again or contact support if the problem persists.</p>
+            <p class="mt-2 text-sm text-red-700">Unfortunately, your payment could not be processed. Please try again or contact support.</p>
             <div class="mt-3 flex gap-4">
               <%= link_to "Try Again", providers_path, class: "text-sm font-medium text-red-600 hover:text-red-500" %>
               <span class="text-gray-400">|</span>
@@ -156,23 +142,23 @@
   <% end %>
 
   <%# Main Dashboard Content %>
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+  <div class="dashboard-container">
+    <div class="dashboard-grid">
       <%# Left Column - Main Content (2/3 width) %>
-      <div class="lg:col-span-2 space-y-8">
+      <div class="space-y-8">
         <%# Upcoming Appointments Card %>
-        <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
-          <div class="bg-gradient-to-r from-teal-50 to-gray-50 px-6 py-4 border-b border-gray-200">
+        <div class="dashboard-card">
+          <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
             <div class="flex items-center justify-between">
               <div class="flex items-center">
-                <div class="bg-teal-100 p-2 rounded-lg mr-3">
-                  <svg class="w-6 h-6 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="stats-card-icon stats-card-primary mr-3">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                   </svg>
                 </div>
                 <h2 class="text-xl font-bold text-gray-900">Upcoming Appointments</h2>
               </div>
-              <span class="bg-teal-100 text-teal-800 text-xs font-semibold px-3 py-1 rounded-full"><%= @upcoming_count %> scheduled</span>
+              <span class="status-badge status-badge-success"><%= @upcoming_count %> scheduled</span>
             </div>
           </div>
 
@@ -183,15 +169,15 @@
               </div>
             <% else %>
               <%# Empty State %>
-              <div class="text-center py-12">
-                <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-teal-100 to-gray-100 rounded-full mb-4">
-                  <svg class="w-8 h-8 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div class="empty-state">
+                <div class="empty-state-icon">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                   </svg>
                 </div>
-                <h3 class="text-lg font-semibold text-gray-900 mb-2">No Upcoming Appointments</h3>
-                <p class="text-gray-600 mb-6 max-w-sm mx-auto">You don't have any scheduled appointments. Browse our providers to book your first session.</p>
-                <%= link_to providers_path, class: "inline-flex items-center px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-xl shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200" do %>
+                <h3 class="empty-state-title">No Upcoming Appointments</h3>
+                <p class="empty-state-description">You don't have any scheduled appointments. Browse our providers to book your first session.</p>
+                <%= link_to providers_path, class: "btn-primary" do %>
                   <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                   </svg>
@@ -203,12 +189,12 @@
         </div>
 
         <%# Recent Health Records Card %>
-        <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
-          <div class="bg-gradient-to-r from-gray-50 to-teal-50 px-6 py-4 border-b border-gray-200">
+        <div class="dashboard-card">
+          <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
             <div class="flex items-center justify-between">
               <div class="flex items-center">
-                <div class="bg-gray-100 p-2 rounded-lg mr-3">
-                  <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="stats-card-icon stats-card-success mr-3">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                   </svg>
                 </div>
@@ -224,14 +210,14 @@
               </div>
             <% else %>
               <%# Empty State %>
-              <div class="text-center py-12">
-                <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-gray-100 to-teal-100 rounded-full mb-4">
-                  <svg class="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div class="empty-state">
+                <div class="empty-state-icon">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                   </svg>
                 </div>
-                <h3 class="text-lg font-semibold text-gray-900 mb-2">No Health Records Yet</h3>
-                <p class="text-gray-600 max-w-sm mx-auto">Your consultation notes and health records will appear here after completed appointments.</p>
+                <h3 class="empty-state-title">No Health Records Yet</h3>
+                <p class="empty-state-description">Your consultation notes and health records will appear here after completed appointments.</p>
               </div>
             <% end %>
           </div>
@@ -239,7 +225,7 @@
       </div>
 
       <%# Right Column - Sidebar (1/3 width) %>
-      <div class="lg:col-span-1 space-y-8">
+      <div class="space-y-8">
         <%= render 'dashboard/notifications_card' %>
         <%= render 'dashboard/recommended_providers_card' %>
       </div>

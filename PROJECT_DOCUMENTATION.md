@@ -1,6 +1,37 @@
-# CLAUDE.md
+# WellnessConnect - Project Documentation
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+> **Complete guide to WellnessConnect**: A professional services marketplace platform connecting clients with qualified service providers for virtual consultations.
+
+---
+
+## 📋 Table of Contents
+
+### Quick Start
+- [Project Overview](#project-overview)
+- [Getting Started](#getting-started)
+- [Technology Stack](#technology-stack)
+
+### Architecture
+- [Data Architecture & Domain Model](#data-architecture--domain-model)
+- [Core Business Logic](#core-business-logic)
+- [Key Architectural Decisions](#key-architectural-decisions)
+
+### Development
+- [Development Workflow](#development-workflow)
+- [Development Commands](#development-commands)
+- [Testing Strategy](#testing-strategy)
+- [Common Development Tasks](#common-development-tasks)
+
+### Configuration
+- [Configuration & Environment](#configuration--environment)
+- [Database Schema Management](#database-schema-management)
+
+### Support
+- [Troubleshooting](#troubleshooting)
+- [Future Enhancements](#future-enhancements)
+- [Additional Resources](#additional-resources)
+
+---
 
 ## Project Overview
 
@@ -18,6 +49,32 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Any professional offering time-based consultation services
 
 This is an MVP focusing on core booking and session workflow with integrated payment processing via Stripe.
+
+---
+
+## Getting Started
+
+### Initial Setup
+```bash
+bin/setup              # Install dependencies, prepare database, seed data
+bin/setup --reset      # Full reset: drop, create, migrate, seed
+```
+
+### Running the Application
+```bash
+bin/dev                       # Start Rails server + Tailwind CSS watcher
+bin/rails server              # Start Rails server only (port 3000)
+bin/rails console             # Rails console (REPL)
+```
+
+### Database Setup
+```bash
+bin/rails db:create           # Create database
+bin/rails db:migrate          # Run pending migrations
+bin/rails db:seed             # Run seed file
+```
+
+---
 
 ## Technology Stack
 
@@ -37,12 +94,14 @@ This is an MVP focusing on core booking and session workflow with integrated pay
 - **WebSockets**: Solid Cable (Rails 8 database-backed Action Cable)
 - **Deployment**: Kamal with Thruster (containerized deployment)
 
+---
+
 ## Data Architecture & Domain Model
 
 ### Core Entities
 
 #### 1. User (Central Identity Model)
-- **Role System**: Single enum role (`patient`, `provider`, `admin`) - NOT multiple boolean flags
+- **Role System**: Single enum role (`patient`, `provider`, `admin`, `super_admin`) - NOT multiple boolean flags
   - Note: "patient" terminology used for database/code, but represents "client" in UI/business context
 - **Polymorphic Profiles**: Based on role, users have either PatientProfile (client profile) OR ProviderProfile
 - **Attributes**: email, password_digest, first_name, last_name, role, time_zone
@@ -50,7 +109,7 @@ This is an MVP focusing on core booking and session workflow with integrated pay
   - `has_one :provider_profile` (if role is provider)
   - `has_one :patient_profile` (if role is patient/client)
   - `has_many :appointments_as_patient` (sessions where they're the client)
-  - `has_many :appointments_as_provider` (sessions where they're the provider)
+  - `has_many :appointments_as_provider` (sessions where they're the service provider)
   - `has_many :payments_made` (as payer)
   - `has_many :sent_messages`, `has_many :received_messages` (future messaging feature)
 
@@ -149,6 +208,8 @@ Appointment (joins client + provider + service)
 └─ has_one ConsultationNote (provider's notes)
 ```
 
+---
+
 ## Core Business Logic
 
 ### 1. Provider Onboarding
@@ -223,6 +284,14 @@ Appointment (joins client + provider + service)
 - Platform analytics and reporting
 - Service provider verification/approval
 
+**Super Admin permissions:**
+- Full CRUD on users (create, edit, delete, suspend, block)
+- User role management
+- Platform-wide configuration
+- All admin permissions plus elevated privileges
+
+---
+
 ## Development Workflow
 
 ### Mandatory Git Workflow
@@ -270,13 +339,9 @@ Appointment (joins client + provider + service)
 - `style:` - Code style changes (formatting)
 - `chore:` - Maintenance tasks
 
-## Development Commands
+---
 
-### Initial Setup
-```bash
-bin/setup              # Install dependencies, prepare database, seed data
-bin/setup --reset      # Full reset: drop, create, migrate, seed
-```
+## Development Commands
 
 ### Database Management
 ```bash
@@ -287,13 +352,6 @@ bin/rails db:rollback STEP=3  # Rollback last 3 migrations
 bin/rails db:reset            # Drop, create, migrate, and seed
 bin/rails db:seed             # Run seed file
 bin/rails db:prepare          # Create if needed, then migrate
-```
-
-### Running the Application
-```bash
-bin/dev                       # Start Rails server + Tailwind CSS watcher
-bin/rails server              # Start Rails server only (port 3000)
-bin/rails console             # Rails console (REPL)
 ```
 
 ### Testing (TDD Required)
@@ -346,6 +404,8 @@ bin/rails db:schema:dump       # Update schema.rb from database
 bin/rails notes                # Show TODO/FIXME comments
 bin/rails stats                # Code statistics
 ```
+
+---
 
 ## Testing Strategy
 
@@ -425,6 +485,8 @@ class AppointmentsTest < ApplicationSystemTestCase
 end
 ```
 
+---
+
 ## Key Architectural Decisions
 
 ### 1. Rails 8 Beta Choice
@@ -474,6 +536,8 @@ end
 - **Terminology**: Code uses "patient/provider", UI uses "client/service provider"
 - **Future**: Service categories, provider verification by category
 
+---
+
 ## Configuration & Environment
 
 ### Required Environment Variables
@@ -505,6 +569,8 @@ SMTP_PASSWORD=...
 - **Never edit `schema.rb` manually** - always use migrations
 - **Make migrations reversible** - implement `down` method or use reversible methods
 - **Test migrations**: `rails db:migrate && rails db:rollback && rails db:migrate`
+
+---
 
 ## Common Development Tasks
 
@@ -560,6 +626,8 @@ git add . && git commit -m "feat: add CRUD for ModelName"
 git push -u origin feature/feature-name
 ```
 
+---
+
 ## Troubleshooting
 
 ### Common Issues
@@ -596,7 +664,9 @@ RAILS_ENV=test bin/rails db:reset
 bin/rails routes | grep devise
 ```
 
-## Future Enhancements (Not in MVP)
+---
+
+## Future Enhancements
 
 ### Platform Features
 - **Service Categories**: Categorization system (Business, Legal, Health, Education, etc.)
@@ -632,6 +702,8 @@ bin/rails routes | grep devise
 - **Dispute Resolution**: Payment dispute management system
 - **Reporting Tools**: Financial reports, user activity reports
 
+---
+
 ## Additional Resources
 
 - [Rails 8 Release Notes](https://edgeguides.rubyonrails.org/8_0_release_notes.html)
@@ -640,3 +712,8 @@ bin/rails routes | grep devise
 - [Stripe Ruby SDK](https://stripe.com/docs/api?lang=ruby)
 - [Pundit Documentation](https://github.com/varvet/pundit)
 - [Devise Documentation](https://github.com/heartcombo/devise)
+
+---
+
+*Last Updated: January 2025*
+*Version: 1.0*
