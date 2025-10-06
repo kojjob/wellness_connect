@@ -1,9 +1,9 @@
 class CreateConversations < ActiveRecord::Migration[8.1]
   def change
     create_table :conversations do |t|
-      t.references :patient, null: false, foreign_key: false
-      t.references :provider, null: false, foreign_key: false
-      t.references :appointment, null: true, foreign_key: false, index: false
+      t.bigint :patient_id, null: false
+      t.bigint :provider_id, null: false
+      t.bigint :appointment_id, null: true
       t.datetime :last_message_at
       t.integer :patient_unread_count, default: 0, null: false
       t.integer :provider_unread_count, default: 0, null: false
@@ -16,9 +16,12 @@ class CreateConversations < ActiveRecord::Migration[8.1]
     # Add foreign keys with on_delete options explicitly
     add_foreign_key :conversations, :users, column: :patient_id, on_delete: :cascade
     add_foreign_key :conversations, :users, column: :provider_id, on_delete: :cascade
-    add_foreign_key :conversations, :appointments, on_delete: :nullify
+    add_foreign_key :conversations, :appointments, column: :appointment_id, on_delete: :nullify
 
     # Indexes for performance
+    add_index :conversations, :patient_id
+    add_index :conversations, :provider_id
+
     add_index :conversations, [ :patient_id, :last_message_at ],
               order: { last_message_at: :desc },
               comment: "Find patient's conversations sorted by recent activity"
