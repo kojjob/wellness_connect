@@ -126,13 +126,14 @@ class CalendarModalTest < ApplicationSystemTestCase
 
     # Calendar should render
     within '[data-availability-calendar-target="modal"]' do
-      # Today's date should have green highlighting (has unbooked availability)
-      today_element = page.find("div", text: Time.current.day.to_s, exact_text: true, match: :first)
-      parent_classes = today_element[:class]
+      # Date with availability should have green highlighting (has unbooked availability)
+      available_day = @today_morning.start_time.day
+      day_element = page.find("div", text: available_day.to_s, exact_text: true, match: :first)
+      parent_classes = day_element[:class]
 
       # Should have green background classes
       assert parent_classes.include?("bg-green-50") || parent_classes.include?("bg-green"),
-        "Today's date should be highlighted (has availability)"
+        "Date with availability should be highlighted (has unbooked slots)"
     end
   end
 

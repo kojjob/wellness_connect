@@ -129,7 +129,7 @@ export default class extends Controller {
 
     return this.availabilities.some(avail => {
       const availDate = new Date(avail.start_time).toLocaleDateString('en-CA')
-      return availDate === dateStr
+      return availDate === dateStr && avail.is_booked === false
     })
   }
 
@@ -159,7 +159,7 @@ export default class extends Controller {
     const slotsForDate = this.availabilities.filter(avail => {
       const availDate = new Date(avail.start_time)
       const availDateStr = availDate.toLocaleDateString('en-CA')
-      return availDateStr === selectedDateStr
+      return availDateStr === selectedDateStr && avail.is_booked === false
     })
 
     if (slotsForDate.length === 0) {
