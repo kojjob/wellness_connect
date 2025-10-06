@@ -105,6 +105,18 @@ export default class extends Controller {
       backgroundColor: computedStyle.backgroundColor
     })
 
+    // Quick fix: Force dropdown to appear in viewport
+    const rect = this.menuTarget.getBoundingClientRect()
+    const viewportWidth = window.innerWidth
+
+    if (rect.right > viewportWidth || rect.left > viewportWidth - 100) {
+      console.log("Forcing dropdown to visible position")
+      this.menuTarget.style.position = "fixed"
+      this.menuTarget.style.top = "60px"
+      this.menuTarget.style.right = "20px"
+      this.menuTarget.style.left = "auto"
+    }
+
     // Add a temporary red border for visual debugging
     this.menuTarget.style.border = "3px solid red"
     this.menuTarget.style.backgroundColor = "yellow"
@@ -114,6 +126,46 @@ export default class extends Controller {
       document.addEventListener("click", this.boundHandleClickOutside)
       document.addEventListener("keydown", this.boundHandleEscape)
     }, 10)
+  }
+
+  adjustDropdownPosition() {
+    const rect = this.menuTarget.getBoundingClientRect()
+    const viewportWidth = window.innerWidth
+    const viewportHeight = window.innerHeight
+
+    console.log("Viewport dimensions:", { width: viewportWidth, height: viewportHeight })
+    console.log("Dropdown rect before adjustment:", rect)
+
+    // Check if dropdown is off-screen to the right
+    if (rect.right > viewportWidth) {
+      console.log("Dropdown is off-screen to the right, adjusting...")
+      // Remove right-0 and add left positioning
+      this.menuTarget.classList.remove("right-0")
+      this.menuTarget.classList.add("left-0")
+      this.menuTarget.style.right = "auto"
+      this.menuTarget.style.left = "0"
+    }
+
+    // Check if dropdown is off-screen to the left
+    if (rect.left < 0) {
+      console.log("Dropdown is off-screen to the left, adjusting...")
+      this.menuTarget.classList.remove("left-0")
+      this.menuTarget.classList.add("right-0")
+      this.menuTarget.style.left = "auto"
+      this.menuTarget.style.right = "0"
+    }
+
+    // Check if dropdown is off-screen at the bottom
+    if (rect.bottom > viewportHeight) {
+      console.log("Dropdown is off-screen at bottom, adjusting...")
+      this.menuTarget.style.top = "auto"
+      this.menuTarget.style.bottom = "100%"
+      this.menuTarget.style.marginBottom = "0.75rem"
+      this.menuTarget.style.marginTop = "0"
+    }
+
+    const newRect = this.menuTarget.getBoundingClientRect()
+    console.log("Dropdown rect after adjustment:", newRect)
   }
 
   closeOtherDropdowns() {

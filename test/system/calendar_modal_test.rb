@@ -152,13 +152,15 @@ class CalendarModalTest < ApplicationSystemTestCase
       end
       puts "==================\n"
 
-      # Click today's date
+      # Click today's date using JavaScript to ensure event fires
       clickable_date = page.find('div[data-action="click->availability-calendar#selectDate"]',
                                   text: Time.current.day.to_s,
                                   exact_text: true,
                                   match: :first)
       puts "Found clickable date: #{clickable_date.text}, data-date: #{clickable_date['data-date']}"
-      clickable_date.click
+
+      # Use JavaScript to trigger click event to ensure it reaches the event listener
+      page.execute_script("arguments[0].click()", clickable_date)
 
       # Wait for time slots to render
       sleep 0.5

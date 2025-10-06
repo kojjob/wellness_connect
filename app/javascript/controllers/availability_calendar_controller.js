@@ -224,9 +224,9 @@ export default class extends Controller {
     // Sort by start time
     slotsForDate.sort((a, b) => new Date(a.start_time) - new Date(b.start_time))
     
-    // Update selected date display
-    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
-    this.selectedDateTarget.textContent = this.selectedDate.toLocaleDateString('en-US', options)
+    // Update selected date display with leading zero for day (to match Rails strftime format)
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: '2-digit' }
+    this.selectedDateTarget.innerHTML = `<h4 class="text-lg font-semibold text-gray-900">${this.selectedDate.toLocaleDateString('en-US', options)}</h4>`
     
     // Render time slots
     let slotsHTML = '<div class="grid grid-cols-2 gap-3">'
@@ -254,10 +254,11 @@ export default class extends Controller {
   }
 
   formatTime(date) {
-    return date.toLocaleTimeString('en-US', { 
-      hour: 'numeric', 
+    return date.toLocaleTimeString('en-US', {
+      hour: 'numeric',
       minute: '2-digit',
-      hour12: true 
+      hour12: true,
+      timeZone: 'UTC'
     })
   }
 
