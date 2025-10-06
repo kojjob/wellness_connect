@@ -23,6 +23,7 @@ class Message < ApplicationRecord
   scope :by_type, ->(type) { where(message_type: type) }
 
   # Callbacks
+  before_update :set_edited_timestamp, if: :content_changed?
   after_create :update_conversation_timestamp
   after_create :increment_recipient_unread_count
   after_create_commit :broadcast_message
@@ -81,5 +82,10 @@ class Message < ApplicationRecord
   def broadcast_message
     # TODO: Implement in Phase 2 when we add Action Cable channels
     # broadcast_append_to [conversation, "messages"], target: "messages"
+  end
+
+  # Callback: set edited_at timestamp when content changes
+  def set_edited_timestamp
+    self.edited_at = Time.current
   end
 end

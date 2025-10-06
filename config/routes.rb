@@ -66,7 +66,7 @@ Rails.application.routes.draw do
     end
 
     # Nested messages within conversations
-    resources :messages, only: [ :create, :update, :destroy ] do
+    resources :messages, only: [ :create, :edit, :update, :destroy ] do
       member do
         patch :mark_as_read
       end

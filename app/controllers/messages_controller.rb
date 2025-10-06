@@ -63,8 +63,8 @@ class MessagesController < ApplicationController
   def update
     authorize @message
 
-    # Check if message is still editable (model validation handles time limit)
-    unless @message.editable?
+    # Check if message is still editable (admins can always edit)
+    unless current_user.admin? || @message.editable?
       redirect_to conversation_path(@conversation),
                   alert: "Message can no longer be edited (15 minute limit exceeded)."
       return
@@ -147,8 +147,6 @@ class MessagesController < ApplicationController
   def set_conversation
     @conversation = Conversation.find(params[:conversation_id])
     authorize @conversation, :show?
-  rescue Pundit::NotAuthorizedError
-    redirect_to conversations_path, alert: "You are not authorized to access this conversation."
   end
 
   def set_message

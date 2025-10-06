@@ -16,6 +16,9 @@ export default class extends Controller {
     if (this.hasAvailabilitiesValue) {
       this.availabilities = this.availabilitiesValue
     }
+
+    // Bind the escape key handler
+    this.escapeHandler = this.handleKeydown.bind(this)
   }
 
   openModal(event) {

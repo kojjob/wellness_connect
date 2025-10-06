@@ -8,6 +8,9 @@ class CalendarModalTest < ApplicationSystemTestCase
     @provider_profile = provider_profiles(:provider_profile_one)
     @service = services(:service_one)
 
+    # Delete any fixture availabilities to avoid conflicts
+    @provider_profile.availabilities.destroy_all
+
     # Create availabilities for testing calendar
     # Use Time.zone.local to explicitly create times in the application's timezone
     # This ensures proper conversion between Rails (UTC storage) and JavaScript (local display)
@@ -65,8 +68,8 @@ class CalendarModalTest < ApplicationSystemTestCase
   end
 
   test "calendar modal opens when View All Availability is clicked" do
-    # Verify availabilities were created (4 from setup + 1 from fixture)
-    assert_equal 5, @provider_profile.availabilities.where(is_booked: false).count, "Should have 5 unbooked availabilities"
+    # Verify availabilities were created (4 from setup)
+    assert_equal 4, @provider_profile.availabilities.where(is_booked: false).count, "Should have 4 unbooked availabilities"
 
     # Sign in as patient
     visit new_user_session_path
