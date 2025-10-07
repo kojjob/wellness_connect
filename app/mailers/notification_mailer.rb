@@ -25,7 +25,6 @@ class NotificationMailer < ApplicationMailer
     @title = title
     @message = message
     @notification_type = "appointment"
-    @icon_color = "green"
 
     mail(
       to: user.email,
@@ -39,7 +38,6 @@ class NotificationMailer < ApplicationMailer
     @title = title
     @message = message
     @notification_type = "appointment"
-    @icon_color = "red"
 
     mail(
       to: user.email,
@@ -53,7 +51,6 @@ class NotificationMailer < ApplicationMailer
     @title = title
     @message = message
     @notification_type = "appointment"
-    @icon_color = "blue"
 
     mail(
       to: user.email,
@@ -67,7 +64,6 @@ class NotificationMailer < ApplicationMailer
     @title = title
     @message = message
     @notification_type = "payment"
-    @icon_color = "green"
 
     mail(
       to: user.email,
@@ -81,7 +77,6 @@ class NotificationMailer < ApplicationMailer
     @title = title
     @message = message
     @notification_type = "payment"
-    @icon_color = "red"
 
     mail(
       to: user.email,
@@ -95,7 +90,6 @@ class NotificationMailer < ApplicationMailer
     @title = title
     @message = message
     @notification_type = "payment"
-    @icon_color = "blue"
 
     mail(
       to: user.email,
@@ -109,7 +103,6 @@ class NotificationMailer < ApplicationMailer
     @title = title
     @message = message
     @notification_type = "profile"
-    @icon_color = "green"
 
     mail(
       to: user.email,
@@ -123,7 +116,6 @@ class NotificationMailer < ApplicationMailer
     @title = title
     @message = message
     @notification_type = "review"
-    @icon_color = "yellow"
 
     mail(
       to: user.email,
@@ -137,7 +129,6 @@ class NotificationMailer < ApplicationMailer
     @title = title
     @message = message
     @notification_type = "system"
-    @icon_color = "purple"
 
     mail(
       to: user.email,
