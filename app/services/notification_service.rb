@@ -55,24 +55,36 @@ class NotificationService
   def self.notify_appointment_reminder(appointment)
     # Notify patient
     if can_notify?(appointment.patient, "appointment_reminder")
+      title = "Appointment Reminder"
+      message = "You have an appointment with #{appointment.provider.email} tomorrow at #{appointment.start_time.strftime('%I:%M %p')}"
+
       Notification.create!(
         user: appointment.patient,
-        title: "Appointment Reminder",
-        message: "You have an appointment with #{appointment.provider.email} tomorrow at #{appointment.start_time.strftime('%I:%M %p')}",
+        title: title,
+        message: message,
         notification_type: "appointment_reminder",
         action_url: Rails.application.routes.url_helpers.appointment_path(appointment)
       )
+
+      # Send email if enabled
+      send_email(appointment.patient, "appointment_reminder", title, message)
     end
 
     # Notify provider
     if can_notify?(appointment.provider, "appointment_reminder")
+      title = "Appointment Reminder"
+      message = "You have an appointment with #{appointment.patient.email} tomorrow at #{appointment.start_time.strftime('%I:%M %p')}"
+
       Notification.create!(
         user: appointment.provider,
-        title: "Appointment Reminder",
-        message: "You have an appointment with #{appointment.patient.email} tomorrow at #{appointment.start_time.strftime('%I:%M %p')}",
+        title: title,
+        message: message,
         notification_type: "appointment_reminder",
         action_url: Rails.application.routes.url_helpers.appointment_path(appointment)
       )
+
+      # Send email if enabled
+      send_email(appointment.provider, "appointment_reminder", title, message)
     end
   end
 
