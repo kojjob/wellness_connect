@@ -1,0 +1,15 @@
+<% content_for :title, "422 - Unprocessable Entity" %>
+
+<div class="error-container">
+  <div class="icon">⚠️</div>
+  <div class="error-code">422</div>
+  <h1 class="error-title">Unprocessable Entity</h1>
+  <p class="error-message">
+    The change you wanted was rejected.
+    Maybe you tried to change something you didn't have access to.
+  </p>
+  <div class="error-actions">
+    <%= link_to "Go Home", root_path, class: "btn btn-primary" %>
+    <%= link_to "Go Back", "javascript:history.back()", class: "btn btn-secondary" %>
+  </div>
+</div>

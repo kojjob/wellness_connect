@@ -12,6 +12,9 @@ Rails.application.configure do
   # Full error reports are disabled.
   config.consider_all_requests_local = false
 
+  # Route exceptions to ErrorsController for proper CSP nonce handling
+  config.exceptions_app = routes
+
   # Turn on fragment caching in view templates.
   config.action_controller.perform_caching = true
 
@@ -108,8 +111,8 @@ Rails.application.configure do
     policy.img_src     :self, :https, :data, :blob
     policy.object_src  :none
     policy.script_src  :self, :https
-    # Allow inline styles for error pages and Tailwind
-    policy.style_src   :self, :https, :unsafe_inline
+    # Style sources with nonce support (no unsafe_inline needed)
+    policy.style_src   :self, :https
     # Specify URI for violation reports (optional - can be configured later)
     # policy.report_uri "/csp-violation-report-endpoint"
 
