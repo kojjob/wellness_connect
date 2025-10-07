@@ -1,6 +1,9 @@
 class Notification < ApplicationRecord
   belongs_to :user
 
+  # Broadcast new notifications via Turbo Streams
+  after_create_commit -> { broadcast_notification }
+
   # Scopes
   scope :unread, -> { where(read_at: nil) }
   scope :read, -> { where.not(read_at: nil) }
@@ -37,5 +40,17 @@ class Notification < ApplicationRecord
   # Check if notification is unread
   def unread?
     !read?
+  end
+
+  private
+
+  # Broadcast notification to user's stream
+  def broadcast_notification
+    broadcast_prepend_to(
+      "user_#{user_id}_notifications",
+      partial: "notifications/notification",
+      locals: { notification: self },
+      target: "notifications"
+    )
   end
 end

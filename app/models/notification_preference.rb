@@ -14,7 +14,7 @@ class NotificationPreference < ApplicationRecord
       email_messages
     when /payment|refund/
       email_payments
-    when /system/
+    when /system|profile|review/
       email_system
     else
       true # Default to enabled for unknown types
@@ -30,7 +30,7 @@ class NotificationPreference < ApplicationRecord
       in_app_messages
     when /payment|refund/
       in_app_payments
-    when /system/
+    when /system|profile|review/
       in_app_system
     else
       true # Default to enabled for unknown types
