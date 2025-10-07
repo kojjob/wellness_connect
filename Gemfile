@@ -84,3 +84,7 @@ group :test do
   # Mocking and stubbing for tests
   gem "mocha"
 end
+
+gem "dockerfile-rails", ">= 1.7", group: :development
+
+gem "aws-sdk-s3", "~> 1.199", require: false

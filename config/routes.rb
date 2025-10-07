@@ -88,6 +88,7 @@ Rails.application.routes.draw do
       end
     end
     resources :provider_profiles # Full CRUD for provider profiles
+    resources :patient_profiles # Full CRUD for patient profiles
     resources :appointments, only: [ :index, :show ]
     resources :payments, only: [ :index, :show ]
   end

@@ -108,7 +108,8 @@ Rails.application.configure do
     policy.img_src     :self, :https, :data, :blob
     policy.object_src  :none
     policy.script_src  :self, :https
-    policy.style_src   :self, :https
+    # Allow inline styles for error pages and Tailwind
+    policy.style_src   :self, :https, :unsafe_inline
     # Specify URI for violation reports (optional - can be configured later)
     # policy.report_uri "/csp-violation-report-endpoint"
 

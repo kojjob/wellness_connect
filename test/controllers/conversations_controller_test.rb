@@ -95,7 +95,7 @@ class ConversationsControllerTest < ActionDispatch::IntegrationTest
     get conversation_path(@other_conversation)
 
     assert_redirected_to root_path
-    assert_equal "You are not authorized to perform this action.", flash[:alert]
+    assert_equal "You are not authorized to access this page.", flash[:alert]
   end
 
   test "show action marks conversation as read for patient" do
@@ -162,7 +162,7 @@ class ConversationsControllerTest < ActionDispatch::IntegrationTest
 
     # Authorization fails because provider_id is nil (policy requires both IDs present)
     assert_redirected_to root_path
-    assert_equal "You are not authorized to perform this action.", flash[:alert]
+    assert_equal "You are not authorized to access this page.", flash[:alert]
   end
 
   test "user cannot create conversation they won't participate in" do
@@ -181,7 +181,7 @@ class ConversationsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_redirected_to root_path
-    assert_equal "You are not authorized to perform this action.", flash[:alert]
+    assert_equal "You are not authorized to access this page.", flash[:alert]
   end
 
   # Archive action tests
@@ -217,7 +217,7 @@ class ConversationsControllerTest < ActionDispatch::IntegrationTest
     patch archive_conversation_path(@other_conversation)
 
     assert_redirected_to root_path
-    assert_equal "You are not authorized to perform this action.", flash[:alert]
+    assert_equal "You are not authorized to access this page.", flash[:alert]
   end
 
   # Unarchive action tests
@@ -249,7 +249,7 @@ class ConversationsControllerTest < ActionDispatch::IntegrationTest
     patch unarchive_conversation_path(@other_conversation)
 
     assert_redirected_to root_path
-    assert_equal "You are not authorized to perform this action.", flash[:alert]
+    assert_equal "You are not authorized to access this page.", flash[:alert]
   end
 
   private
