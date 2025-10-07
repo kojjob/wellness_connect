@@ -1,73 +1,216 @@
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-  <div class="mb-8">
-    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
-      Messages
-    </h1>
-    <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
-      View and manage your conversations with <%= current_user.provider? ? "clients" : "service providers" %>
-    </p>
+<!-- Modern Conversations Page with Enhanced Design -->
+<div class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-teal-50/30 py-8 px-4 sm:px-6 lg:px-8">
+  <!-- Animated Background Blobs -->
+  <div class="fixed inset-0 overflow-hidden pointer-events-none">
+    <div class="absolute top-20 right-20 w-96 h-96 bg-teal-500/5 rounded-full blur-3xl animate-blob"></div>
+    <div class="absolute bottom-20 left-20 w-80 h-80 bg-gray-500/5 rounded-full blur-2xl animate-blob animation-delay-2000"></div>
+    <div class="absolute top-1/2 left-1/2 w-72 h-72 bg-teal-400/5 rounded-full blur-xl animate-blob animation-delay-4000"></div>
   </div>
 
-  <%# Active Conversations Section %>
-  <div class="mb-12">
-    <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-      <svg class="w-5 h-5 mr-2 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-      </svg>
-      Active Conversations
-      <% if @active_conversations.any? %>
-        <span class="ml-2 px-2 py-1 text-xs font-medium bg-primary-100 text-primary-800 rounded-full">
-          <%= @active_conversations.size %>
-        </span>
-      <% end %>
-    </h2>
+  <div class="relative max-w-6xl mx-auto">
+    <!-- Hero Header Section -->
+    <div class="mb-8 bg-gradient-to-r from-teal-600 via-teal-700 to-gray-700 rounded-2xl shadow-2xl overflow-hidden">
+      <!-- Background decoration -->
+      <div class="absolute inset-0 bg-gradient-to-r from-teal-500/20 to-gray-600/20"></div>
+      <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl"></div>
+      <div class="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full blur-2xl"></div>
 
-    <% if @active_conversations.any? %>
-      <div class="bg-white dark:bg-gray-800 shadow rounded-lg divide-y divide-gray-200 dark:divide-gray-700">
-        <% @active_conversations.each do |conversation| %>
-          <%= render "conversation_item", conversation: conversation, current_user: current_user %>
-        <% end %>
+      <div class="relative px-8 py-10">
+        <div class="flex items-center justify-between flex-wrap gap-4">
+          <div class="flex items-center space-x-4">
+            <div class="h-16 w-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg ring-2 ring-white/40">
+              <svg class="h-8 w-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z"/>
+                <path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z"/>
+              </svg>
+            </div>
+            <div>
+              <h1 class="text-3xl font-bold text-white">Messages</h1>
+              <p class="text-teal-100 mt-1">Connect with <%= current_user.provider? ? "your clients" : "service providers" %></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stats Bar -->
+        <%
+          total_conversations = @active_conversations.size + @archived_conversations.size
+          unread_count = @active_conversations.sum { |conv| conv.unread_count_for(current_user) }
+        %>
+        <div class="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-3 border border-white/20">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-teal-100 text-xs font-medium">Total Conversations</p>
+                <p class="text-white text-2xl font-bold"><%= total_conversations %></p>
+              </div>
+              <div class="h-10 w-10 rounded-lg bg-white/20 flex items-center justify-center">
+                <svg class="h-5 w-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z"/>
+                  <path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-3 border border-white/20">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-teal-100 text-xs font-medium">Active</p>
+                <p class="text-white text-2xl font-bold"><%= @active_conversations.size %></p>
+              </div>
+              <div class="h-10 w-10 rounded-lg bg-white/20 flex items-center justify-center">
+                <svg class="h-5 w-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-3 border border-white/20">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-teal-100 text-xs font-medium">Unread Messages</p>
+                <p class="text-white text-2xl font-bold"><%= unread_count %></p>
+              </div>
+              <div class="h-10 w-10 rounded-lg bg-white/20 flex items-center justify-center">
+                <% if unread_count > 0 %>
+                  <span class="relative flex h-3 w-3">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
+                  </span>
+                <% else %>
+                  <svg class="h-5 w-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+                    <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+                  </svg>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%# Search and Filter Section %>
+    <div class="mb-6 bg-white rounded-2xl shadow-xl border border-gray-200 p-6">
+      <div class="flex flex-col sm:flex-row gap-4">
+        <div class="flex-1">
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+              </svg>
+            </div>
+            <input type="text"
+                   id="conversation-search"
+                   placeholder="Search conversations..."
+                   class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 sm:text-sm transition-all duration-200"
+                   data-controller="search"
+                   data-action="input->search#filter">
+          </div>
+        </div>
+        <div class="flex gap-2">
+          <button type="button"
+                  class="inline-flex items-center px-4 py-3 border border-gray-300 rounded-xl text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-all duration-200">
+            <svg class="h-5 w-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+            </svg>
+            Filter
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <%# Active Conversations Section %>
+    <div class="mb-12">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-2xl font-bold text-gray-900 flex items-center">
+          <div class="h-10 w-10 rounded-xl bg-gradient-to-br from-teal-500 to-teal-600 flex items-center justify-center mr-3 shadow-lg">
+            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z"/>
+              <path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z"/>
+            </svg>
+          </div>
+          Active Conversations
+          <% if @active_conversations.any? %>
+            <span class="ml-3 px-3 py-1 text-sm font-semibold bg-gradient-to-r from-teal-100 to-teal-200 text-teal-800 rounded-full shadow-sm">
+              <%= @active_conversations.size %>
+            </span>
+          <% end %>
+        </h2>
       </div>
 
-      <%# Pagination %>
-      <% if @active_conversations.respond_to?(:total_pages) && @active_conversations.total_pages > 1 %>
-        <div class="mt-6">
-          <%= paginate @active_conversations, theme: 'tailwind' %>
+      <% if @active_conversations.any? %>
+        <div class="space-y-4" id="conversations-list">
+          <% @active_conversations.each do |conversation| %>
+            <%= render "conversation_item", conversation: conversation, current_user: current_user %>
+          <% end %>
+        </div>
+
+        <%# Pagination %>
+        <% if @active_conversations.respond_to?(:total_pages) && @active_conversations.total_pages > 1 %>
+          <div class="mt-8 bg-white rounded-2xl shadow-xl border border-gray-200 p-6">
+            <div class="flex items-center justify-between">
+              <div class="text-sm text-gray-600">
+                Showing conversations <span class="font-semibold text-gray-900">1</span> to
+                <span class="font-semibold text-gray-900"><%= @active_conversations.size %></span>
+              </div>
+              <div class="flex items-center space-x-2">
+                <%= paginate @active_conversations %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      <% else %>
+        <!-- Enhanced Empty State -->
+        <div class="bg-white rounded-2xl shadow-xl border-2 border-dashed border-gray-300 p-16 text-center">
+          <div class="mx-auto h-24 w-24 rounded-full bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center mb-6">
+            <svg class="h-12 w-12 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-gray-900 mb-2">
+            No active conversations yet
+          </h3>
+          <p class="text-gray-600 mb-6 max-w-md mx-auto">
+            <%= current_user.provider? ? "Your conversations with clients will appear here. When clients message you, you'll see them in this list." : "Your conversations with service providers will appear here. Start by browsing providers and booking an appointment." %>
+          </p>
+          <% unless current_user.provider? %>
+            <%= link_to providers_path,
+                class: "inline-flex items-center px-6 py-3 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200" do %>
+              <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+              </svg>
+              Browse Providers
+            <% end %>
+          <% end %>
         </div>
       <% end %>
-    <% else %>
-      <div class="bg-white dark:bg-gray-800 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 p-12 text-center">
-        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-        </svg>
-        <h3 class="mt-2 text-sm font-semibold text-gray-900 dark:text-white">
-          No active conversations
-        </h3>
-        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          <%= current_user.provider? ? "Your conversations with clients will appear here" : "Your conversations with service providers will appear here" %>
-        </p>
+    </div>
+
+    <%# Archived Conversations Section %>
+    <% if @archived_conversations.any? %>
+      <div>
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-2xl font-bold text-gray-900 flex items-center">
+            <div class="h-10 w-10 rounded-xl bg-gradient-to-br from-gray-400 to-gray-500 flex items-center justify-center mr-3 shadow-lg">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+              </svg>
+            </div>
+            Archived Conversations
+            <span class="ml-3 px-3 py-1 text-sm font-semibold bg-gray-100 text-gray-700 rounded-full shadow-sm">
+              <%= @archived_conversations.size %>
+            </span>
+          </h2>
+        </div>
+
+        <div class="space-y-4">
+          <% @archived_conversations.each do |conversation| %>
+            <%= render "conversation_item", conversation: conversation, current_user: current_user, archived: true %>
+          <% end %>
+        </div>
       </div>
     <% end %>
   </div>
-
-  <%# Archived Conversations Section %>
-  <% if @archived_conversations.any? %>
-    <div>
-      <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-        <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
-        </svg>
-        Archived Conversations
-        <span class="ml-2 px-2 py-1 text-xs font-medium bg-gray-100 text-gray-600 rounded-full">
-          <%= @archived_conversations.size %>
-        </span>
-      </h2>
-
-      <div class="bg-white dark:bg-gray-800 shadow rounded-lg divide-y divide-gray-200 dark:divide-gray-700">
-        <% @archived_conversations.each do |conversation| %>
-          <%= render "conversation_item", conversation: conversation, current_user: current_user, archived: true %>
-        <% end %>
-      </div>
-    </div>
-  <% end %>
 </div>
