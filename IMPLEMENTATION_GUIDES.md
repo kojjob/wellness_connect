@@ -1369,10 +1369,12 @@ Users can now successfully create accounts with their chosen role, enabling the 
 **Commit:** `56bb3fc` - fix: resolve provider profile display issues and add share functionality
 
 **Files Changed:**
+
 - `app/javascript/controllers/share_controller.js` (new file, 68 lines)
 - `app/views/provider_profiles/show.html.erb` (fixed specialty reference)
 
 **Share Controller Features:**
+
 - Web Share API support detection
 - Clipboard API fallback
 - Toast notification system
@@ -1384,6 +1386,7 @@ Users can now successfully create accounts with their chosen role, enabling the 
 ### 🎨 Features Restored/Added
 
 **Navbar Features (Restored):**
+
 - ✅ Fixed navbar with backdrop blur (z-50)
 - ✅ Gradient logo (indigo → purple)
 - ✅ Desktop navigation links (Browse Providers, About, Become a Provider)
@@ -1407,6 +1410,7 @@ Users can now successfully create accounts with their chosen role, enabling the 
 - ✅ WCAG 2.1 AA accessibility
 
 **Provider Profile Features (Fixed):**
+
 - ✅ All action buttons fully visible
 - ✅ Proper spacing between buttons and wave divider
 - ✅ No overlap with decorative elements
@@ -1414,7 +1418,11 @@ Users can now successfully create accounts with their chosen role, enabling the 
 - ✅ Professional appearance
 
 **Button Functionality:**
+
 - ✅ **Book Appointment**:
+
+  - Functional for authenticated patients
+  - Disabled state for profile owner
   - Links to booking section for authenticated patients
   - Links to sign-in for guests
   - Smooth scroll to booking form
@@ -1429,10 +1437,10 @@ Users can now successfully create accounts with their chosen role, enabling the 
   - Shares profile URL, title, and description
 
 ---
-
 ### 📊 Impact
 
 **Before:**
+
 - ❌ Application wouldn't load (syntax errors)
 - ❌ Navbar broken with merge conflicts
 - ❌ Buttons partially hidden on provider profiles
@@ -1440,6 +1448,7 @@ Users can now successfully create accounts with their chosen role, enabling the 
 - ❌ Poor user experience
 
 **After:**
+
 - ✅ Application loads successfully
 - ✅ Clean, functional navbar with premium design
 - ✅ All buttons fully visible and functional
@@ -1451,6 +1460,7 @@ Users can now successfully create accounts with their chosen role, enabling the 
 ### 🧪 Testing
 
 **Manual Testing Completed:**
+
 1. ✅ Server starts without errors
 2. ✅ Navbar renders correctly on all pages
 3. ✅ Notification dropdown opens/closes smoothly
@@ -1462,6 +1472,7 @@ Users can now successfully create accounts with their chosen role, enabling the 
 9. ✅ Book Appointment button navigates correctly
 
 **Browser Testing:**
+
 - ✅ Chrome/Edge (latest)
 - ✅ Safari (latest)
 - ✅ Firefox (latest)
@@ -1469,6 +1480,7 @@ Users can now successfully create accounts with their chosen role, enabling the 
 - ✅ Chrome Mobile (Android)
 
 **Responsive Testing:**
+
 - ✅ Desktop (1920px+)
 - ✅ Laptop (1366px)
 - ✅ Tablet (768px)
@@ -1485,6 +1497,7 @@ b0d4284 - fix: resolve navbar merge conflicts
 ```
 
 **Total Changes:**
+
 - 3 commits
 - 30+ files modified/created
 - 259 lines removed (merge conflicts)
@@ -1497,6 +1510,7 @@ b0d4284 - fix: resolve navbar merge conflicts
 **Status:** ✅ Deployed to `dev` branch
 
 **Deployment Notes:**
+
 - No database migrations required
 - No environment variables needed
 - No breaking changes
@@ -1509,6 +1523,7 @@ b0d4284 - fix: resolve navbar merge conflicts
 **For Future Bugfixes:**
 
 1. **Create Feature Branch FIRST:**
+
    ```bash
    git checkout -b feature/bugfix-description
    # Make changes
@@ -1743,6 +1758,7 @@ flash[:alert] = "Invalid email or password"
 ### Styling
 
 Toast styles are defined in:
+
 - `app/assets/tailwind/application.css` - Animation CSS
 - `app/views/shared/_toast.html.erb` - Component structure and TailwindCSS classes
 
@@ -1814,9 +1830,11 @@ All security features are production-ready and enabled by default.
 ## Content Security Policy (CSP)
 
 ### Configuration Location
+
 - `config/environments/production.rb` (lines 103-132)
 
 ### Protection Against
+
 - Cross-Site Scripting (XSS)
 - Code injection attacks
 - Clickjacking
@@ -1870,10 +1888,12 @@ config.content_security_policy_nonce_directives = %w[script-src style-src]
 ## Rate Limiting
 
 ### Configuration Location
+
 - `config/initializers/rack_attack.rb`
 - `config/application.rb` (middleware registration)
 
 ### Protection Against
+
 - Brute force attacks
 - DDoS attacks
 - API abuse
@@ -1882,43 +1902,58 @@ config.content_security_policy_nonce_directives = %w[script-src style-src]
 ### Rate Limits
 
 **General Request Throttling:**
+
 ```ruby
+
 throttle("req/ip", limit: 300, period: 5.minutes)
 ```
+
 - Limit: 300 requests per 5 minutes per IP
 - Applies to all non-asset requests
 
 **Login Attempts:**
+
 ```ruby
 throttle("logins/ip", limit: 5, period: 20.seconds)
 throttle("logins/email", limit: 5, period: 20.seconds)
 ```
+
 - Limit: 5 attempts per 20 seconds
 - Tracked by both IP and email address
 
 **Password Resets:**
+
 ```ruby
+
 throttle("password_resets/ip", limit: 5, period: 1.hour)
 ```
+
 - Limit: 5 requests per hour per IP
 
 **Registrations:**
+
 ```ruby
+
 throttle("registrations/ip", limit: 10, period: 1.hour)
 ```
+
 - Limit: 10 registrations per hour per IP
 
 **Appointment Bookings:**
+
 ```ruby
 throttle("bookings/ip", limit: 20, period: 1.hour)
 ```
+
 - Limit: 20 bookings per hour per IP
 - Prevents booking spam
 
 **API Endpoints (Future):**
+
 ```ruby
 throttle("api/ip", limit: 60, period: 1.minute)
 ```
+
 - Limit: 60 requests per minute per IP
 
 ### Response Codes
@@ -1941,6 +1976,7 @@ Edit `config/initializers/rack_attack.rb` and modify the `limit:` and `period:` 
 ### Safelist/Blocklist
 
 **Safelist** (always allow):
+
 ```ruby
 safelist("allow_localhost") do |req|
   req.ip == "127.0.0.1" || req.ip == "::1" if Rails.env.development?
@@ -1948,6 +1984,7 @@ end
 ```
 
 **Blocklist** (always block):
+
 ```ruby
 blocklist("block_bad_ips") do |req|
   %w[1.2.3.4 5.6.7.8].include?(req.ip)
@@ -1959,21 +1996,26 @@ end
 ## Security Headers
 
 ### Configuration Location
+
 - `config/initializers/security_headers.rb`
 
 ### Implemented Headers
 
 **X-Frame-Options:**
+
 ```ruby
 "X-Frame-Options" => "DENY"
 ```
+
 - Prevents clickjacking by disallowing framing
 - More widely supported than CSP frame-ancestors
 
 **X-Content-Type-Options:**
+
 ```ruby
 "X-Content-Type-Options" => "nosniff"
 ```
+
 - Prevents MIME type sniffing
 - Forces browsers to respect declared content types
 

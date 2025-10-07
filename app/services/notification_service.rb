@@ -2,21 +2,31 @@ class NotificationService
   # Create a notification for appointment booking
   def self.notify_appointment_booked(appointment)
     # Notify provider
-    Notification.create!(
+    create_notification(
       user: appointment.provider,
+      actor: appointment.patient,
+      notifiable: appointment,
       title: "New Appointment Booked",
-      message: "#{appointment.patient.email} has booked an appointment with you for #{appointment.start_time.strftime('%B %d, %Y at %I:%M %p')}",
+      message: "#{appointment.patient.full_name} has booked an appointment with you for #{appointment.start_time.strftime('%B %d, %Y at %I:%M %p')}",
       notification_type: "appointment_booked",
-      action_url: Rails.application.routes.url_helpers.appointment_path(appointment)
+      action_url: Rails.application.routes.url_helpers.appointment_path(appointment),
+      send_email: true,
+      mailer_method: :provider_booking_notification,
+      mailer_args: [appointment]
     )
 
     # Notify patient
-    Notification.create!(
+    create_notification(
       user: appointment.patient,
+      actor: appointment.provider,
+      notifiable: appointment,
       title: "Appointment Confirmed",
-      message: "Your appointment with #{appointment.provider.email} has been confirmed for #{appointment.start_time.strftime('%B %d, %Y at %I:%M %p')}",
+      message: "Your appointment with #{appointment.provider.full_name} has been confirmed for #{appointment.start_time.strftime('%B %d, %Y at %I:%M %p')}",
       notification_type: "appointment_booked",
-      action_url: Rails.application.routes.url_helpers.appointment_path(appointment)
+      action_url: Rails.application.routes.url_helpers.appointment_path(appointment),
+      send_email: true,
+      mailer_method: :booking_confirmation,
+      mailer_args: [appointment]
     )
   end
 
@@ -139,5 +149,76 @@ class NotificationService
       notification_type: "no_refund",
       action_url: Rails.application.routes.url_helpers.appointments_path
     )
+  end
+
+  # Create notification for new message
+  def self.notify_message_received(message, recipient)
+    conversation = message.conversation
+    sender = message.sender
+
+    create_notification(
+      user: recipient,
+      actor: sender,
+      notifiable: message,
+      title: "New Message",
+      message: "#{sender.full_name}: #{message.content.truncate(50)}",
+      notification_type: "message_received",
+      action_url: Rails.application.routes.url_helpers.conversation_path(conversation),
+      send_email: false  # Messages are real-time, skip email
+    )
+  end
+
+  private
+
+  # Core method to create notification with email and broadcasting
+  def self.create_notification(
+    user:,
+    title:,
+    message:,
+    notification_type:,
+    actor: nil,
+    notifiable: nil,
+    action_url: nil,
+    send_email: false,
+    mailer_method: nil,
+    mailer_args: []
+  )
+    # Create in-app notification
+    notification = Notification.create!(
+      user: user,
+      actor: actor,
+      notifiable: notifiable,
+      notification_type: notification_type,
+      title: title,
+      message: message,
+      action_url: action_url
+    )
+
+    # Send email if requested and mailer method provided
+    if send_email && mailer_method.present?
+      begin
+        AppointmentMailer.public_send(mailer_method, *mailer_args).deliver_later
+        notification.mark_as_delivered!
+      rescue => e
+        Rails.logger.error("Failed to send notification email: #{e.message}")
+      end
+    end
+
+    # Broadcast to user's notification stream for real-time updates
+    broadcast_notification(notification) if defined?(Turbo)
+
+    notification
+  end
+
+  # Broadcast notification to user's Turbo Stream
+  def self.broadcast_notification(notification)
+    Turbo::StreamsChannel.broadcast_append_to(
+      "notifications_#{notification.user_id}",
+      target: "notifications",
+      partial: "notifications/notification",
+      locals: { notification: notification }
+    )
+  rescue => e
+    Rails.logger.error("Failed to broadcast notification: #{e.message}")
   end
 end

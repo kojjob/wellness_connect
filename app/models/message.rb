@@ -26,6 +26,7 @@ class Message < ApplicationRecord
   before_update :set_edited_timestamp, if: :content_changed?
   after_create :update_conversation_timestamp
   after_create :increment_recipient_unread_count
+  after_create :notify_recipient
   after_create_commit :broadcast_message
 
   # Instance methods
@@ -78,6 +79,15 @@ class Message < ApplicationRecord
   # Callback: increment unread count for the recipient
   def increment_recipient_unread_count
     conversation.increment_unread_for(sender)
+  end
+
+  # Callback: notify recipient of new message
+  def notify_recipient
+    return if recipient.blank?
+    NotificationService.notify_message_received(self, recipient)
+  rescue => e
+    Rails.logger.error("Failed to create message notification: #{e.message}")
+    # Don't fail message creation if notification fails
   end
 
   # Callback: broadcast message to conversation channel
