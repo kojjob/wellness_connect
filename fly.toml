@@ -2,6 +2,16 @@
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
+# REQUIRED SECRETS (set via `fly secrets set`):
+# - RAILS_MASTER_KEY: Rails credentials encryption key (from config/master.key)
+# - DATABASE_URL: PostgreSQL connection string (automatically set by Fly.io)
+# - AWS_ACCESS_KEY_ID: Tigris storage access key
+# - AWS_SECRET_ACCESS_KEY: Tigris storage secret key
+# - AWS_ENDPOINT_URL_S3: Tigris storage endpoint (https://fly.storage.tigris.dev)
+# - BUCKET_NAME: Tigris storage bucket name
+#
+# See docs/FLYIO_TIGRIS_SETUP.md for detailed setup instructions
+# See docs/DEPLOYMENT_CHECKLIST.md for deployment checklist
 
 app = 'wellness-connect'
 primary_region = 'lhr'
