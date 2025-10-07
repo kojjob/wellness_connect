@@ -1,1 +1,40 @@
-notification.text.erb
+🌿 WellnessConnect
+================================================================================
+
+Hi <%= @user.first_name || @user.email %>,
+
+⚠️ PAYMENT FAILED
+================================================================================
+
+Amount: $<%= @message.match(/\$([0-9.]+)/)[1] rescue '0.00' %>
+
+Payment Details:
+--------------------------------------------------------------------------------
+Status:           ✗ Failed
+Transaction Type: Appointment Payment
+Date:             <%= Time.current.strftime("%B %d, %Y at %I:%M %p") %>
+
+<%= @message %>
+
+⚠️ Action Required
+--------------------------------------------------------------------------------
+Your payment could not be processed. Please update your payment method to 
+complete this transaction.
+
+Common reasons for payment failure:
+• Insufficient funds in your account
+• Expired or invalid card information
+• Card declined by your bank
+• Incorrect billing address or CVV
+
+Update Payment Method: <%= root_url %>
+
+================================================================================
+
+You received this email because you have email notifications enabled for payment updates.
+You can manage your notification preferences at: <%= edit_notification_preferences_url %>
+
+WellnessConnect - Your trusted wellness platform
+© <%= Time.current.year %> WellnessConnect. All rights reserved.
+
+If you need help with this payment, please contact our support team.
