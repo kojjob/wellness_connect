@@ -59,7 +59,11 @@
             <% if last_message.sender == current_user %>
               <span class="font-medium">You:</span>
             <% end %>
-            <%= truncate(last_message.content, length: 100) %>
+            <% begin %>
+              <%= truncate(last_message.content, length: 100) %>
+            <% rescue ActiveRecord::Encryption::Errors::Decryption %>
+              <span class="italic text-gray-400">[Message content unavailable]</span>
+            <% end %>
           </p>
         <% else %>
           <p class="mt-1 text-sm text-gray-400 dark:text-gray-500 italic">

@@ -109,14 +109,14 @@ class Admin::UsersControllerTest < ActionDispatch::IntegrationTest
       }
     end
     assert_redirected_to root_path
-    assert_equal "You are not authorized to perform this action.", flash[:alert]
+    assert_equal "You are not authorized to access this page.", flash[:alert]
   end
 
   test "regular admin cannot access new user form" do
     sign_in @admin
     get new_admin_user_path
     assert_redirected_to root_path
-    assert_equal "You are not authorized to perform this action.", flash[:alert]
+    assert_equal "You are not authorized to access this page.", flash[:alert]
   end
 
   test "provider cannot create users" do
@@ -243,7 +243,7 @@ class Admin::UsersControllerTest < ActionDispatch::IntegrationTest
     sign_in @patient
     get admin_users_path
     assert_redirected_to root_path
-    assert_equal "You are not authorized to perform this action.", flash[:alert]
+    assert_equal "You are not authorized to access this page.", flash[:alert]
   end
 
   test "guest cannot access users index" do
@@ -259,7 +259,7 @@ class Admin::UsersControllerTest < ActionDispatch::IntegrationTest
     sign_in @admin
     get admin_user_path(@patient)
     assert_response :success
-    assert_select "h1", "User Details"
+    assert_select "h1", @patient.full_name
     assert_select "dd", text: @patient.email
   end
 
@@ -268,14 +268,14 @@ class Admin::UsersControllerTest < ActionDispatch::IntegrationTest
     @patient.suspend!("Test suspension")
     get admin_user_path(@patient)
     assert_response :success
-    assert_select "dd", text: "suspended"
+    assert_select "span", text: "Suspended"
   end
 
   test "non-admin cannot view user details" do
     sign_in @patient
     get admin_user_path(@provider)
     assert_redirected_to root_path
-    assert_equal "You are not authorized to perform this action.", flash[:alert]
+    assert_equal "You are not authorized to access this page.", flash[:alert]
   end
 
   # ========================================

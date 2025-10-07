@@ -1,7 +1,7 @@
 module Admin
   class UserPolicy < AdminPolicy
-    # Only super_admins can create and manage users
-    # Regular admins can view users but not create/edit/delete them
+    # Only super_admins can create, delete, suspend, and block users
+    # Regular admins can view and edit users
 
     def index?
       admin_user? || super_admin_user?
@@ -26,10 +26,10 @@ module Admin
     end
 
     def edit?
-      update?
+      super_admin_user?
     end
 
-    # Only super_admins can delete users (and prevent deleting themselves)
+    # Only super_admins can delete users (but not themselves)
     def destroy?
       super_admin_user? && record.id != user.id
     end

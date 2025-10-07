@@ -12,6 +12,9 @@ Rails.application.configure do
   # Full error reports are disabled.
   config.consider_all_requests_local = false
 
+  # Route exceptions to ErrorsController for proper CSP nonce handling
+  config.exceptions_app = routes
+
   # Turn on fragment caching in view templates.
   config.action_controller.perform_caching = true
 
@@ -33,8 +36,8 @@ Rails.application.configure do
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
   # config.asset_host = "http://assets.example.com"
 
-  # Store uploaded files on the local file system (see config/storage.yml for options).
-  config.active_storage.service = :local
+  # Store uploaded files in Tigris Global Object Storage (see config/storage.yml for options).
+  config.active_storage.service = :tigris
 
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
   config.assume_ssl = true
@@ -108,6 +111,7 @@ Rails.application.configure do
     policy.img_src     :self, :https, :data, :blob
     policy.object_src  :none
     policy.script_src  :self, :https
+    # Style sources with nonce support (no unsafe_inline needed)
     policy.style_src   :self, :https
     # Specify URI for violation reports (optional - can be configured later)
     # policy.report_uri "/csp-violation-report-endpoint"

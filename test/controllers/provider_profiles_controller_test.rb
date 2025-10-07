@@ -201,14 +201,14 @@ class ProviderProfilesControllerTest < ActionDispatch::IntegrationTest
     patch provider_profile_url(@provider_profile), params: {
       provider_profile: {
         specialty: "Updated Specialty",
-        bio: "Updated bio"
+        bio: "This is an updated bio that meets the minimum length requirement of 50 characters for the provider profile validation."
       }
     }
     assert_redirected_to provider_profile_url(@provider_profile)
 
     @provider_profile.reload
     assert_equal "Updated Specialty", @provider_profile.specialty
-    assert_equal "Updated bio", @provider_profile.bio
+    assert_equal "This is an updated bio that meets the minimum length requirement of 50 characters for the provider profile validation.", @provider_profile.bio
   end
 
   test "patient should not update provider_profile" do

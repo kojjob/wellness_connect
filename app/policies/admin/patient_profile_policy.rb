@@ -1,6 +1,6 @@
 module Admin
-  class ProviderProfilePolicy < AdminPolicy
-    # Admins can view and manage all provider profiles
+  class PatientProfilePolicy < AdminPolicy
+    # Admins can view and manage all patient profiles
     def index?
       admin_user?
     end
@@ -17,7 +17,7 @@ module Admin
       admin_user?
     end
 
-    # Admins cannot create provider profiles (providers create their own on signup)
+    # Admins cannot create patient profiles (patients create their own on signup)
     def create?
       false
     end
@@ -26,12 +26,12 @@ module Admin
       false
     end
 
-    # Admins cannot delete provider profiles (data integrity)
+    # Admins cannot delete patient profiles (data integrity)
     def destroy?
       false
     end
 
-    # Scope returns all provider profiles for admins and super_admins
+    # Scope returns all patient profiles for admins and super_admins
     class Scope < AdminPolicy::Scope
       def resolve
         if user&.admin? || user&.super_admin?

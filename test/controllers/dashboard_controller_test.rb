@@ -23,7 +23,7 @@ class DashboardControllerTest < ActionDispatch::IntegrationTest
   test "should redirect to admin panel when admin tries to access dashboard" do
     sign_in @admin
     get dashboard_url
-    assert_redirected_to admin_users_path
+    assert_redirected_to admin_root_path
   end
 
   test "should get dashboard when provider is authenticated" do
@@ -50,10 +50,10 @@ class DashboardControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "should display link to add new service" do
+  test "should display link to view all services" do
     sign_in @provider
     get dashboard_url
-    assert_select "a[href=?]", new_provider_profile_service_path(@provider_profile), text: /Add.*Service/i
+    assert_select "a[href=?]", provider_profile_services_path(@provider_profile), text: /View All Services/i
   end
 
   test "should display provider's availabilities" do
@@ -64,10 +64,10 @@ class DashboardControllerTest < ActionDispatch::IntegrationTest
     assert_select "a[href=?]", provider_profile_availabilities_path(@provider_profile)
   end
 
-  test "should display link to add new availability" do
+  test "should display link to manage availability" do
     sign_in @provider
     get dashboard_url
-    assert_select "a[href=?]", new_provider_profile_availability_path(@provider_profile), text: /Add.*Availability/i
+    assert_select "a[href=?]", provider_profile_availabilities_path(@provider_profile), text: /Manage Availability/i
   end
 
   test "should display provider statistics" do

@@ -92,9 +92,10 @@ class ConversationsControllerTest < ActionDispatch::IntegrationTest
   test "patient cannot view conversation they don't participate in" do
     sign_in @patient
 
-    assert_raises(Pundit::NotAuthorizedError) do
-      get conversation_path(@other_conversation)
-    end
+    get conversation_path(@other_conversation)
+
+    assert_redirected_to root_path
+    assert_equal "You are not authorized to access this page.", flash[:alert]
   end
 
   test "show action marks conversation as read for patient" do
@@ -159,7 +160,9 @@ class ConversationsControllerTest < ActionDispatch::IntegrationTest
       }
     end
 
-    assert_response :unprocessable_entity
+    # Authorization fails because provider_id is nil (policy requires both IDs present)
+    assert_redirected_to root_path
+    assert_equal "You are not authorized to access this page.", flash[:alert]
   end
 
   test "user cannot create conversation they won't participate in" do
@@ -168,7 +171,7 @@ class ConversationsControllerTest < ActionDispatch::IntegrationTest
     other_patient = users(:patient_user_two)
     other_provider = users(:provider_user_two)
 
-    assert_raises(Pundit::NotAuthorizedError) do
+    assert_no_difference("Conversation.count") do
       post conversations_path, params: {
         conversation: {
           patient_id: other_patient.id,
@@ -176,72 +179,77 @@ class ConversationsControllerTest < ActionDispatch::IntegrationTest
         }
       }
     end
+
+    assert_redirected_to root_path
+    assert_equal "You are not authorized to access this page.", flash[:alert]
   end
 
   # Archive action tests
   test "patient can archive their own conversation" do
     sign_in @patient
 
-    assert_not @patient_conversation.patient_archived
+    assert_not @patient_conversation.archived_by_patient
 
     patch archive_conversation_path(@patient_conversation)
     assert_redirected_to conversations_path
 
     @patient_conversation.reload
-    assert @patient_conversation.patient_archived
-    assert_not @patient_conversation.provider_archived
+    assert @patient_conversation.archived_by_patient
+    assert_not @patient_conversation.archived_by_provider
   end
 
   test "provider can archive their own conversation" do
     sign_in @provider
 
-    assert_not @patient_conversation.provider_archived
+    assert_not @patient_conversation.archived_by_provider
 
     patch archive_conversation_path(@patient_conversation)
     assert_redirected_to conversations_path
 
     @patient_conversation.reload
-    assert @patient_conversation.provider_archived
-    assert_not @patient_conversation.patient_archived
+    assert @patient_conversation.archived_by_provider
+    assert_not @patient_conversation.archived_by_patient
   end
 
   test "user cannot archive conversation they don't participate in" do
     sign_in @patient
 
-    assert_raises(Pundit::NotAuthorizedError) do
-      patch archive_conversation_path(@other_conversation)
-    end
+    patch archive_conversation_path(@other_conversation)
+
+    assert_redirected_to root_path
+    assert_equal "You are not authorized to access this page.", flash[:alert]
   end
 
   # Unarchive action tests
   test "patient can unarchive their archived conversation" do
-    @patient_conversation.update(patient_archived: true)
+    @patient_conversation.update(archived_by_patient: true)
     sign_in @patient
 
     patch unarchive_conversation_path(@patient_conversation)
     assert_redirected_to conversations_path
 
     @patient_conversation.reload
-    assert_not @patient_conversation.patient_archived
+    assert_not @patient_conversation.archived_by_patient
   end
 
   test "provider can unarchive their archived conversation" do
-    @patient_conversation.update(provider_archived: true)
+    @patient_conversation.update(archived_by_provider: true)
     sign_in @provider
 
     patch unarchive_conversation_path(@patient_conversation)
     assert_redirected_to conversations_path
 
     @patient_conversation.reload
-    assert_not @patient_conversation.provider_archived
+    assert_not @patient_conversation.archived_by_provider
   end
 
   test "user cannot unarchive conversation they don't participate in" do
     sign_in @patient
 
-    assert_raises(Pundit::NotAuthorizedError) do
-      patch unarchive_conversation_path(@other_conversation)
-    end
+    patch unarchive_conversation_path(@other_conversation)
+
+    assert_redirected_to root_path
+    assert_equal "You are not authorized to access this page.", flash[:alert]
   end
 
   private

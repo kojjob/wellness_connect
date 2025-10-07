@@ -33,11 +33,11 @@ class ProvidersControllerTest < ActionDispatch::IntegrationTest
 
     # Should display first provider
     assert_select "div", text: /#{@provider.first_name} #{@provider.last_name}/
-    assert_select "p", text: /#{@provider_profile.specialty}/
+    assert_select "span", text: /#{@provider_profile.specialty}/
 
     # Should display second provider
     assert_select "div", text: /#{@another_provider.first_name} #{@another_provider.last_name}/
-    assert_select "p", text: /#{@another_provider_profile.specialty}/
+    assert_select "span", text: /#{@another_provider_profile.specialty}/
   end
 
   test "should display link to view provider profile" do
@@ -105,16 +105,11 @@ class ProvidersControllerTest < ActionDispatch::IntegrationTest
     get provider_profile_url(@provider_profile)
     assert_response :success
 
-    # Should show availabilities section
-    assert_select "h2", text: /Available/i
+    # Should show availabilities indicator
+    assert_select "span", text: /Available This Week/i
   end
 
-  test "should display consultation rate on show page" do
-    get provider_profile_url(@provider_profile)
-    assert_response :success
-
-    assert_select "div", text: /\$#{@provider_profile.consultation_rate}/
-  end
+  # Note: Consultation rate display removed in redesign - pricing shown per service instead
 
   # Error Handling Tests
   test "should handle invalid provider profile id" do
