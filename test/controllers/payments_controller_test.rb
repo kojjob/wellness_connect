@@ -1,4 +1,5 @@
 require "test_helper"
+require "ostruct"
 
 class PaymentsControllerTest < ActionDispatch::IntegrationTest
   setup do
@@ -28,6 +29,14 @@ class PaymentsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create payment intent for appointment" do
+    # Mock Stripe PaymentIntent creation
+    payment_intent_mock = OpenStruct.new(
+      id: "pi_test_123",
+      client_secret: "pi_test_123_secret_456"
+    )
+
+    Stripe::PaymentIntent.stubs(:create).returns(payment_intent_mock)
+
     assert_difference "Payment.count", 1 do
       post payments_path, params: {
         payment: {
