@@ -1,0 +1,78 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+patient_user_preference:
+  user: patient_user
+  email_appointments: true
+  email_messages: true
+  email_payments: true
+  email_system: true
+  in_app_appointments: true
+  in_app_messages: true
+  in_app_payments: true
+  in_app_system: true
+
+provider_user_preference:
+  user: provider_user
+  email_appointments: true
+  email_messages: true
+  email_payments: true
+  email_system: true
+  in_app_appointments: true
+  in_app_messages: true
+  in_app_payments: true
+  in_app_system: true
+
+admin_user_preference:
+  user: admin_user
+  email_appointments: true
+  email_messages: true
+  email_payments: true
+  email_system: true
+  in_app_appointments: true
+  in_app_messages: true
+  in_app_payments: true
+  in_app_system: true
+
+super_admin_user_preference:
+  user: super_admin_user
+  email_appointments: true
+  email_messages: true
+  email_payments: true
+  email_system: true
+  in_app_appointments: true
+  in_app_messages: true
+  in_app_payments: true
+  in_app_system: true
+
+provider_user_two_preference:
+  user: provider_user_two
+  email_appointments: true
+  email_messages: true
+  email_payments: true
+  email_system: true
+  in_app_appointments: true
+  in_app_messages: true
+  in_app_payments: true
+  in_app_system: true
+
+software_engineer_provider_preference:
+  user: software_engineer_provider
+  email_appointments: true
+  email_messages: true
+  email_payments: true
+  email_system: true
+  in_app_appointments: true
+  in_app_messages: true
+  in_app_payments: true
+  in_app_system: true
+
+patient_user_two_preference:
+  user: patient_user_two
+  email_appointments: true
+  email_messages: true
+  email_payments: true
+  email_system: true
+  in_app_appointments: true
+  in_app_messages: true
+  in_app_payments: true
+  in_app_system: true

@@ -51,6 +51,9 @@ Rails.application.routes.draw do
     end
   end
 
+  # Notification Preferences (singular resource - one per user)
+  resource :notification_preferences, only: [ :edit, :update ]
+
   # Payments
   resources :payments, only: [ :index, :create ] do
     member do
@@ -91,6 +94,11 @@ Rails.application.routes.draw do
     resources :patient_profiles, except: [ :destroy, :new, :create ] # View and edit patient profiles (no creation/deletion for data integrity)
     resources :appointments, only: [ :index, :show ]
     resources :payments, only: [ :index, :show ]
+    resources :announcements, only: [ :new, :create ] do
+      collection do
+        get :preview
+      end
+    end
   end
 
   # Error pages (handled by ErrorsController with CSP nonces)
