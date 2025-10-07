@@ -101,7 +101,7 @@ class Admin::AnnouncementsControllerTest < ActionDispatch::IntegrationTest
 
   test "should create announcement for specific user" do
     sign_in @admin
-    
+
     assert_difference("Notification.count", 1) do
       post admin_announcements_path, params: {
         announcement: {
@@ -115,6 +115,91 @@ class Admin::AnnouncementsControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to admin_root_path
     assert_equal "Announcement sent to #{@patient.email} successfully.", flash[:notice]
+  end
+
+  test "should show accurate message when specific user has notifications disabled" do
+    sign_in @admin
+
+    # Disable system notifications for patient
+    @patient.notification_preference.update(in_app_system: false)
+
+    assert_no_difference("Notification.count") do
+      post admin_announcements_path, params: {
+        announcement: {
+          title: "Personal Message",
+          message: "This is for you.",
+          recipient_type: "specific",
+          user_id: @patient.id
+        }
+      }
+    end
+
+    assert_redirected_to admin_root_path
+    assert_equal "Announcement not delivered to #{@patient.email} (notifications disabled).", flash[:notice]
+  end
+
+  test "should show accurate message when all users have notifications disabled" do
+    sign_in @admin
+
+    # Disable system notifications for all users
+    NotificationPreference.update_all(in_app_system: false)
+
+    assert_no_difference("Notification.count") do
+      post admin_announcements_path, params: {
+        announcement: {
+          title: "System Update",
+          message: "Important update for everyone.",
+          recipient_type: "all"
+        }
+      }
+    end
+
+    assert_redirected_to admin_root_path
+    assert_equal "No recipients reached. All users have system notifications disabled.", flash[:notice]
+  end
+
+  test "should show accurate message when all patients have notifications disabled" do
+    sign_in @admin
+
+    # Disable system notifications for all patients
+    User.where(role: "patient").find_each do |user|
+      user.notification_preference.update(in_app_system: false)
+    end
+
+    assert_no_difference("Notification.count") do
+      post admin_announcements_path, params: {
+        announcement: {
+          title: "Patient Update",
+          message: "Important update for patients.",
+          recipient_type: "patients"
+        }
+      }
+    end
+
+    assert_redirected_to admin_root_path
+    assert_equal "No recipients reached. All patients have system notifications disabled.", flash[:notice]
+  end
+
+  test "should show accurate message when all providers have notifications disabled" do
+    sign_in @admin
+
+    # Disable system notifications for all providers
+    User.where(role: "provider").find_each do |user|
+      user.notification_preference.update(in_app_system: false)
+    end
+
+    assert_no_difference("Notification.count") do
+      post admin_announcements_path, params: {
+        announcement: {
+          title: "Provider Update",
+          message: "Important update for providers.",
+          recipient_type: "providers"
+        }
+      }
+    end
+
+    assert_redirected_to admin_root_path
+    assert_equal "No recipients reached. All providers have system notifications disabled.", flash[:notice]
   end
 
   test "should not create announcement with invalid params" do
@@ -136,7 +221,7 @@ class Admin::AnnouncementsControllerTest < ActionDispatch::IntegrationTest
 
   test "should require user_id when recipient_type is specific" do
     sign_in @admin
-    
+
     assert_no_difference("Notification.count") do
       post admin_announcements_path, params: {
         announcement: {
@@ -144,6 +229,56 @@ class Admin::AnnouncementsControllerTest < ActionDispatch::IntegrationTest
           message: "Test message",
           recipient_type: "specific",
           user_id: nil
+        }
+      }
+    end
+
+    assert_response :unprocessable_entity
+  end
+
+  test "should handle missing user gracefully with validation error" do
+    sign_in @admin
+
+    # Use a non-existent user ID
+    non_existent_id = User.maximum(:id).to_i + 1000
+
+    assert_no_difference("Notification.count") do
+      post admin_announcements_path, params: {
+        announcement: {
+          title: "Personal Message",
+          message: "This is for you.",
+          recipient_type: "specific",
+          user_id: non_existent_id
+        }
+      }
+    end
+
+    assert_response :unprocessable_entity
+    assert_select ".error", text: /must reference a valid user/
+  end
+
+  test "should handle deleted user gracefully in send_announcement" do
+    sign_in @admin
+
+    # Create a user and get their ID
+    temp_user = User.create!(
+      email: "temp@example.com",
+      password: "password123",
+      role: "patient"
+    )
+    temp_user_id = temp_user.id
+
+    # Delete the user
+    temp_user.destroy
+
+    # Try to send announcement to deleted user
+    assert_no_difference("Notification.count") do
+      post admin_announcements_path, params: {
+        announcement: {
+          title: "Personal Message",
+          message: "This is for you.",
+          recipient_type: "specific",
+          user_id: temp_user_id
         }
       }
     end

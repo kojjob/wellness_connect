@@ -329,6 +329,139 @@ class MessagesControllerTest < ActionDispatch::IntegrationTest
     assert @provider_message.read?
   end
 
+  # Download attachment action tests
+  test "patient can download attachment from message in their conversation" do
+    sign_in @patient
+
+    # Create a message with an attachment
+    message_with_attachment = @conversation.messages.create!(
+      sender: @provider,
+      content: "Here's a document",
+      message_type: :file
+    )
+    message_with_attachment.attachment.attach(
+      io: StringIO.new("test pdf content"),
+      filename: "test.pdf",
+      content_type: "application/pdf"
+    )
+
+    initial_count = message_with_attachment.downloads_count
+
+    get download_attachment_conversation_message_path(@conversation, message_with_attachment)
+
+    message_with_attachment.reload
+    assert_equal initial_count + 1, message_with_attachment.downloads_count
+    assert_response :redirect
+  end
+
+  test "provider can download attachment from message in their conversation" do
+    sign_in @provider
+
+    # Create a message with an attachment
+    message_with_attachment = @conversation.messages.create!(
+      sender: @patient,
+      content: "Check out this image",
+      message_type: :image
+    )
+    message_with_attachment.attachment.attach(
+      io: StringIO.new("test image content"),
+      filename: "test.jpg",
+      content_type: "image/jpeg"
+    )
+
+    initial_count = message_with_attachment.downloads_count
+
+    get download_attachment_conversation_message_path(@conversation, message_with_attachment)
+
+    message_with_attachment.reload
+    assert_equal initial_count + 1, message_with_attachment.downloads_count
+    assert_response :redirect
+  end
+
+  test "admin can download attachment from any message" do
+    sign_in @admin
+
+    # Create a message with an attachment
+    message_with_attachment = @conversation.messages.create!(
+      sender: @patient,
+      content: "Admin review document",
+      message_type: :file
+    )
+    message_with_attachment.attachment.attach(
+      io: StringIO.new("test pdf content"),
+      filename: "test.pdf",
+      content_type: "application/pdf"
+    )
+
+    initial_count = message_with_attachment.downloads_count
+
+    get download_attachment_conversation_message_path(@conversation, message_with_attachment)
+
+    message_with_attachment.reload
+    assert_equal initial_count + 1, message_with_attachment.downloads_count
+    assert_response :redirect
+  end
+
+  test "user cannot download attachment from conversation they don't participate in" do
+    other_patient = users(:patient_user_two)
+    sign_in other_patient
+
+    # Create a message with an attachment
+    message_with_attachment = @conversation.messages.create!(
+      sender: @patient,
+      content: "Confidential document",
+      message_type: :file
+    )
+    message_with_attachment.attachment.attach(
+      io: StringIO.new("test pdf content"),
+      filename: "test.pdf",
+      content_type: "application/pdf"
+    )
+
+    initial_count = message_with_attachment.downloads_count
+
+    get download_attachment_conversation_message_path(@conversation, message_with_attachment)
+
+    message_with_attachment.reload
+    assert_equal initial_count, message_with_attachment.downloads_count
+    assert_redirected_to root_path
+    assert_equal "You are not authorized to access this page.", flash[:alert]
+  end
+
+  test "downloading attachment without attachment attached redirects with alert" do
+    sign_in @patient
+
+    # Use an existing message without attachment
+    get download_attachment_conversation_message_path(@conversation, @patient_message)
+
+    assert_redirected_to conversation_path(@conversation)
+    assert_equal "No attachment found", flash[:alert]
+  end
+
+  test "download counter increments correctly on multiple downloads" do
+    sign_in @patient
+
+    # Create a message with an attachment
+    message_with_attachment = @conversation.messages.create!(
+      sender: @provider,
+      content: "Important file for review",
+      message_type: :file
+    )
+    message_with_attachment.attachment.attach(
+      io: StringIO.new("test pdf content"),
+      filename: "test.pdf",
+      content_type: "application/pdf"
+    )
+
+    # Download 3 times
+    3.times do
+      get download_attachment_conversation_message_path(@conversation, message_with_attachment)
+      message_with_attachment.reload
+    end
+
+    assert_equal 3, message_with_attachment.downloads_count
+  end
+
   private
 
   def sign_in(user)

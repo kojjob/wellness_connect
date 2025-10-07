@@ -91,26 +91,40 @@ class NotificationService
   # Create a notification for payment received
   def self.notify_payment_received(payment)
     if payment.appointment.present? && can_notify?(payment.appointment.provider, "payment_received")
+      user = payment.appointment.provider
+      title = "Payment Received"
+      message = "You received a payment of $#{payment.amount} for your appointment with #{payment.payer.email}"
+
       Notification.create!(
-        user: payment.appointment.provider,
-        title: "Payment Received",
-        message: "You received a payment of $#{payment.amount} for your appointment with #{payment.payer.email}",
+        user: user,
+        title: title,
+        message: message,
         notification_type: "payment_received",
         action_url: Rails.application.routes.url_helpers.appointment_path(payment.appointment)
       )
+
+      # Send email notification
+      send_email(user, "payment_received", title, message)
     end
   end
 
   # Create a notification for payment failed
   def self.notify_payment_failed(payment)
     if can_notify?(payment.payer, "payment_failed")
+      user = payment.payer
+      title = "Payment Failed"
+      message = "Your payment of $#{payment.amount} could not be processed. Please update your payment method."
+
       Notification.create!(
-        user: payment.payer,
-        title: "Payment Failed",
-        message: "Your payment of $#{payment.amount} could not be processed. Please update your payment method.",
+        user: user,
+        title: title,
+        message: message,
         notification_type: "payment_failed",
         action_url: Rails.application.routes.url_helpers.appointments_path
       )
+
+      # Send email notification
+      send_email(user, "payment_failed", title, message)
     end
   end
 

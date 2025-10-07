@@ -12,6 +12,7 @@ class Message < ApplicationRecord
   validates :sender_id, presence: true
   validate :content_or_attachment_present
   validate :sender_must_be_participant
+  validate :attachment_validation
 
   # Enums
   enum :message_type, { text: 0, file: 1, image: 2, system: 3 }, default: :text
@@ -71,6 +72,27 @@ class Message < ApplicationRecord
     end
   end
 
+  # Custom validation: validate attachment file type and size
+  def attachment_validation
+    return unless attachment.attached?
+
+    # Check file size based on content type
+    if attachment.blob.content_type.in?(%w[image/jpeg image/jpg image/png image/webp])
+      # Images: 10MB limit
+      if attachment.blob.byte_size > 10.megabytes
+        errors.add(:attachment, "image must be less than 10MB")
+      end
+    elsif attachment.blob.content_type.in?(%w[application/pdf])
+      # Documents: 20MB limit
+      if attachment.blob.byte_size > 20.megabytes
+        errors.add(:attachment, "document must be less than 20MB")
+      end
+    else
+      # Invalid content type
+      errors.add(:attachment, "must be a JPEG, PNG, WebP image or PDF document")
+    end
+  end
+
   # Callback: update conversation's last_message_at timestamp
   def update_conversation_timestamp
     conversation.touch_last_message
@@ -92,8 +114,16 @@ class Message < ApplicationRecord
 
   # Callback: broadcast message to conversation channel
   def broadcast_message
-    # TODO: Implement in Phase 2 when we add Action Cable channels
-    # broadcast_append_to [conversation, "messages"], target: "messages"
+    # Broadcast new message to all subscribers of this conversation
+    ConversationChannel.broadcast_to(
+      conversation,
+      type: "message",
+      message_id: id,
+      sender_id: sender_id,
+      sender_name: sender.full_name,
+      content: content,
+      created_at: created_at.iso8601
+    )
   end
 
   # Callback: set edited_at timestamp when content changes

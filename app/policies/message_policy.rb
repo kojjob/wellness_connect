@@ -54,6 +54,11 @@ class MessagePolicy < ApplicationPolicy
     conversation_participant? && !sender?
   end
 
+  # Download attachment action - conversation participants can download attachments
+  def download_attachment?
+    conversation_participant?
+  end
+
   private
 
   # Check if current user is a participant in the message's conversation

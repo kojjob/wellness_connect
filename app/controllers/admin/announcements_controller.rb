@@ -9,17 +9,35 @@ module Admin
 
       if @announcement.valid?
         count = send_announcement
-        
+
         flash[:notice] = case @announcement.recipient_type
         when "all"
-          "Announcement sent to #{count} users successfully."
+          if count > 0
+            "Announcement sent to #{count} users successfully."
+          else
+            "No recipients reached. All users have system notifications disabled."
+          end
         when "patients"
-          "Announcement sent to #{count} patients successfully."
+          if count > 0
+            "Announcement sent to #{count} patients successfully."
+          else
+            "No recipients reached. All patients have system notifications disabled."
+          end
         when "providers"
-          "Announcement sent to #{count} providers successfully."
+          if count > 0
+            "Announcement sent to #{count} providers successfully."
+          else
+            "No recipients reached. All providers have system notifications disabled."
+          end
         when "specific"
-          user = User.find(@announcement.user_id)
-          "Announcement sent to #{user.email} successfully."
+          user = @announcement.user
+          if user.nil?
+            "Error: Selected user no longer exists."
+          elsif count > 0
+            "Announcement sent to #{user.email} successfully."
+          else
+            "Announcement not delivered to #{user.email} (notifications disabled)."
+          end
         end
 
         redirect_to admin_root_path
@@ -68,8 +86,8 @@ module Admin
           end
         end
       when "specific"
-        user = User.find(@announcement.user_id)
-        if NotificationService.send(:can_notify?, user, "system_announcement")
+        user = @announcement.user
+        if user.present? && NotificationService.send(:can_notify?, user, "system_announcement")
           NotificationService.notify_system_announcement(user, @announcement.title, @announcement.message)
           count = 1
         end
@@ -93,6 +111,18 @@ module Admin
     validates :message, presence: true, length: { maximum: 1000 }
     validates :recipient_type, presence: true, inclusion: { in: %w[all patients providers specific] }
     validates :user_id, presence: true, if: -> { recipient_type == "specific" }
+    validate :user_must_exist, if: -> { recipient_type == "specific" && user_id.present? }
+
+    def user
+      @user ||= User.find_by(id: user_id) if user_id.present?
+    end
+
+    private
+
+    def user_must_exist
+      if user.nil?
+        errors.add(:user_id, "must reference a valid user")
+      end
+    end
   end
 end
-
