@@ -1,0 +1,15 @@
+<% content_for :title, "404 - Page Not Found" %>
+
+<div class="error-container">
+  <div class="icon">🔍</div>
+  <div class="error-code">404</div>
+  <h1 class="error-title">Page Not Found</h1>
+  <p class="error-message">
+    Sorry, we couldn't find the page you're looking for.
+    The page may have been moved, deleted, or never existed.
+  </p>
+  <div class="error-actions">
+    <%= link_to "Go Home", root_path, class: "btn btn-primary" %>
+    <%= link_to "Go Back", "javascript:history.back()", class: "btn btn-secondary" %>
+  </div>
+</div>

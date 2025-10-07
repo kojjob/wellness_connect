@@ -1,0 +1,15 @@
+<% content_for :title, "500 - Internal Server Error" %>
+
+<div class="error-container">
+  <div class="icon">🔧</div>
+  <div class="error-code">500</div>
+  <h1 class="error-title">Internal Server Error</h1>
+  <p class="error-message">
+    Oops! Something went wrong on our end.
+    We've been notified and are working to fix it. Please try again later.
+  </p>
+  <div class="error-actions">
+    <%= link_to "Go Home", root_path, class: "btn btn-primary" %>
+    <%= link_to "Try Again", "javascript:location.reload()", class: "btn btn-secondary" %>
+  </div>
+</div>

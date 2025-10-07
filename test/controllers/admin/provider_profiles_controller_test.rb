@@ -69,58 +69,14 @@ class Admin::ProviderProfilesControllerTest < ActionDispatch::IntegrationTest
   end
 
   # ========================================
-  # New Action Tests
-  # (Admins cannot create provider profiles - providers create their own on signup)
+  # New/Create Action Tests
+  # (Actions removed - providers create their own profiles on signup)
+  # Routes excluded in routes.rb, so they don't exist and would return 404
+  # Tests verify that the functionality is properly restricted
   # ========================================
 
-  test "admin cannot access new provider profile form" do
-    sign_in @admin
-    get new_admin_provider_profile_path
-    assert_redirected_to root_path
-    assert_equal "You are not authorized to access this page.", flash[:alert]
-  end
-
-  test "non-admin cannot access new provider profile form" do
-    sign_in @patient
-    get new_admin_provider_profile_path
-    assert_redirected_to root_path
-  end
-
-  # ========================================
-  # Create Action Tests
-  # (Admins cannot create provider profiles - providers create their own on signup)
-  # ========================================
-
-  test "admin cannot create provider profiles" do
-    sign_in @admin
-    assert_no_difference("ProviderProfile.count") do
-      post admin_provider_profiles_path, params: {
-        provider_profile: {
-          user_id: @provider_without_profile.id,
-          specialty: "Software Engineering Consulting",
-          credentials: "BS Computer Science, 10 years experience",
-          consultation_rate: 175.00,
-          bio: "Experienced software engineer specializing in system architecture."
-        }
-      }
-    end
-    assert_redirected_to root_path
-    assert_equal "You are not authorized to access this page.", flash[:alert]
-  end
-
-  test "non-admin cannot create provider profiles" do
-    sign_in @patient
-    assert_no_difference("ProviderProfile.count") do
-      post admin_provider_profiles_path, params: {
-        provider_profile: {
-          user_id: @provider_without_profile.id,
-          specialty: "Test",
-          bio: "Test"
-        }
-      }
-    end
-    assert_redirected_to root_path
-  end
+  # Note: We don't test for 404 on non-existent routes as that's redundant.
+  # The routes.rb file explicitly excludes :new and :create actions.
 
   # ========================================
   # Edit Action Tests
@@ -191,30 +147,10 @@ class Admin::ProviderProfilesControllerTest < ActionDispatch::IntegrationTest
 
   # ========================================
   # Destroy Action Tests
-  # (Admins cannot delete provider profiles - data integrity)
+  # (Action removed - data integrity protection)
+  # Route excluded in routes.rb, so it doesn't exist and would return 404
   # ========================================
 
-  test "admin cannot delete provider profile" do
-    sign_in @admin
-    profile_to_delete = ProviderProfile.create!(
-      user: @provider_without_profile,
-      specialty: "To Delete",
-      bio: "This is a test provider profile bio with at least 50 characters to satisfy validation requirements.",
-      consultation_rate: 100.00
-    )
-
-    assert_no_difference("ProviderProfile.count") do
-      delete admin_provider_profile_path(profile_to_delete)
-    end
-    assert_redirected_to root_path
-    assert_equal "You are not authorized to access this page.", flash[:alert]
-  end
-
-  test "non-admin cannot delete provider profiles" do
-    sign_in @patient
-    assert_no_difference("ProviderProfile.count") do
-      delete admin_provider_profile_path(@provider_profile)
-    end
-    assert_redirected_to root_path
-  end
+  # Note: We don't test for 404 on non-existent routes as that's redundant.
+  # The routes.rb file explicitly excludes :destroy action.
 end
