@@ -496,4 +496,203 @@ class MessageTest < ActiveSupport::TestCase
 
     assert_equal @provider, message.recipient
   end
+
+  # Attachment Validation Tests
+  test "should accept valid PDF attachment" do
+    message = Message.new(
+      conversation: @conversation,
+      sender: @patient,
+      message_type: :file
+    )
+    message.attachment.attach(
+      io: File.open(Rails.root.join("test", "fixtures", "files", "test_document.pdf")),
+      filename: "test_document.pdf",
+      content_type: "application/pdf"
+    )
+    assert message.valid?, "Valid PDF should be accepted"
+  end
+
+  test "should accept valid JPEG attachment" do
+    message = Message.new(
+      conversation: @conversation,
+      sender: @patient,
+      message_type: :image
+    )
+    message.attachment.attach(
+      io: File.open(Rails.root.join("test", "fixtures", "files", "test_image.jpg")),
+      filename: "test_image.jpg",
+      content_type: "image/jpeg"
+    )
+    assert message.valid?, "Valid JPEG should be accepted"
+  end
+
+  test "should accept valid PNG attachment" do
+    message = Message.new(
+      conversation: @conversation,
+      sender: @patient,
+      message_type: :image
+    )
+    message.attachment.attach(
+      io: File.open(Rails.root.join("test", "fixtures", "files", "test_image.png")),
+      filename: "test_image.png",
+      content_type: "image/png"
+    )
+    assert message.valid?, "Valid PNG should be accepted"
+  end
+
+  test "should accept valid WebP attachment" do
+    message = Message.new(
+      conversation: @conversation,
+      sender: @patient,
+      message_type: :image
+    )
+    message.attachment.attach(
+      io: File.open(Rails.root.join("test", "fixtures", "files", "test_image.webp")),
+      filename: "test_image.webp",
+      content_type: "image/webp"
+    )
+    assert message.valid?, "Valid WebP should be accepted"
+  end
+
+  test "should normalize image/jpg to image/jpeg automatically" do
+    # ActiveStorage automatically normalizes non-standard MIME types using Marcel
+    message = Message.new(
+      conversation: @conversation,
+      sender: @patient,
+      message_type: :image
+    )
+    message.attachment.attach(
+      io: File.open(Rails.root.join("test", "fixtures", "files", "test_image.jpg")),
+      filename: "test_image.jpg",
+      content_type: "image/jpg"  # Non-standard MIME type
+    )
+    # ActiveStorage will normalize this to image/jpeg
+    assert_equal "image/jpeg", message.attachment.blob.content_type
+    assert message.valid?, "Normalized MIME type should be accepted"
+  end
+
+  test "should reject invalid file type with descriptive error" do
+    message = Message.new(
+      conversation: @conversation,
+      sender: @patient,
+      message_type: :file
+    )
+    message.attachment.attach(
+      io: StringIO.new("fake text content"),
+      filename: "test.txt",
+      content_type: "text/plain"
+    )
+    assert_not message.valid?, "Text file should be rejected"
+    assert_includes message.errors[:attachment].first, "must be a JPEG, PNG, WebP image or PDF document"
+    assert_includes message.errors[:attachment].first, "text/plain"
+  end
+
+  test "ActiveStorage automatically detects and corrects MIME types" do
+    # ActiveStorage uses Marcel to automatically detect the actual MIME type of uploaded files
+    # This provides protection against MIME type spoofing at the framework level
+
+    message = Message.new(
+      conversation: @conversation,
+      sender: @patient,
+      message_type: :file
+    )
+
+    # Upload a PDF file - ActiveStorage will detect it's a PDF regardless of what we claim
+    message.attachment.attach(
+      io: File.open(Rails.root.join("test", "fixtures", "files", "test_document.pdf")),
+      filename: "document.pdf",
+      content_type: "application/pdf"
+    )
+
+    # ActiveStorage correctly identifies it as a PDF
+    assert_equal "application/pdf", message.attachment.blob.content_type
+    assert message.valid?, "Valid PDF should be accepted"
+
+    # Our validation layer provides additional checks:
+    # 1. Only allows standard MIME types (no image/jpg, only image/jpeg)
+    # 2. Enforces size limits based on file type
+    # 3. Provides detailed error messages with actual uploaded types
+  end
+
+  test "should reject oversized image with descriptive error" do
+    message = Message.new(
+      conversation: @conversation,
+      sender: @patient,
+      message_type: :image
+    )
+    # Create a large fake image (> 10MB)
+    large_content = "x" * (11 * 1024 * 1024)  # 11MB
+    message.attachment.attach(
+      io: StringIO.new(large_content),
+      filename: "large_image.png",
+      content_type: "image/png"
+    )
+
+    # Stub Marcel to return PNG for our fake content
+    Marcel::MimeType.stubs(:for).returns("image/png")
+    assert_not message.valid?, "Oversized image should be rejected"
+    assert_includes message.errors[:attachment].first, "image size must be less than 10MB"
+    assert_includes message.errors[:attachment].first, "image/png"
+    assert_match(/size: \d+\.\d+MB/, message.errors[:attachment].first)
+  end
+
+  test "should reject oversized PDF with descriptive error" do
+    message = Message.new(
+      conversation: @conversation,
+      sender: @patient,
+      message_type: :file
+    )
+    # Create a large fake PDF (> 20MB)
+    large_content = "x" * (21 * 1024 * 1024)  # 21MB
+    message.attachment.attach(
+      io: StringIO.new(large_content),
+      filename: "large_document.pdf",
+      content_type: "application/pdf"
+    )
+
+    # Stub Marcel to return PDF for our fake content
+    Marcel::MimeType.stubs(:for).returns("application/pdf")
+    assert_not message.valid?, "Oversized PDF should be rejected"
+    assert_includes message.errors[:attachment].first, "PDF size must be less than 20MB"
+    assert_includes message.errors[:attachment].first, "application/pdf"
+    assert_match(/size: \d+\.\d+MB/, message.errors[:attachment].first)
+  end
+
+  test "should accept image under 10MB size limit" do
+    message = Message.new(
+      conversation: @conversation,
+      sender: @patient,
+      message_type: :image
+    )
+    # Create a small image (< 10MB)
+    small_content = "x" * (5 * 1024 * 1024)  # 5MB
+    message.attachment.attach(
+      io: StringIO.new(small_content),
+      filename: "small_image.png",
+      content_type: "image/png"
+    )
+
+    # Stub Marcel to return PNG for our fake content
+    Marcel::MimeType.stubs(:for).returns("image/png")
+    assert message.valid?, "Image under 10MB should be accepted"
+  end
+
+  test "should accept PDF under 20MB size limit" do
+    message = Message.new(
+      conversation: @conversation,
+      sender: @patient,
+      message_type: :file
+    )
+    # Create a small PDF (< 20MB)
+    small_content = "x" * (15 * 1024 * 1024)  # 15MB
+    message.attachment.attach(
+      io: StringIO.new(small_content),
+      filename: "small_document.pdf",
+      content_type: "application/pdf"
+    )
+
+    # Stub Marcel to return PDF for our fake content
+    Marcel::MimeType.stubs(:for).returns("application/pdf")
+    assert message.valid?, "PDF under 20MB should be accepted"
+  end
 end

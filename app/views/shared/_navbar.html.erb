@@ -46,17 +46,6 @@
           <span class="relative z-10">Become a Provider</span>
           <div class="absolute inset-0 bg-gradient-to-r from-teal-500/10 to-teal-600/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
         <% end %>
-
-        <% if user_signed_in? && (current_user.admin? || current_user.super_admin?) %>
-          <%= link_to admin_users_path,
-              { class: "relative group text-red-700 hover:text-red-600 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100/50 hover:shadow-sm flex items-center" } do %>
-            <div class="absolute inset-0 bg-gradient-to-r from-red-500/10 to-red-600/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <svg class="h-4 w-4 mr-2 relative z-10" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-              <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-            </svg>
-            <span class="relative z-10">Admin Panel</span>
-          <% end %>
-        <% end %>
       </div>
 
       <!-- Right side navigation -->
@@ -293,7 +282,32 @@
                   </svg>
                 <% end %>
 
-                <% if current_user.admin? %>
+                <%= link_to conversations_path,
+                    class: "group flex items-center px-5 py-3 text-sm font-medium text-gray-700 hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 hover:text-purple-600 transition-all duration-200",
+                    role: "menuitem" do %>
+                  <div class="mr-3 h-8 w-8 rounded-lg bg-purple-100 group-hover:bg-purple-200 flex items-center justify-center transition-colors relative">
+                    <svg class="h-5 w-5 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z"/>
+                      <path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z"/>
+                    </svg>
+                    <%
+                      unread_count = Conversation.for_user(current_user).sum do |conv|
+                        conv.unread_count_for(current_user)
+                      end
+                      if unread_count > 0
+                    %>
+                      <span class="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-500 text-white text-xs font-bold flex items-center justify-center ring-2 ring-white">
+                        <%= [unread_count, 9].min %>
+                      </span>
+                    <% end %>
+                  </div>
+                  <span>Messages</span>
+                  <svg class="ml-auto h-4 w-4 text-gray-400 group-hover:text-purple-600 transition-transform group-hover:translate-x-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                  </svg>
+                <% end %>
+
+                <% if current_user.admin? || current_user.super_admin? %>
                   <%= link_to admin_users_path,
                       class: "group flex items-center px-5 py-3 text-sm font-medium text-red-700 hover:bg-gradient-to-r hover:from-red-50 hover:to-pink-50 hover:text-red-600 transition-all duration-200",
                       role: "menuitem" do %>
@@ -481,22 +495,6 @@
           <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
         </svg>
       <% end %>
-
-      <% if user_signed_in? && current_user.admin? %>
-        <%= link_to admin_users_path,
-            { data: { action: "click->navbar#handleLinkClick" },
-            class: "group flex items-center px-4 py-3 rounded-xl text-base font-semibold text-red-700 hover:text-red-600 hover:bg-gradient-to-r hover:from-red-50 hover:to-pink-50 transition-all duration-300 transform hover:scale-[1.02] ring-2 ring-red-200 hover:ring-red-300" } do %>
-          <div class="mr-3 h-10 w-10 rounded-lg bg-red-100 group-hover:bg-red-200 flex items-center justify-center transition-all duration-300 group-hover:scale-110">
-            <svg class="h-5 w-5 text-red-600" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-              <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-            </svg>
-          </div>
-          <span class="flex-1">Admin Panel</span>
-          <svg class="h-5 w-5 text-gray-400 group-hover:text-red-600 transition-transform group-hover:translate-x-1" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
-          </svg>
-        <% end %>
-      <% end %>
     </div>
 
     <% if user_signed_in? %>
@@ -588,6 +586,47 @@
             <svg class="h-5 w-5 text-gray-400 group-hover:text-teal-600 transition-transform group-hover:translate-x-1" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
             </svg>
+          <% end %>
+
+          <%= link_to conversations_path,
+              data: { action: "click->navbar#handleLinkClick" },
+              class: "group flex items-center px-4 py-3 rounded-xl text-base font-medium text-gray-700 hover:text-purple-600 hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 transition-all duration-300 transform hover:scale-[1.02]" do %>
+            <div class="mr-3 h-10 w-10 rounded-lg bg-purple-100 group-hover:bg-purple-200 flex items-center justify-center transition-all duration-300 group-hover:scale-110 relative">
+              <svg class="h-5 w-5 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z"/>
+                <path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z"/>
+              </svg>
+              <%
+                unread_count = Conversation.for_user(current_user).sum do |conv|
+                  conv.unread_count_for(current_user)
+                end
+                if unread_count > 0
+              %>
+                <span class="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-500 text-white text-xs font-bold flex items-center justify-center ring-2 ring-white">
+                  <%= [unread_count, 9].min %>
+                </span>
+              <% end %>
+            </div>
+            <span class="flex-1">Messages</span>
+            <svg class="h-5 w-5 text-gray-400 group-hover:text-purple-600 transition-transform group-hover:translate-x-1" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+            </svg>
+          <% end %>
+
+          <% if current_user.admin? || current_user.super_admin? %>
+            <%= link_to admin_users_path,
+                data: { action: "click->navbar#handleLinkClick" },
+                class: "group flex items-center px-4 py-3 rounded-xl text-base font-semibold text-red-700 hover:text-red-600 hover:bg-gradient-to-r hover:from-red-50 hover:to-pink-50 transition-all duration-300 transform hover:scale-[1.02] ring-2 ring-red-200 hover:ring-red-300" do %>
+              <div class="mr-3 h-10 w-10 rounded-lg bg-red-100 group-hover:bg-red-200 flex items-center justify-center transition-all duration-300 group-hover:scale-110">
+                <svg class="h-5 w-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                </svg>
+              </div>
+              <span class="flex-1">Admin Panel</span>
+              <svg class="h-5 w-5 text-gray-400 group-hover:text-red-600 transition-transform group-hover:translate-x-1" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+              </svg>
+            <% end %>
           <% end %>
 
           <% if current_user.provider? && current_user.provider_profile.present? %>
