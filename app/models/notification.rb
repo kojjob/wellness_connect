@@ -4,6 +4,9 @@ class Notification < ApplicationRecord
   belongs_to :actor, class_name: "User", optional: true  # who triggered the notification
   belongs_to :notifiable, polymorphic: true, optional: true  # what entity is this about
 
+  # Broadcast new notifications via Turbo Streams
+  after_create_commit -> { broadcast_notification }
+
   # Scopes
   scope :unread, -> { where(read_at: nil) }
   scope :read, -> { where.not(read_at: nil) }
@@ -26,6 +29,7 @@ class Notification < ApplicationRecord
     no_refund
     profile_approved
     new_review
+    new_message
     system_announcement
   ].freeze
 
@@ -54,13 +58,15 @@ class Notification < ApplicationRecord
     !read?
   end
 
-  # Check if email was delivered
-  def delivered?
-    delivered_at.present?
-  end
+  private
 
-  # Get actor name or "System" for system notifications
-  def actor_name
-    actor&.full_name || "System"
+  # Broadcast notification to user's stream
+  def broadcast_notification
+    broadcast_prepend_to(
+      "user_#{user_id}_notifications",
+      partial: "notifications/notification",
+      locals: { notification: self },
+      target: "notifications"
+    )
   end
 end

@@ -26,9 +26,48 @@
 
       <%# Message content %>
       <div class="rounded-lg px-4 py-2 <%= is_sender ? 'bg-primary-600 text-white' : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white' %> shadow-sm">
-        <p class="text-sm whitespace-pre-wrap break-words">
-          <%= message.content %>
-        </p>
+        <%# Text content (if present) %>
+        <% if message.content.present? %>
+          <p class="text-sm whitespace-pre-wrap break-words">
+            <%= message.content %>
+          </p>
+        <% end %>
+
+        <%# Attachment display %>
+        <% if message.attachment.attached? %>
+          <div class="<%= 'mt-2' if message.content.present? %>">
+            <% if message.attachment.blob.content_type.in?(%w[image/jpeg image/jpg image/png image/webp]) %>
+              <%# Image attachment - display as clickable preview %>
+              <%= link_to download_attachment_conversation_message_path(message.conversation, message),
+                    target: "_blank",
+                    class: "block rounded-lg overflow-hidden hover:opacity-90 transition-opacity" do %>
+                <%= image_tag message.attachment.variant(resize_to_limit: [400, 300]),
+                      alt: "Attached image",
+                      class: "max-w-full h-auto rounded-lg" %>
+              <% end %>
+            <% elsif message.attachment.blob.content_type == 'application/pdf' %>
+              <%# PDF attachment - display as download link with icon %>
+              <%= link_to download_attachment_conversation_message_path(message.conversation, message),
+                    target: "_blank",
+                    class: "flex items-center space-x-2 p-2 rounded-md #{is_sender ? 'bg-primary-700 hover:bg-primary-800' : 'bg-gray-100 dark:bg-gray-600 hover:bg-gray-200 dark:hover:bg-gray-500'} transition-colors" do %>
+                <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd" />
+                </svg>
+                <div class="flex flex-col min-w-0">
+                  <span class="text-xs font-medium truncate">
+                    <%= message.attachment.filename %>
+                  </span>
+                  <span class="text-xs opacity-75">
+                    <%= number_to_human_size(message.attachment.byte_size) %> • <%= message.downloads_count %> downloads
+                  </span>
+                </div>
+                <svg class="w-4 h-4 flex-shrink-0 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+              <% end %>
+            <% end %>
+          </div>
+        <% end %>
 
         <%# Edited indicator %>
         <% if message.edited_at.present? %>

@@ -1,0 +1,34 @@
+🌿 WellnessConnect
+================================================================================
+
+Hi <%= @user.first_name || @user.email %>,
+
+✅ PAYMENT RECEIVED!
+================================================================================
+
+Amount: $<%= @message.match(/\$([0-9.]+)/)[1] rescue '0.00' %>
+
+Payment Details:
+--------------------------------------------------------------------------------
+Status:           ✓ Completed
+Transaction Type: Appointment Payment
+Date:             <%= Time.current.strftime("%B %d, %Y at %I:%M %p") %>
+
+<%= @message %>
+
+💡 What's Next?
+--------------------------------------------------------------------------------
+The payment has been successfully processed and will be reflected in your account.
+You can view the full transaction details and download a receipt from your dashboard.
+
+View Dashboard: <%= root_url %>
+
+================================================================================
+
+You received this email because you have email notifications enabled for payment updates.
+You can manage your notification preferences at: <%= edit_notification_preferences_url %>
+
+WellnessConnect - Your trusted wellness platform
+© <%= Time.current.year %> WellnessConnect. All rights reserved.
+
+If you have any questions about this payment, please contact our support team.

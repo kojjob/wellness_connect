@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_10_07_024445) do
+ActiveRecord::Schema[8.1].define(version: 2025_10_07_102819) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -127,6 +127,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_07_024445) do
     t.text "content"
     t.bigint "conversation_id", null: false
     t.datetime "created_at", null: false
+    t.integer "downloads_count", default: 0, null: false
     t.datetime "edited_at"
     t.integer "message_type", default: 0, null: false
     t.datetime "read_at"
@@ -137,6 +138,21 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_07_024445) do
     t.index ["message_type"], name: "index_messages_on_message_type", comment: "Filter messages by type"
     t.index ["read_at"], name: "index_messages_on_read_at", where: "(read_at IS NULL)", comment: "Find unread messages"
     t.index ["sender_id"], name: "index_messages_on_sender_id", comment: "Find messages by sender"
+  end
+
+  create_table "notification_preferences", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.boolean "email_appointments", default: true, null: false
+    t.boolean "email_messages", default: true, null: false
+    t.boolean "email_payments", default: true, null: false
+    t.boolean "email_system", default: true, null: false
+    t.boolean "in_app_appointments", default: true, null: false
+    t.boolean "in_app_messages", default: true, null: false
+    t.boolean "in_app_payments", default: true, null: false
+    t.boolean "in_app_system", default: true, null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id"], name: "index_notification_preferences_on_user_id", unique: true
   end
 
   create_table "notifications", force: :cascade do |t|
@@ -302,6 +318,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_07_024445) do
   add_foreign_key "conversations", "users", column: "provider_id"
   add_foreign_key "messages", "conversations"
   add_foreign_key "messages", "users", column: "sender_id"
+  add_foreign_key "notification_preferences", "users"
   add_foreign_key "notifications", "users"
   add_foreign_key "notifications", "users", column: "actor_id"
   add_foreign_key "patient_profiles", "users"

@@ -1,0 +1,225 @@
+<!-- Admin Announcement Broadcast Page -->
+<div class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-teal-50/30 py-8 px-4 sm:px-6 lg:px-8">
+  <!-- Animated Background Blobs -->
+  <div class="fixed inset-0 overflow-hidden pointer-events-none">
+    <div class="absolute top-20 right-20 w-96 h-96 bg-teal-500/5 rounded-full blur-3xl animate-blob"></div>
+    <div class="absolute bottom-20 left-20 w-80 h-80 bg-indigo-500/5 rounded-full blur-2xl animate-blob animation-delay-2000"></div>
+    <div class="absolute top-1/2 left-1/2 w-72 h-72 bg-purple-400/5 rounded-full blur-xl animate-blob animation-delay-4000"></div>
+  </div>
+
+  <div class="relative max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="mb-8">
+      <%= link_to admin_root_path, class: "inline-flex items-center text-sm font-medium text-gray-600 hover:text-teal-600 transition-colors mb-4" do %>
+        <svg class="h-4 w-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/>
+        </svg>
+        Back to Dashboard
+      <% end %>
+
+      <div class="bg-gradient-to-r from-teal-600 via-teal-700 to-gray-700 rounded-2xl shadow-2xl overflow-hidden">
+        <div class="relative px-8 py-10">
+          <div class="flex items-center space-x-4">
+            <div class="h-16 w-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg ring-2 ring-white/40">
+              <svg class="h-8 w-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+              </svg>
+            </div>
+            <div>
+              <h1 class="text-3xl font-bold text-white">Broadcast Announcement</h1>
+              <p class="text-teal-100 mt-1">Send system-wide notifications to users</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%= form_with model: @announcement, scope: :announcement, url: admin_announcements_path, local: true, html: { class: "space-y-6" } do |f| %>
+      <!-- Main Form Card -->
+      <div class="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
+        <div class="p-8">
+          <h2 class="text-xl font-bold text-gray-900 mb-6">Announcement Details</h2>
+
+          <!-- Title Field -->
+          <div class="mb-6">
+            <%= f.label :title, class: "block text-sm font-semibold text-gray-700 mb-2" do %>
+              <span class="flex items-center">
+                <svg class="h-4 w-4 mr-2 text-teal-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd"/>
+                </svg>
+                Announcement Title
+              </span>
+            <% end %>
+            <%= f.text_field :title, 
+                class: "w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-200 transition-all duration-200",
+                placeholder: "e.g., System Maintenance Scheduled" %>
+            <% if @announcement.errors[:title].any? %>
+              <p class="mt-2 text-sm text-red-600 error"><%= @announcement.errors[:title].first %></p>
+            <% end %>
+          </div>
+
+          <!-- Message Field -->
+          <div class="mb-6">
+            <%= f.label :message, class: "block text-sm font-semibold text-gray-700 mb-2" do %>
+              <span class="flex items-center">
+                <svg class="h-4 w-4 mr-2 text-teal-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M18 13V5a2 2 0 00-2-2H4a2 2 0 00-2 2v8a2 2 0 002 2h3l3 3 3-3h3a2 2 0 002-2zM5 7a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1zm1 3a1 1 0 100 2h3a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                </svg>
+                Message
+              </span>
+            <% end %>
+            <%= f.text_area :message, 
+                rows: 5,
+                class: "w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-200 transition-all duration-200",
+                placeholder: "Enter your announcement message here..." %>
+            <p class="mt-2 text-xs text-gray-500">Maximum 1000 characters</p>
+            <% if @announcement.errors[:message].any? %>
+              <p class="mt-2 text-sm text-red-600 error"><%= @announcement.errors[:message].first %></p>
+            <% end %>
+          </div>
+
+          <!-- Recipient Type Field -->
+          <div class="mb-6">
+            <%= f.label :recipient_type, class: "block text-sm font-semibold text-gray-700 mb-3" do %>
+              <span class="flex items-center">
+                <svg class="h-4 w-4 mr-2 text-teal-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+                </svg>
+                Send To
+              </span>
+            <% end %>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <label class="relative flex items-center p-4 rounded-xl border-2 border-gray-200 cursor-pointer hover:border-teal-500 transition-all duration-200 has-[:checked]:border-teal-500 has-[:checked]:bg-teal-50">
+                <%= f.radio_button :recipient_type, "all", class: "peer sr-only", checked: true %>
+                <div class="flex items-center space-x-3 w-full">
+                  <div class="h-10 w-10 rounded-lg bg-gradient-to-br from-teal-400 to-teal-500 flex items-center justify-center shadow-lg">
+                    <svg class="h-5 w-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+                    </svg>
+                  </div>
+                  <div class="flex-1">
+                    <p class="font-semibold text-gray-900">All Users</p>
+                    <p class="text-xs text-gray-500">Everyone on the platform</p>
+                  </div>
+                </div>
+              </label>
+
+              <label class="relative flex items-center p-4 rounded-xl border-2 border-gray-200 cursor-pointer hover:border-indigo-500 transition-all duration-200 has-[:checked]:border-indigo-500 has-[:checked]:bg-indigo-50">
+                <%= f.radio_button :recipient_type, "patients", class: "peer sr-only" %>
+                <div class="flex items-center space-x-3 w-full">
+                  <div class="h-10 w-10 rounded-lg bg-gradient-to-br from-indigo-400 to-indigo-500 flex items-center justify-center shadow-lg">
+                    <svg class="h-5 w-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                    </svg>
+                  </div>
+                  <div class="flex-1">
+                    <p class="font-semibold text-gray-900">Patients Only</p>
+                    <p class="text-xs text-gray-500">All patient users</p>
+                  </div>
+                </div>
+              </label>
+
+              <label class="relative flex items-center p-4 rounded-xl border-2 border-gray-200 cursor-pointer hover:border-purple-500 transition-all duration-200 has-[:checked]:border-purple-500 has-[:checked]:bg-purple-50">
+                <%= f.radio_button :recipient_type, "providers", class: "peer sr-only" %>
+                <div class="flex items-center space-x-3 w-full">
+                  <div class="h-10 w-10 rounded-lg bg-gradient-to-br from-purple-400 to-purple-500 flex items-center justify-center shadow-lg">
+                    <svg class="h-5 w-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"/>
+                    </svg>
+                  </div>
+                  <div class="flex-1">
+                    <p class="font-semibold text-gray-900">Providers Only</p>
+                    <p class="text-xs text-gray-500">All provider users</p>
+                  </div>
+                </div>
+              </label>
+
+              <label class="relative flex items-center p-4 rounded-xl border-2 border-gray-200 cursor-pointer hover:border-pink-500 transition-all duration-200 has-[:checked]:border-pink-500 has-[:checked]:bg-pink-50">
+                <%= f.radio_button :recipient_type, "specific", class: "peer sr-only" %>
+                <div class="flex items-center space-x-3 w-full">
+                  <div class="h-10 w-10 rounded-lg bg-gradient-to-br from-pink-400 to-pink-500 flex items-center justify-center shadow-lg">
+                    <svg class="h-5 w-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                    </svg>
+                  </div>
+                  <div class="flex-1">
+                    <p class="font-semibold text-gray-900">Specific User</p>
+                    <p class="text-xs text-gray-500">Choose one user</p>
+                  </div>
+                </div>
+              </label>
+            </div>
+            <% if @announcement.errors[:recipient_type].any? %>
+              <p class="mt-2 text-sm text-red-600 error"><%= @announcement.errors[:recipient_type].first %></p>
+            <% end %>
+          </div>
+
+          <!-- User Selection (shown when specific is selected) -->
+          <div id="user-selection" class="mb-6 hidden">
+            <%= f.label :user_id, "Select User", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+            <%= f.select :user_id, 
+                User.order(:email).map { |u| ["#{u.email} (#{u.role.titleize})", u.id] },
+                { include_blank: "Choose a user..." },
+                class: "w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-200 transition-all duration-200" %>
+            <% if @announcement.errors[:user_id].any? %>
+              <p class="mt-2 text-sm text-red-600 error"><%= @announcement.errors[:user_id].first %></p>
+            <% end %>
+          </div>
+
+          <!-- Info Box -->
+          <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 rounded-xl p-4">
+            <div class="flex items-start">
+              <svg class="h-5 w-5 text-blue-600 mt-0.5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+              </svg>
+              <div class="text-sm text-blue-800">
+                <p class="font-semibold mb-1">Notification Preferences</p>
+                <p>Only users who have system notifications enabled in their preferences will receive this announcement.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center justify-between gap-4">
+        <%= link_to admin_root_path, class: "inline-flex items-center px-6 py-3 rounded-xl text-sm font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 transition-all duration-200 shadow-sm hover:shadow-md" do %>
+          <svg class="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/>
+          </svg>
+          Cancel
+        <% end %>
+
+        <%= f.submit "Send Announcement", 
+            class: "inline-flex items-center px-8 py-3 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105",
+            data: { confirm: "Are you sure you want to send this announcement? This action cannot be undone." } %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<script>
+  // Show/hide user selection based on recipient type
+  document.addEventListener('DOMContentLoaded', function() {
+    const recipientRadios = document.querySelectorAll('input[name="announcement[recipient_type]"]');
+    const userSelection = document.getElementById('user-selection');
+    
+    recipientRadios.forEach(radio => {
+      radio.addEventListener('change', function() {
+        if (this.value === 'specific') {
+          userSelection.classList.remove('hidden');
+        } else {
+          userSelection.classList.add('hidden');
+        }
+      });
+    });
+    
+    // Check initial state
+    const checkedRadio = document.querySelector('input[name="announcement[recipient_type]"]:checked');
+    if (checkedRadio && checkedRadio.value === 'specific') {
+      userSelection.classList.remove('hidden');
+    }
+  });
+</script>

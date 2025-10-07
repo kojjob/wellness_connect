@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        background-color: #f3f4f6;
+      }
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: #ffffff;
+      }
+      .header {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        padding: 40px 20px;
+        text-align: center;
+      }
+      .logo {
+        color: #ffffff;
+        font-size: 28px;
+        font-weight: bold;
+        margin: 0;
+      }
+      .alert-icon {
+        font-size: 64px;
+        margin: 20px 0;
+      }
+      .content {
+        padding: 40px 30px;
+      }
+      .greeting {
+        font-size: 18px;
+        color: #111827;
+        margin-bottom: 20px;
+      }
+      .payment-card {
+        background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+        border-left: 4px solid #ef4444;
+        border-radius: 12px;
+        padding: 24px;
+        margin: 24px 0;
+      }
+      .payment-title {
+        font-size: 24px;
+        font-weight: bold;
+        color: #991b1b;
+        margin: 0 0 20px 0;
+      }
+      .payment-amount {
+        font-size: 48px;
+        font-weight: bold;
+        color: #dc2626;
+        margin: 16px 0;
+      }
+      .payment-details {
+        background-color: #ffffff;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 20px 0;
+      }
+      .detail-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 0;
+        border-bottom: 1px solid #e5e7eb;
+      }
+      .detail-row:last-child {
+        border-bottom: none;
+      }
+      .detail-label {
+        font-weight: 600;
+        color: #374151;
+      }
+      .detail-value {
+        color: #111827;
+      }
+      .button {
+        display: inline-block;
+        padding: 14px 28px;
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        color: #ffffff !important;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 600;
+        margin: 20px 0;
+        text-align: center;
+      }
+      .info-box {
+        background-color: #fffbeb;
+        border-left: 4px solid #f59e0b;
+        border-radius: 8px;
+        padding: 16px;
+        margin: 20px 0;
+        font-size: 14px;
+        color: #92400e;
+      }
+      .help-section {
+        background-color: #f9fafb;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 20px 0;
+      }
+      .help-title {
+        font-weight: 600;
+        color: #111827;
+        margin: 0 0 12px 0;
+      }
+      .help-list {
+        margin: 0;
+        padding-left: 20px;
+        color: #374151;
+      }
+      .help-list li {
+        margin: 8px 0;
+      }
+      @media only screen and (max-width: 600px) {
+        .content {
+          padding: 24px 16px;
+        }
+        .payment-card {
+          padding: 16px;
+        }
+        .payment-amount {
+          font-size: 36px;
+        }
+      }
+      .footer {
+        background-color: #f9fafb;
+        padding: 30px;
+        text-align: center;
+        border-top: 1px solid #e5e7eb;
+      }
+      .footer-text {
+        font-size: 14px;
+        color: #6b7280;
+        margin: 5px 0;
+      }
+      .footer-link {
+        color: #ef4444;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header -->
+      <div class="header">
+        <h1 class="logo">🌿 WellnessConnect</h1>
+        <div class="alert-icon">⚠️</div>
+      </div>
+
+      <!-- Content -->
+      <div class="content">
+        <p class="greeting">Hi <%= @user.first_name || @user.email %>,</p>
+
+        <!-- Payment Card -->
+        <div class="payment-card">
+          <h2 class="payment-title">Payment Failed</h2>
+          
+          <div class="payment-amount">
+            $<%= @message.match(/\$([0-9.]+)/)[1] rescue '0.00' %>
+          </div>
+
+          <div class="payment-details">
+            <div class="detail-row">
+              <span class="detail-label">Status:</span>
+              <span class="detail-value" style="color: #dc2626; font-weight: 600;">✗ Failed</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Transaction Type:</span>
+              <span class="detail-value">Appointment Payment</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Date:</span>
+              <span class="detail-value"><%= Time.current.strftime("%B %d, %Y at %I:%M %p") %></span>
+            </div>
+          </div>
+
+          <p style="margin: 20px 0 0 0; color: #374151; font-size: 16px;">
+            <%= @message %>
+          </p>
+        </div>
+
+        <div class="info-box">
+          <strong>⚠️ Action Required</strong><br/>
+          Your payment could not be processed. Please update your payment method to complete this transaction.
+        </div>
+
+        <div class="help-section">
+          <p class="help-title">Common reasons for payment failure:</p>
+          <ul class="help-list">
+            <li>Insufficient funds in your account</li>
+            <li>Expired or invalid card information</li>
+            <li>Card declined by your bank</li>
+            <li>Incorrect billing address or CVV</li>
+          </ul>
+        </div>
+
+        <a href="<%= root_url %>" class="button">Update Payment Method</a>
+
+        <p style="color: #6b7280; font-size: 14px; margin-top: 24px;">
+          You received this email because you have email notifications enabled for payment updates.
+          You can manage your notification preferences in your account settings.
+        </p>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+        <p class="footer-text">
+          <strong>WellnessConnect</strong><br/>
+          Your trusted wellness platform
+        </p>
+        <p class="footer-text">
+          <a href="<%= edit_notification_preferences_url %>" class="footer-link">Notification Settings</a> |
+          <a href="<%= root_url %>" class="footer-link">Visit Website</a>
+        </p>
+        <p class="footer-text" style="margin-top: 20px;">
+          © <%= Time.current.year %> WellnessConnect. All rights reserved.
+        </p>
+        <p class="footer-text" style="margin-top: 10px; font-size: 12px;">
+          If you need help with this payment, please contact our support team.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>
