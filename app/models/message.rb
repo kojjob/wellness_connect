@@ -76,23 +76,48 @@ class Message < ApplicationRecord
   def attachment_validation
     return unless attachment.attached?
 
-    # File type validation
-    allowed_image_types = %w[image/jpeg image/jpg image/png image/webp]
+    blob = attachment.blob
+
+    # Verify actual content type using Marcel to prevent MIME type spoofing
+    detected_content_type = nil
+    begin
+      if blob.key.present? && blob.service.exist?(blob.key)
+        # For persisted blobs, use blob.open
+        detected_content_type = blob.open { |file| Marcel::MimeType.for(file) }
+      else
+        # For new attachments in tests/memory, analyze the IO directly
+        io_source = blob.instance_variable_get(:@io) || blob.send(:download_chunk, 0..(8.kilobytes))
+        detected_content_type = Marcel::MimeType.for(io_source)
+      end
+    rescue => e
+      # If we can't verify the content type, log and continue with declared type validation
+      Rails.logger.warn("Could not verify attachment content type: #{e.message}")
+    end
+
+    # Check for content type mismatch if we successfully detected the type
+    if detected_content_type.present? && detected_content_type != blob.content_type
+      errors.add(:attachment, "content type mismatch: uploaded as '#{blob.content_type}' but detected as '#{detected_content_type}'")
+      return
+    end
+
+    # File type validation (using only standard MIME types)
+    allowed_image_types = %w[image/jpeg image/png image/webp]
     allowed_document_types = %w[application/pdf]
     allowed_types = allowed_image_types + allowed_document_types
 
-    unless allowed_types.include?(attachment.blob.content_type)
-      errors.add(:attachment, "must be a JPEG, PNG, WebP image or PDF document")
+    unless allowed_types.include?(blob.content_type)
+      errors.add(:attachment, "must be a JPEG, PNG, WebP image or PDF document (uploaded type: '#{blob.content_type}')")
+      return
     end
 
-    # File size validation
-    if allowed_image_types.include?(attachment.blob.content_type)
-      if attachment.blob.byte_size > 10.megabytes
-        errors.add(:attachment, "image size must be less than 10MB")
+    # File size validation (branch by detected type: image vs PDF)
+    if allowed_image_types.include?(blob.content_type)
+      if blob.byte_size > 10.megabytes
+        errors.add(:attachment, "image size must be less than 10MB (uploaded type: '#{blob.content_type}', size: #{(blob.byte_size / 1.megabyte.to_f).round(2)}MB)")
       end
-    elsif attachment.blob.content_type == "application/pdf"
-      if attachment.blob.byte_size > 20.megabytes
-        errors.add(:attachment, "PDF size must be less than 20MB")
+    else # PDF
+      if blob.byte_size > 20.megabytes
+        errors.add(:attachment, "PDF size must be less than 20MB (uploaded type: '#{blob.content_type}', size: #{(blob.byte_size / 1.megabyte.to_f).round(2)}MB)")
       end
     end
   end
