@@ -221,7 +221,7 @@ class Admin::AnnouncementsControllerTest < ActionDispatch::IntegrationTest
 
   test "should require user_id when recipient_type is specific" do
     sign_in @admin
-    
+
     assert_no_difference("Notification.count") do
       post admin_announcements_path, params: {
         announcement: {
@@ -229,6 +229,56 @@ class Admin::AnnouncementsControllerTest < ActionDispatch::IntegrationTest
           message: "Test message",
           recipient_type: "specific",
           user_id: nil
+        }
+      }
+    end
+
+    assert_response :unprocessable_entity
+  end
+
+  test "should handle missing user gracefully with validation error" do
+    sign_in @admin
+
+    # Use a non-existent user ID
+    non_existent_id = User.maximum(:id).to_i + 1000
+
+    assert_no_difference("Notification.count") do
+      post admin_announcements_path, params: {
+        announcement: {
+          title: "Personal Message",
+          message: "This is for you.",
+          recipient_type: "specific",
+          user_id: non_existent_id
+        }
+      }
+    end
+
+    assert_response :unprocessable_entity
+    assert_select ".error", text: /must reference a valid user/
+  end
+
+  test "should handle deleted user gracefully in send_announcement" do
+    sign_in @admin
+
+    # Create a user and get their ID
+    temp_user = User.create!(
+      email: "temp@example.com",
+      password: "password123",
+      role: "patient"
+    )
+    temp_user_id = temp_user.id
+
+    # Delete the user
+    temp_user.destroy
+
+    # Try to send announcement to deleted user
+    assert_no_difference("Notification.count") do
+      post admin_announcements_path, params: {
+        announcement: {
+          title: "Personal Message",
+          message: "This is for you.",
+          recipient_type: "specific",
+          user_id: temp_user_id
         }
       }
     end

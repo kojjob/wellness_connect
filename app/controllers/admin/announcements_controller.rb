@@ -30,8 +30,10 @@ module Admin
             "No recipients reached. All providers have system notifications disabled."
           end
         when "specific"
-          user = User.find(@announcement.user_id)
-          if count > 0
+          user = @announcement.user
+          if user.nil?
+            "Error: Selected user no longer exists."
+          elsif count > 0
             "Announcement sent to #{user.email} successfully."
           else
             "Announcement not delivered to #{user.email} (notifications disabled)."
@@ -84,8 +86,8 @@ module Admin
           end
         end
       when "specific"
-        user = User.find(@announcement.user_id)
-        if NotificationService.send(:can_notify?, user, "system_announcement")
+        user = @announcement.user
+        if user.present? && NotificationService.send(:can_notify?, user, "system_announcement")
           NotificationService.notify_system_announcement(user, @announcement.title, @announcement.message)
           count = 1
         end
@@ -109,5 +111,18 @@ module Admin
     validates :message, presence: true, length: { maximum: 1000 }
     validates :recipient_type, presence: true, inclusion: { in: %w[all patients providers specific] }
     validates :user_id, presence: true, if: -> { recipient_type == "specific" }
+    validate :user_must_exist, if: -> { recipient_type == "specific" && user_id.present? }
+
+    def user
+      @user ||= User.find_by(id: user_id) if user_id.present?
+    end
+
+    private
+
+    def user_must_exist
+      if user.nil?
+        errors.add(:user_id, "must reference a valid user")
+      end
+    end
   end
 end
