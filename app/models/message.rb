@@ -72,53 +72,24 @@ class Message < ApplicationRecord
     end
   end
 
-  # Custom validation: attachment file type and size validation
+  # Custom validation: validate attachment file type and size
   def attachment_validation
     return unless attachment.attached?
 
-    blob = attachment.blob
-
-    # Verify actual content type using Marcel to prevent MIME type spoofing
-    detected_content_type = nil
-    begin
-      if blob.key.present? && blob.service.exist?(blob.key)
-        # For persisted blobs, use blob.open
-        detected_content_type = blob.open { |file| Marcel::MimeType.for(file) }
-      else
-        # For new attachments in tests/memory, analyze the IO directly
-        io_source = blob.instance_variable_get(:@io) || blob.send(:download_chunk, 0..(8.kilobytes))
-        detected_content_type = Marcel::MimeType.for(io_source)
+    # Check file size based on content type
+    if attachment.blob.content_type.in?(%w[image/jpeg image/jpg image/png image/webp])
+      # Images: 10MB limit
+      if attachment.blob.byte_size > 10.megabytes
+        errors.add(:attachment, "image must be less than 10MB")
       end
-    rescue => e
-      # If we can't verify the content type, log and continue with declared type validation
-      Rails.logger.warn("Could not verify attachment content type: #{e.message}")
-    end
-
-    # Check for content type mismatch if we successfully detected the type
-    if detected_content_type.present? && detected_content_type != blob.content_type
-      errors.add(:attachment, "content type mismatch: uploaded as '#{blob.content_type}' but detected as '#{detected_content_type}'")
-      return
-    end
-
-    # File type validation (using only standard MIME types)
-    allowed_image_types = %w[image/jpeg image/png image/webp]
-    allowed_document_types = %w[application/pdf]
-    allowed_types = allowed_image_types + allowed_document_types
-
-    unless allowed_types.include?(blob.content_type)
-      errors.add(:attachment, "must be a JPEG, PNG, WebP image or PDF document (uploaded type: '#{blob.content_type}')")
-      return
-    end
-
-    # File size validation (branch by detected type: image vs PDF)
-    if allowed_image_types.include?(blob.content_type)
-      if blob.byte_size > 10.megabytes
-        errors.add(:attachment, "image size must be less than 10MB (uploaded type: '#{blob.content_type}', size: #{(blob.byte_size / 1.megabyte.to_f).round(2)}MB)")
+    elsif attachment.blob.content_type.in?(%w[application/pdf])
+      # Documents: 20MB limit
+      if attachment.blob.byte_size > 20.megabytes
+        errors.add(:attachment, "document must be less than 20MB")
       end
-    else # PDF
-      if blob.byte_size > 20.megabytes
-        errors.add(:attachment, "PDF size must be less than 20MB (uploaded type: '#{blob.content_type}', size: #{(blob.byte_size / 1.megabyte.to_f).round(2)}MB)")
-      end
+    else
+      # Invalid content type
+      errors.add(:attachment, "must be a JPEG, PNG, WebP image or PDF document")
     end
   end
 
@@ -143,8 +114,16 @@ class Message < ApplicationRecord
 
   # Callback: broadcast message to conversation channel
   def broadcast_message
-    # TODO: Implement in Phase 2 when we add Action Cable channels
-    # broadcast_append_to [conversation, "messages"], target: "messages"
+    # Broadcast new message to all subscribers of this conversation
+    ConversationChannel.broadcast_to(
+      conversation,
+      type: "message",
+      message_id: id,
+      sender_id: sender_id,
+      sender_name: sender.full_name,
+      content: content,
+      created_at: created_at.iso8601
+    )
   end
 
   # Callback: set edited_at timestamp when content changes

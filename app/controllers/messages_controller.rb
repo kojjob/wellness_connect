@@ -144,19 +144,19 @@ class MessagesController < ApplicationController
   end
 
   # GET /conversations/:conversation_id/messages/:id/download_attachment
-  # Download message attachment and track download count
+  # Download message attachment and increment download counter
   def download_attachment
     authorize @message
 
     unless @message.attachment.attached?
-      redirect_to conversation_path(@conversation), alert: "No attachment found."
+      redirect_to conversation_path(@conversation), alert: "No attachment found"
       return
     end
 
     # Increment download counter
     @message.increment!(:downloads_count)
 
-    # Redirect to the attachment URL (served by ActiveStorage)
+    # Redirect to the blob download URL
     redirect_to rails_blob_path(@message.attachment, disposition: "attachment"), allow_other_host: true
   end
 

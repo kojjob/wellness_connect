@@ -54,7 +54,7 @@ class MessagePolicy < ApplicationPolicy
     conversation_participant? && !sender?
   end
 
-  # Download attachment action - any conversation participant can download
+  # Download attachment action - conversation participants can download attachments
   def download_attachment?
     conversation_participant?
   end
