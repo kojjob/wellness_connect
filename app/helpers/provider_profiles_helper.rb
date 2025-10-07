@@ -4,7 +4,7 @@ module ProviderProfilesHelper
 
     @provider_profile.availabilities
       .where(is_booked: false)
-      .where('start_time > ?', Time.current)
+      .where("start_time > ?", Time.current)
       .order(:start_time)
       .map do |avail|
         {

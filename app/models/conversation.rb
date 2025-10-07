@@ -8,54 +8,73 @@ class Conversation < ApplicationRecord
   # Validations
   validates :patient_id, presence: true
   validates :provider_id, presence: true
-  validate :patient_and_provider_must_be_different
-  validate :appointment_participants_must_match, if: :appointment_id?
+  validate :participants_must_be_different
 
   # Scopes
+  scope :for_user, ->(user) {
+    where("patient_id = ? OR provider_id = ?", user.id, user.id)
+  }
+  scope :recent, -> { order(last_message_at: :desc) }
+  scope :ordered, -> { order(last_message_at: :desc) }
+  scope :unarchived_for_patient, -> { where(archived_by_patient: false) }
+  scope :unarchived_for_provider, -> { where(archived_by_provider: false) }
+
+  # General scopes for filtering conversations
   scope :active, -> { where(archived_by_patient: false, archived_by_provider: false) }
   scope :archived, -> { where("archived_by_patient = ? OR archived_by_provider = ?", true, true) }
-  scope :with_unread, -> { where("patient_unread_count > 0 OR provider_unread_count > 0") }
+  scope :with_unread, -> { where("patient_unread_count > ? OR provider_unread_count > ?", 0, 0) }
   scope :appointment_specific, -> { where.not(appointment_id: nil) }
   scope :general, -> { where(appointment_id: nil) }
-  scope :ordered, -> { order(last_message_at: :desc, created_at: :desc) }
+
+  # User-specific archive filtering
+  scope :unarchived_for, ->(user) {
+    if user.patient?
+      where(patient_id: user.id, archived_by_patient: false)
+        .or(where(provider_id: user.id, archived_by_provider: false))
+    elsif user.provider?
+      where(patient_id: user.id, archived_by_patient: false)
+        .or(where(provider_id: user.id, archived_by_provider: false))
+    else
+      none
+    end
+  }
+
+  scope :archived_for, ->(user) {
+    if user.patient?
+      where(patient_id: user.id, archived_by_patient: true)
+        .or(where(provider_id: user.id, archived_by_provider: true))
+    elsif user.provider?
+      where(patient_id: user.id, archived_by_patient: true)
+        .or(where(provider_id: user.id, archived_by_provider: true))
+    else
+      none
+    end
+  }
 
   # Instance methods
 
-  # Returns array of both participants
+  # Get the other participant in the conversation
+  def other_participant(user)
+    return nil unless participant?(user)
+    user == patient ? provider : patient
+  end
+
+  # Get all participants
   def participants
     [ patient, provider ].compact
   end
 
-  # Returns the other participant in the conversation
-  # @param user [User] the user to find the other participant for
-  # @return [User, nil] the other participant or nil if user is not a participant
-  def other_participant(user)
-    return provider if user == patient
-    return patient if user == provider
-    nil
+  # Check if a user is a participant
+  def participant?(user)
+    user == patient || user == provider
   end
 
-  # Marks all messages in conversation as read for the given user
-  # @param user [User] the user marking messages as read
-  def mark_as_read_for(user)
-    if user == patient
-      update(patient_unread_count: 0)
-    elsif user == provider
-      update(provider_unread_count: 0)
-    end
+  # Update the last_message_at timestamp
+  def touch_last_message
+    update(last_message_at: Time.current)
   end
 
-  # Returns unread message count for the given user
-  # @param user [User] the user to check unread count for
-  # @return [Integer] number of unread messages
-  def unread_count_for(user)
-    return patient_unread_count if user == patient
-    return provider_unread_count if user == provider
-    0
-  end
-
-  # Increments unread count for the recipient when sender sends a message
-  # @param sender [User] the user who sent the message
+  # Increment unread count for the recipient (not the sender)
   def increment_unread_for(sender)
     if sender == patient
       increment!(:provider_unread_count)
@@ -64,33 +83,46 @@ class Conversation < ApplicationRecord
     end
   end
 
-  # Checks if user has unread messages in this conversation
-  # @param user [User] the user to check
-  # @return [Boolean] true if user has unread messages
-  def has_unread_for?(user)
-    unread_count_for(user) > 0
+  # Reset unread count for a specific user
+  def mark_as_read_for(user)
+    if user == patient
+      update(patient_unread_count: 0)
+    elsif user == provider
+      update(provider_unread_count: 0)
+    end
   end
 
-  # Updates last_message_at timestamp
-  def touch_last_message
-    update(last_message_at: Time.current)
+  # Convenience methods for marking as read by role
+  def mark_as_read_for_patient
+    update(patient_unread_count: 0)
+  end
+
+  def mark_as_read_for_provider
+    update(provider_unread_count: 0)
+  end
+
+  # Get unread count for a specific user
+  def unread_count_for(user)
+    if user == patient
+      patient_unread_count
+    elsif user == provider
+      provider_unread_count
+    else
+      0
+    end
+  end
+
+  # Check if user has unread messages
+  def has_unread_for?(user)
+    unread_count_for(user) > 0
   end
 
   private
 
   # Custom validation: patient and provider must be different users
-  def patient_and_provider_must_be_different
-    if patient_id.present? && patient_id == provider_id
+  def participants_must_be_different
+    if patient_id.present? && provider_id.present? && patient_id == provider_id
       errors.add(:provider_id, "cannot be the same as patient")
-    end
-  end
-
-  # Custom validation: if appointment-scoped, participants must match appointment
-  def appointment_participants_must_match
-    return unless appointment
-
-    unless appointment.patient_id == patient_id && appointment.provider_id == provider_id
-      errors.add(:base, "Conversation participants must match appointment participants")
     end
   end
 end

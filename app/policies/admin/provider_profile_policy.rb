@@ -17,18 +17,18 @@ module Admin
       admin_user?
     end
 
-    # Admins can create provider profiles for users with provider role
+    # Admins cannot create provider profiles (providers create their own on signup)
     def create?
-      admin_user?
+      false
     end
 
     def new?
-      admin_user?
+      false
     end
 
-    # Admins can delete provider profiles when necessary
+    # Admins cannot delete provider profiles (data integrity)
     def destroy?
-      admin_user?
+      false
     end
 
     # Scope returns all provider profiles for admins

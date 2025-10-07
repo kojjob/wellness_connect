@@ -60,8 +60,10 @@ class Message < ApplicationRecord
   end
 
   # Custom validation: sender must be a participant in the conversation
+  # (admins can send messages in any conversation for moderation)
   def sender_must_be_participant
     return unless conversation && sender
+    return if sender.admin?  # Admins can send messages in any conversation
 
     unless conversation.participants.include?(sender)
       errors.add(:sender, "must be a participant in the conversation")

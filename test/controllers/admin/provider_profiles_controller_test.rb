@@ -17,7 +17,7 @@ class Admin::ProviderProfilesControllerTest < ActionDispatch::IntegrationTest
     sign_in @admin
     get admin_provider_profiles_path
     assert_response :success
-    assert_select "h2", "All Providers"
+    assert_select "h2", "All Provider Profiles"
   end
 
   test "admin sees all provider profiles in index" do
@@ -41,7 +41,7 @@ class Admin::ProviderProfilesControllerTest < ActionDispatch::IntegrationTest
     sign_in @patient
     get admin_provider_profiles_path
     assert_redirected_to root_path
-    assert_equal "You are not authorized to perform this action.", flash[:alert]
+    assert_equal "You are not authorized to access this page.", flash[:alert]
   end
 
   test "guest cannot access provider profiles index" do
@@ -57,75 +57,27 @@ class Admin::ProviderProfilesControllerTest < ActionDispatch::IntegrationTest
     sign_in @admin
     get admin_provider_profile_path(@provider_profile)
     assert_response :success
-    assert_select "h2", @provider_profile.user.full_name
+    assert_select "h1", @provider_profile.user.full_name
     assert_select "p", text: @provider_profile.specialty
-  end
-
-  test "admin can see delete button on show page" do
-    sign_in @admin
-    get admin_provider_profile_path(@provider_profile)
-    assert_response :success
-    assert_select "form[action='#{admin_provider_profile_path(@provider_profile)}'][method='post']" do
-      assert_select "input[name='_method'][value='delete']", count: 1
-    end
   end
 
   test "non-admin cannot view provider profile details" do
     sign_in @patient
     get admin_provider_profile_path(@provider_profile)
     assert_redirected_to root_path
-    assert_equal "You are not authorized to perform this action.", flash[:alert]
+    assert_equal "You are not authorized to access this page.", flash[:alert]
   end
 
   # ========================================
   # New Action Tests
+  # (Admins cannot create provider profiles - providers create their own on signup)
   # ========================================
 
-  test "admin can access new provider profile form" do
+  test "admin cannot access new provider profile form" do
     sign_in @admin
     get new_admin_provider_profile_path
-    assert_response :success
-    assert_select "h2", "Create Provider Profile"
-    assert_select "form"
-  end
-
-  test "new provider profile form has all required fields" do
-    sign_in @admin
-    get new_admin_provider_profile_path
-    assert_response :success
-    assert_select "select[name='provider_profile[user_id]']"
-    assert_select "input[name='provider_profile[specialty]']"
-    assert_select "input[name='provider_profile[credentials]']"
-    assert_select "input[name='provider_profile[consultation_rate]']"
-    assert_select "textarea[name='provider_profile[bio]']"
-  end
-
-  test "new form shows only providers without profiles" do
-    sign_in @admin
-    get new_admin_provider_profile_path
-    assert_response :success
-    # Should include provider without profile
-    assert_select "option[value='#{@provider_without_profile.id}']"
-    # Should NOT include providers with existing profiles
-    assert_select "option[value='#{@provider.id}']", count: 0
-  end
-
-  test "new form shows warning when no available providers" do
-    sign_in @admin
-    # Create profiles for all provider users who don't have one
-    User.where(role: :provider).each do |user|
-      next if user.provider_profile.present?
-      ProviderProfile.create!(
-        user: user,
-        specialty: "Test Specialty",
-        bio: "This is a comprehensive test bio with at least fifty characters to satisfy model validation requirements for bio length.",
-        consultation_rate: 100.00
-      )
-    end
-
-    get new_admin_provider_profile_path
-    assert_response :success
-    assert_select "p", text: /No available providers/
+    assert_redirected_to root_path
+    assert_equal "You are not authorized to access this page.", flash[:alert]
   end
 
   test "non-admin cannot access new provider profile form" do
@@ -136,11 +88,12 @@ class Admin::ProviderProfilesControllerTest < ActionDispatch::IntegrationTest
 
   # ========================================
   # Create Action Tests
+  # (Admins cannot create provider profiles - providers create their own on signup)
   # ========================================
 
-  test "admin can create new provider profile" do
+  test "admin cannot create provider profiles" do
     sign_in @admin
-    assert_difference("ProviderProfile.count", 1) do
+    assert_no_difference("ProviderProfile.count") do
       post admin_provider_profiles_path, params: {
         provider_profile: {
           user_id: @provider_without_profile.id,
@@ -151,36 +104,8 @@ class Admin::ProviderProfilesControllerTest < ActionDispatch::IntegrationTest
         }
       }
     end
-    assert_redirected_to admin_provider_profile_path(ProviderProfile.last)
-    assert_equal "Provider profile successfully created.", flash[:notice]
-  end
-
-  test "create fails with invalid data" do
-    sign_in @admin
-    assert_no_difference("ProviderProfile.count") do
-      post admin_provider_profiles_path, params: {
-        provider_profile: {
-          user_id: @provider_without_profile.id,
-          specialty: "", # Invalid: blank specialty
-          bio: "Test bio"
-        }
-      }
-    end
-    assert_response :unprocessable_entity
-  end
-
-  test "create fails when user already has profile" do
-    sign_in @admin
-    assert_no_difference("ProviderProfile.count") do
-      post admin_provider_profiles_path, params: {
-        provider_profile: {
-          user_id: @provider.id, # Already has provider_profile_one
-          specialty: "Test Specialty",
-          bio: "Test bio"
-        }
-      }
-    end
-    assert_response :unprocessable_entity
+    assert_redirected_to root_path
+    assert_equal "You are not authorized to access this page.", flash[:alert]
   end
 
   test "non-admin cannot create provider profiles" do
@@ -205,7 +130,7 @@ class Admin::ProviderProfilesControllerTest < ActionDispatch::IntegrationTest
     sign_in @admin
     get edit_admin_provider_profile_path(@provider_profile)
     assert_response :success
-    assert_select "h2", "Edit Provider Profile"
+    assert_select "h1", "Edit Provider Profile"
     assert_select "form"
   end
 
@@ -266,9 +191,10 @@ class Admin::ProviderProfilesControllerTest < ActionDispatch::IntegrationTest
 
   # ========================================
   # Destroy Action Tests
+  # (Admins cannot delete provider profiles - data integrity)
   # ========================================
 
-  test "admin can delete provider profile" do
+  test "admin cannot delete provider profile" do
     sign_in @admin
     profile_to_delete = ProviderProfile.create!(
       user: @provider_without_profile,
@@ -277,27 +203,11 @@ class Admin::ProviderProfilesControllerTest < ActionDispatch::IntegrationTest
       consultation_rate: 100.00
     )
 
-    assert_difference("ProviderProfile.count", -1) do
+    assert_no_difference("ProviderProfile.count") do
       delete admin_provider_profile_path(profile_to_delete)
     end
-    assert_redirected_to admin_provider_profiles_path
-    assert_equal "Provider profile successfully deleted.", flash[:notice]
-  end
-
-  test "deleting profile does not delete user" do
-    sign_in @admin
-    profile_to_delete = ProviderProfile.create!(
-      user: @provider_without_profile,
-      specialty: "To Delete",
-      bio: "This is a test provider profile bio with at least 50 characters to satisfy validation requirements.",
-      consultation_rate: 100.00
-    )
-    user_id = profile_to_delete.user_id
-
-    assert_no_difference("User.count") do
-      delete admin_provider_profile_path(profile_to_delete)
-    end
-    assert User.exists?(user_id), "User should still exist after profile deletion"
+    assert_redirected_to root_path
+    assert_equal "You are not authorized to access this page.", flash[:alert]
   end
 
   test "non-admin cannot delete provider profiles" do

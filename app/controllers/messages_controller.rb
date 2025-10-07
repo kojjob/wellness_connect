@@ -50,6 +50,7 @@ class MessagesController < ApplicationController
 
         format.html do
           @messages = @conversation.messages.includes(:sender).ordered
+          @new_message = @message # Set failed message for form re-rendering
           render "conversations/show", status: :unprocessable_entity
         end
 
