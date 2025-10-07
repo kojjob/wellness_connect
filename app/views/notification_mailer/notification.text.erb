@@ -1,0 +1,21 @@
+WellnessConnect Notification
+================================================================================
+
+Hi <%= @user.first_name %>,
+
+<%= @title %>
+--------------------------------------------------------------------------------
+
+<%= @message %>
+
+================================================================================
+
+You received this email because you have email notifications enabled for this
+type of update. You can manage your notification preferences in your account
+settings.
+
+View Dashboard: <%= root_url %>
+Notification Settings: <%= edit_notification_preferences_url %>
+
+© <%= Time.current.year %> WellnessConnect. All rights reserved.
+

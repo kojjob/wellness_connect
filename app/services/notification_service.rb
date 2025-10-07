@@ -3,24 +3,36 @@ class NotificationService
   def self.notify_appointment_booked(appointment)
     # Notify provider
     if can_notify?(appointment.provider, "appointment_booked")
+      title = "New Appointment Booked"
+      message = "#{appointment.patient.email} has booked an appointment with you for #{appointment.start_time.strftime('%B %d, %Y at %I:%M %p')}"
+
       Notification.create!(
         user: appointment.provider,
-        title: "New Appointment Booked",
-        message: "#{appointment.patient.email} has booked an appointment with you for #{appointment.start_time.strftime('%B %d, %Y at %I:%M %p')}",
+        title: title,
+        message: message,
         notification_type: "appointment_booked",
         action_url: Rails.application.routes.url_helpers.appointment_path(appointment)
       )
+
+      # Send email if enabled
+      send_email(appointment.provider, "appointment_booked", title, message)
     end
 
     # Notify patient
     if can_notify?(appointment.patient, "appointment_booked")
+      title = "Appointment Confirmed"
+      message = "Your appointment with #{appointment.provider.email} has been confirmed for #{appointment.start_time.strftime('%B %d, %Y at %I:%M %p')}"
+
       Notification.create!(
         user: appointment.patient,
-        title: "Appointment Confirmed",
-        message: "Your appointment with #{appointment.provider.email} has been confirmed for #{appointment.start_time.strftime('%B %d, %Y at %I:%M %p')}",
+        title: title,
+        message: message,
         notification_type: "appointment_booked",
         action_url: Rails.application.routes.url_helpers.appointment_path(appointment)
       )
+
+      # Send email if enabled
+      send_email(appointment.patient, "appointment_booked", title, message)
     end
   end
 
@@ -181,5 +193,38 @@ class NotificationService
 
     # Check if email notifications are enabled for this type
     preferences.email_enabled_for?(notification_type)
+  end
+
+  # Send email notification if user has email notifications enabled
+  def self.send_email(user, notification_type, title, message, attachments = [])
+    return unless can_email_notify?(user, notification_type)
+
+    # Map notification types to mailer methods
+    mailer_method = case notification_type
+    when "appointment_booked", "appointment_reminder"
+      :appointment_booked
+    when "appointment_cancelled"
+      :appointment_cancelled
+    when "payment_received"
+      :payment_received
+    when "payment_failed"
+      :payment_failed
+    when "refund_processed", "no_refund"
+      :refund_processed
+    when "profile_approved"
+      :profile_approved
+    when "new_review"
+      :new_review
+    when "system_announcement"
+      :system_announcement
+    else
+      :notification
+    end
+
+    # Send email asynchronously
+    NotificationMailer.public_send(mailer_method, user, title, message).deliver_later
+  rescue => e
+    Rails.logger.error "Failed to send email notification: #{e.message}"
+    # Don't raise error - email failure shouldn't break notification creation
   end
 end
