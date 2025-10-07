@@ -1,6 +1,9 @@
 Rails.application.routes.draw do
   devise_for :users
 
+  # Mount Action Cable server
+  mount ActionCable.server => "/cable"
+
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
   root "home#index"
 
@@ -72,6 +75,7 @@ Rails.application.routes.draw do
     resources :messages, only: [ :create, :edit, :update, :destroy ] do
       member do
         patch :mark_as_read
+        get :download_attachment
       end
     end
   end

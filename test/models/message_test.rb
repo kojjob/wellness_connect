@@ -94,6 +94,127 @@ class MessageTest < ActiveSupport::TestCase
     assert_includes message.errors[:sender], "must be a participant in the conversation"
   end
 
+  # Attachment Validation Tests
+  test "should accept valid JPEG image attachment" do
+    message = Message.new(
+      conversation: @conversation,
+      sender: @patient,
+      message_type: :image
+    )
+
+    # Create a small JPEG file (under 10MB)
+    message.attachment.attach(
+      io: StringIO.new("fake jpeg content"),
+      filename: "test.jpg",
+      content_type: "image/jpeg"
+    )
+
+    assert message.valid?, "JPEG attachment should be valid"
+  end
+
+  test "should accept valid PNG image attachment" do
+    message = Message.new(
+      conversation: @conversation,
+      sender: @patient,
+      message_type: :image
+    )
+
+    message.attachment.attach(
+      io: StringIO.new("fake png content"),
+      filename: "test.png",
+      content_type: "image/png"
+    )
+
+    assert message.valid?, "PNG attachment should be valid"
+  end
+
+  test "should accept valid WebP image attachment" do
+    message = Message.new(
+      conversation: @conversation,
+      sender: @patient,
+      message_type: :image
+    )
+
+    message.attachment.attach(
+      io: StringIO.new("fake webp content"),
+      filename: "test.webp",
+      content_type: "image/webp"
+    )
+
+    assert message.valid?, "WebP attachment should be valid"
+  end
+
+  test "should accept valid PDF document attachment" do
+    message = Message.new(
+      conversation: @conversation,
+      sender: @patient,
+      message_type: :file
+    )
+
+    message.attachment.attach(
+      io: StringIO.new("fake pdf content"),
+      filename: "test.pdf",
+      content_type: "application/pdf"
+    )
+
+    assert message.valid?, "PDF attachment should be valid"
+  end
+
+  test "should reject invalid file type attachment" do
+    message = Message.new(
+      conversation: @conversation,
+      sender: @patient,
+      message_type: :file
+    )
+
+    message.attachment.attach(
+      io: StringIO.new("fake doc content"),
+      filename: "test.docx",
+      content_type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    )
+
+    assert_not message.valid?, "Invalid file type should be rejected"
+    assert_includes message.errors[:attachment], "must be a JPEG, PNG, WebP image or PDF document"
+  end
+
+  test "should reject image attachment exceeding 10MB size limit" do
+    message = Message.new(
+      conversation: @conversation,
+      sender: @patient,
+      message_type: :image
+    )
+
+    # Create a fake large file (simulating >10MB)
+    large_content = "a" * (11 * 1024 * 1024) # 11MB of data
+    message.attachment.attach(
+      io: StringIO.new(large_content),
+      filename: "large_image.jpg",
+      content_type: "image/jpeg"
+    )
+
+    assert_not message.valid?, "Image over 10MB should be rejected"
+    assert_includes message.errors[:attachment], "image must be less than 10MB"
+  end
+
+  test "should reject PDF document exceeding 20MB size limit" do
+    message = Message.new(
+      conversation: @conversation,
+      sender: @patient,
+      message_type: :file
+    )
+
+    # Create a fake large file (simulating >20MB)
+    large_content = "a" * (21 * 1024 * 1024) # 21MB of data
+    message.attachment.attach(
+      io: StringIO.new(large_content),
+      filename: "large_document.pdf",
+      content_type: "application/pdf"
+    )
+
+    assert_not message.valid?, "PDF over 20MB should be rejected"
+    assert_includes message.errors[:attachment], "document must be less than 20MB"
+  end
+
   # Enum Tests
   test "should have message_type enum" do
     message = Message.new(
@@ -273,9 +394,23 @@ class MessageTest < ActiveSupport::TestCase
   end
 
   test "should broadcast to conversation channel after create" do
-    # This would require Action Cable testing setup
-    # Placeholder for future implementation
-    skip "Action Cable testing not yet configured"
+    # Test that creating a message broadcasts it to the conversation channel
+    message = nil
+
+    # Expect a broadcast to ConversationChannel
+    # Using Action Cable's assert_broadcasts helper
+    assert_broadcasts(ConversationChannel.broadcasting_for(@conversation), 1) do
+      message = Message.create!(
+        conversation: @conversation,
+        sender: @patient,
+        content: "Test broadcast message"
+      )
+    end
+
+    # Verify the broadcast contains the correct data
+    # Note: In a full implementation, we'd verify the actual broadcast data
+    assert message.persisted?, "Message should be persisted"
+    assert_equal "Test broadcast message", message.content
   end
 
   # Instance Method Tests
