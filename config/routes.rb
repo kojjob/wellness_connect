@@ -51,6 +51,9 @@ Rails.application.routes.draw do
     end
   end
 
+  # Notification Preferences (singular resource - one per user)
+  resource :notification_preferences, only: [ :edit, :update ]
+
   # Payments
   resources :payments, only: [ :index, :create ] do
     member do
