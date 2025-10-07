@@ -12,7 +12,7 @@
 class MessagesController < ApplicationController
   before_action :authenticate_user!
   before_action :set_conversation
-  before_action :set_message, only: [ :update, :destroy, :mark_as_read ]
+  before_action :set_message, only: [ :update, :destroy, :mark_as_read, :download_attachment ]
 
   # POST /conversations/:conversation_id/messages
   # Create new message and broadcast via Turbo Stream
@@ -143,6 +143,23 @@ class MessagesController < ApplicationController
     end
   end
 
+  # GET /conversations/:conversation_id/messages/:id/download_attachment
+  # Download message attachment and track download count
+  def download_attachment
+    authorize @message
+
+    unless @message.attachment.attached?
+      redirect_to conversation_path(@conversation), alert: "No attachment found."
+      return
+    end
+
+    # Increment download counter
+    @message.increment!(:downloads_count)
+
+    # Redirect to the attachment URL (served by ActiveStorage)
+    redirect_to rails_blob_path(@message.attachment, disposition: "attachment"), allow_other_host: true
+  end
+
   private
 
   def set_conversation
@@ -155,7 +172,7 @@ class MessagesController < ApplicationController
   end
 
   def message_params
-    params.require(:message).permit(:content, :message_type)
+    params.require(:message).permit(:content, :message_type, :attachment)
   end
 
   def message_update_params

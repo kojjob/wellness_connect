@@ -12,6 +12,7 @@ class Message < ApplicationRecord
   validates :sender_id, presence: true
   validate :content_or_attachment_present
   validate :sender_must_be_participant
+  validate :attachment_validation
 
   # Enums
   enum :message_type, { text: 0, file: 1, image: 2, system: 3 }, default: :text
@@ -68,6 +69,31 @@ class Message < ApplicationRecord
 
     unless conversation.participants.include?(sender)
       errors.add(:sender, "must be a participant in the conversation")
+    end
+  end
+
+  # Custom validation: attachment file type and size validation
+  def attachment_validation
+    return unless attachment.attached?
+
+    # File type validation
+    allowed_image_types = %w[image/jpeg image/jpg image/png image/webp]
+    allowed_document_types = %w[application/pdf]
+    allowed_types = allowed_image_types + allowed_document_types
+
+    unless allowed_types.include?(attachment.blob.content_type)
+      errors.add(:attachment, "must be a JPEG, PNG, WebP image or PDF document")
+    end
+
+    # File size validation
+    if allowed_image_types.include?(attachment.blob.content_type)
+      if attachment.blob.byte_size > 10.megabytes
+        errors.add(:attachment, "image size must be less than 10MB")
+      end
+    elsif attachment.blob.content_type == "application/pdf"
+      if attachment.blob.byte_size > 20.megabytes
+        errors.add(:attachment, "PDF size must be less than 20MB")
+      end
     end
   end
 

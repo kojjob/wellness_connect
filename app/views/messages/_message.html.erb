@@ -26,9 +26,41 @@
 
       <%# Message content %>
       <div class="rounded-lg px-4 py-2 <%= is_sender ? 'bg-primary-600 text-white' : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white' %> shadow-sm">
-        <p class="text-sm whitespace-pre-wrap break-words">
-          <%= message.content %>
-        </p>
+        <% if message.content.present? %>
+          <p class="text-sm whitespace-pre-wrap break-words">
+            <%= message.content %>
+          </p>
+        <% end %>
+
+        <%# Attachment display %>
+        <% if message.attachment.attached? %>
+          <div class="<%= 'mt-2' if message.content.present? %>">
+            <% if message.attachment.image? %>
+              <%# Image preview with download link %>
+              <div class="relative group">
+                <%= image_tag message.attachment.variant(resize_to_limit: [400, 400]),
+                    class: "rounded-lg max-w-full h-auto",
+                    alt: "Attached image" %>
+                <%= link_to download_attachment_conversation_message_path(message.conversation, message),
+                    class: "absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg" do %>
+                  <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                  </svg>
+                <% end %>
+              </div>
+            <% else %>
+              <%# PDF or other file download link %>
+              <%= link_to download_attachment_conversation_message_path(message.conversation, message),
+                  class: "flex items-center space-x-2 text-sm hover:underline #{is_sender ? 'text-primary-100' : 'text-primary-600 dark:text-primary-400'}" do %>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                </svg>
+                <span><%= message.attachment.filename %></span>
+                <span class="text-xs opacity-75">(<%= number_to_human_size(message.attachment.byte_size) %>)</span>
+              <% end %>
+            <% end %>
+          </div>
+        <% end %>
 
         <%# Edited indicator %>
         <% if message.edited_at.present? %>

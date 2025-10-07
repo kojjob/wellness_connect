@@ -72,6 +72,7 @@ Rails.application.routes.draw do
     resources :messages, only: [ :create, :edit, :update, :destroy ] do
       member do
         patch :mark_as_read
+        get :download_attachment
       end
     end
   end
