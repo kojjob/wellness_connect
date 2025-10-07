@@ -87,8 +87,8 @@ Rails.application.routes.draw do
         delete :remove_avatar
       end
     end
-    resources :provider_profiles # Full CRUD for provider profiles
-    resources :patient_profiles # Full CRUD for patient profiles
+    resources :provider_profiles, except: [ :destroy ] # View and edit provider profiles (no deletion for data integrity)
+    resources :patient_profiles, except: [ :destroy, :new, :create ] # View and edit patient profiles (no creation/deletion for data integrity)
     resources :appointments, only: [ :index, :show ]
     resources :payments, only: [ :index, :show ]
   end
