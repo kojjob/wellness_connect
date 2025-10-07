@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_10_06_223226) do
+ActiveRecord::Schema[8.1].define(version: 2025_10_07_022214) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -213,6 +213,8 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_06_223226) do
     t.string "website"
     t.integer "years_of_experience"
     t.index ["availabilities_count"], name: "index_provider_profiles_on_availabilities_count"
+    t.index ["average_rating", "specialty"], name: "index_provider_profiles_on_rating_and_specialty", comment: "Optimize searches filtering by specialty and sorting by rating"
+    t.index ["average_rating"], name: "index_provider_profiles_on_average_rating", comment: "Optimize provider sorting by rating"
     t.index ["services_count"], name: "index_provider_profiles_on_services_count"
     t.index ["specialty"], name: "index_provider_profiles_on_specialty", comment: "Filter providers by specialty"
     t.index ["user_id"], name: "index_provider_profiles_on_user_id"
@@ -272,6 +274,9 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_06_223226) do
     t.index ["appointments_as_provider_count"], name: "index_users_on_appointments_as_provider_count"
     t.index ["blocked_at"], name: "index_users_on_blocked_at"
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["first_name", "last_name"], name: "index_users_on_first_and_last_name", comment: "Optimize user search by full name"
+    t.index ["first_name"], name: "index_users_on_first_name", comment: "Optimize user search by first name"
+    t.index ["last_name"], name: "index_users_on_last_name", comment: "Optimize user search by last name"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["role"], name: "index_users_on_role", comment: "Filter users by role (patient, provider, admin)"
     t.index ["suspended_at"], name: "index_users_on_suspended_at"

@@ -27,10 +27,10 @@ class ProviderProfilesController < ApplicationController
       @provider_profiles = @provider_profiles.where("consultation_rate <= ?", params[:price_max])
     end
 
-    # Filter by minimum rating
+    # Filter by minimum rating - use database query for performance
     if params[:min_rating].present?
       min_rating = params[:min_rating].to_f
-      @provider_profiles = @provider_profiles.select { |p| p.average_rating >= min_rating }
+      @provider_profiles = @provider_profiles.where("average_rating >= ?", min_rating)
     end
 
     # Filter by years of experience
@@ -48,10 +48,10 @@ class ProviderProfilesController < ApplicationController
       @provider_profiles = @provider_profiles.where("session_formats ILIKE ?", "%#{params[:session_format]}%")
     end
 
-    # Sorting
+    # Sorting - use database ORDER BY for better performance
     case params[:sort]
     when "rating_desc"
-      @provider_profiles = @provider_profiles.sort_by { |p| -p.average_rating }
+      @provider_profiles = @provider_profiles.order(average_rating: :desc)
     when "price_asc"
       @provider_profiles = @provider_profiles.order(consultation_rate: :asc)
     when "price_desc"
@@ -61,29 +61,31 @@ class ProviderProfilesController < ApplicationController
     when "newest"
       @provider_profiles = @provider_profiles.order(created_at: :desc)
     else
-      # Default: highest rated first
-      @provider_profiles = @provider_profiles.sort_by { |p| -p.average_rating } if @provider_profiles.is_a?(Array)
+      # Default: highest rated first - use database ORDER BY
+      @provider_profiles = @provider_profiles.order(average_rating: :desc)
     end
 
-    # Convert to array if it's still an ActiveRecord relation and we need array operations
-    @provider_profiles = @provider_profiles.to_a if @provider_profiles.is_a?(ActiveRecord::Relation) && params[:min_rating].present?
+    # Cache filter dropdowns for 1 hour to reduce database queries
+    # These don't change frequently, so caching significantly improves performance
+    @specialties = Rails.cache.fetch("provider_profiles/specialties", expires_in: 1.hour) do
+      ProviderProfile.distinct.pluck(:specialty).compact.sort
+    end
 
-    # Get unique specialties for filter dropdown
-    @specialties = ProviderProfile.distinct.pluck(:specialty).compact.sort
+    @languages = Rails.cache.fetch("provider_profiles/languages", expires_in: 1.hour) do
+      ProviderProfile.where.not(languages: nil)
+                     .pluck(:languages)
+                     .flat_map { |l| l.split(",").map(&:strip) }
+                     .uniq
+                     .sort
+    end
 
-    # Get available languages for filter
-    @languages = ProviderProfile.where.not(languages: nil)
-                                .pluck(:languages)
-                                .flat_map { |l| l.split(",").map(&:strip) }
-                                .uniq
-                                .sort
-
-    # Get available session formats
-    @session_formats = ProviderProfile.where.not(session_formats: nil)
-                                      .pluck(:session_formats)
-                                      .flat_map { |s| s.split(",").map(&:strip) }
-                                      .uniq
-                                      .sort
+    @session_formats = Rails.cache.fetch("provider_profiles/session_formats", expires_in: 1.hour) do
+      ProviderProfile.where.not(session_formats: nil)
+                     .pluck(:session_formats)
+                     .flat_map { |s| s.split(",").map(&:strip) }
+                     .uniq
+                     .sort
+    end
 
     # Don't require authorization for public browsing
     authorize @provider_profiles if user_signed_in?
