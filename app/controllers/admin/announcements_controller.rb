@@ -9,17 +9,33 @@ module Admin
 
       if @announcement.valid?
         count = send_announcement
-        
+
         flash[:notice] = case @announcement.recipient_type
         when "all"
-          "Announcement sent to #{count} users successfully."
+          if count > 0
+            "Announcement sent to #{count} users successfully."
+          else
+            "No recipients reached. All users have system notifications disabled."
+          end
         when "patients"
-          "Announcement sent to #{count} patients successfully."
+          if count > 0
+            "Announcement sent to #{count} patients successfully."
+          else
+            "No recipients reached. All patients have system notifications disabled."
+          end
         when "providers"
-          "Announcement sent to #{count} providers successfully."
+          if count > 0
+            "Announcement sent to #{count} providers successfully."
+          else
+            "No recipients reached. All providers have system notifications disabled."
+          end
         when "specific"
           user = User.find(@announcement.user_id)
-          "Announcement sent to #{user.email} successfully."
+          if count > 0
+            "Announcement sent to #{user.email} successfully."
+          else
+            "Announcement not delivered to #{user.email} (notifications disabled)."
+          end
         end
 
         redirect_to admin_root_path
@@ -95,4 +111,3 @@ module Admin
     validates :user_id, presence: true, if: -> { recipient_type == "specific" }
   end
 end
-
