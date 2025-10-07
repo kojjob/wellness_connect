@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_10_06_223226) do
+ActiveRecord::Schema[8.1].define(version: 2025_10_07_084306) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -139,17 +139,39 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_06_223226) do
     t.index ["sender_id"], name: "index_messages_on_sender_id", comment: "Find messages by sender"
   end
 
+  create_table "notification_preferences", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.boolean "email_appointments", default: true, null: false
+    t.boolean "email_messages", default: true, null: false
+    t.boolean "email_payments", default: true, null: false
+    t.boolean "email_system", default: true, null: false
+    t.boolean "in_app_appointments", default: true, null: false
+    t.boolean "in_app_messages", default: true, null: false
+    t.boolean "in_app_payments", default: true, null: false
+    t.boolean "in_app_system", default: true, null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id"], name: "index_notification_preferences_on_user_id", unique: true
+  end
+
   create_table "notifications", force: :cascade do |t|
     t.string "action_url"
+    t.bigint "actor_id"
     t.datetime "created_at", null: false
+    t.datetime "delivered_at"
     t.text "message"
+    t.bigint "notifiable_id"
+    t.string "notifiable_type"
     t.string "notification_type"
     t.datetime "read_at"
     t.string "title"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
+    t.index ["actor_id"], name: "index_notifications_on_actor_id"
+    t.index ["notifiable_type", "notifiable_id"], name: "index_notifications_on_notifiable"
     t.index ["notification_type"], name: "index_notifications_on_notification_type", comment: "Filter notifications by type"
     t.index ["read_at"], name: "index_notifications_on_read_at", comment: "Find unread notifications (WHERE read_at IS NULL)"
+    t.index ["user_id", "read_at"], name: "index_notifications_on_user_and_read_status"
     t.index ["user_id", "read_at"], name: "index_notifications_on_user_id_and_read_at", comment: "Find user's unread notifications"
     t.index ["user_id"], name: "index_notifications_on_user_id"
   end
@@ -213,6 +235,8 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_06_223226) do
     t.string "website"
     t.integer "years_of_experience"
     t.index ["availabilities_count"], name: "index_provider_profiles_on_availabilities_count"
+    t.index ["average_rating", "specialty"], name: "index_provider_profiles_on_rating_and_specialty", comment: "Optimize searches filtering by specialty and sorting by rating"
+    t.index ["average_rating"], name: "index_provider_profiles_on_average_rating", comment: "Optimize provider sorting by rating"
     t.index ["services_count"], name: "index_provider_profiles_on_services_count"
     t.index ["specialty"], name: "index_provider_profiles_on_specialty", comment: "Filter providers by specialty"
     t.index ["user_id"], name: "index_provider_profiles_on_user_id"
@@ -272,6 +296,9 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_06_223226) do
     t.index ["appointments_as_provider_count"], name: "index_users_on_appointments_as_provider_count"
     t.index ["blocked_at"], name: "index_users_on_blocked_at"
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["first_name", "last_name"], name: "index_users_on_first_and_last_name", comment: "Optimize user search by full name"
+    t.index ["first_name"], name: "index_users_on_first_name", comment: "Optimize user search by first name"
+    t.index ["last_name"], name: "index_users_on_last_name", comment: "Optimize user search by last name"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["role"], name: "index_users_on_role", comment: "Filter users by role (patient, provider, admin)"
     t.index ["suspended_at"], name: "index_users_on_suspended_at"
@@ -290,7 +317,9 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_06_223226) do
   add_foreign_key "conversations", "users", column: "provider_id"
   add_foreign_key "messages", "conversations"
   add_foreign_key "messages", "users", column: "sender_id"
+  add_foreign_key "notification_preferences", "users"
   add_foreign_key "notifications", "users"
+  add_foreign_key "notifications", "users", column: "actor_id"
   add_foreign_key "patient_profiles", "users"
   add_foreign_key "payments", "appointments"
   add_foreign_key "payments", "users", column: "payer_id"

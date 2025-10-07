@@ -7,6 +7,9 @@ class User < ApplicationRecord
   # Include Analytics concern for provider metrics
   include Analytics
 
+  # Callbacks
+  after_create :create_default_notification_preferences
+
   # Enums
   # Role hierarchy: patient < provider < admin < super_admin
   # super_admin: Full system access including user creation and management
@@ -22,6 +25,7 @@ class User < ApplicationRecord
   has_many :appointments_as_provider, class_name: "Appointment", foreign_key: "provider_id", dependent: :destroy
   has_many :payments_made, class_name: "Payment", foreign_key: "payer_id", dependent: :destroy
   has_many :notifications, dependent: :destroy
+  has_one :notification_preference, dependent: :destroy
   has_many :reviews, foreign_key: "reviewer_id", dependent: :destroy
 
   # Conversations and messaging
@@ -128,5 +132,12 @@ class User < ApplicationRecord
     else
       super
     end
+  end
+
+  private
+
+  # Create default notification preferences for new users
+  def create_default_notification_preferences
+    create_notification_preference! unless notification_preference.present?
   end
 end
