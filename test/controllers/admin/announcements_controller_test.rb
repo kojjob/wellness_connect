@@ -17,7 +17,7 @@ class Admin::AnnouncementsControllerTest < ActionDispatch::IntegrationTest
     sign_in @patient
     get new_admin_announcement_path
     assert_redirected_to root_path
-    assert_equal "You are not authorized to perform this action.", flash[:alert]
+    assert_equal "You are not authorized to access this page.", flash[:alert]
   end
 
   test "admin can access new announcement page" do

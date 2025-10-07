@@ -26,6 +26,7 @@ class Message < ApplicationRecord
   before_update :set_edited_timestamp, if: :content_changed?
   after_create :update_conversation_timestamp
   after_create :increment_recipient_unread_count
+  after_create :send_notification_to_recipient
   after_create_commit :broadcast_message
 
   # Instance methods
@@ -78,6 +79,15 @@ class Message < ApplicationRecord
   # Callback: increment unread count for the recipient
   def increment_recipient_unread_count
     conversation.increment_unread_for(sender)
+  end
+
+  # Callback: send notification to recipient
+  def send_notification_to_recipient
+    return unless recipient.present?
+    return if message_type == "system" # Don't notify for system messages
+
+    # Create notification for the recipient
+    NotificationService.notify_new_message(self)
   end
 
   # Callback: broadcast message to conversation channel

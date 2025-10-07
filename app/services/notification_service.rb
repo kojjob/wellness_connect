@@ -175,6 +175,33 @@ class NotificationService
     end
   end
 
+  # Create a notification for new message
+  def self.notify_new_message(message)
+    recipient = message.recipient
+    return unless recipient.present?
+    return unless can_notify?(recipient, "new_message")
+
+    sender = message.sender
+    conversation = message.conversation
+
+    # Truncate message content for notification
+    message_preview = message.content.present? ? message.content.truncate(100) : "[Attachment]"
+
+    title = "New Message from #{sender.full_name}"
+    notification_message = "#{sender.full_name}: #{message_preview}"
+
+    Notification.create!(
+      user: recipient,
+      title: title,
+      message: notification_message,
+      notification_type: "new_message",
+      action_url: Rails.application.routes.url_helpers.conversation_path(conversation)
+    )
+
+    # Send email if enabled
+    send_email(recipient, "new_message", title, notification_message)
+  end
+
   private
 
   # Check if a user's preferences allow notification of a specific type

@@ -20,6 +20,7 @@ class Notification < ApplicationRecord
     no_refund
     profile_approved
     new_review
+    new_message
     system_announcement
   ].freeze
 
