@@ -280,4 +280,75 @@ class NotificationService
     Rails.logger.error "Failed to send email notification: #{e.message}"
     # Don't raise error - email failure shouldn't break notification creation
   end
+
+  # Create notification for new message
+  def self.notify_message_received(message, recipient)
+    conversation = message.conversation
+    sender = message.sender
+
+    create_notification(
+      user: recipient,
+      actor: sender,
+      notifiable: message,
+      title: "New Message",
+      message: "#{sender.full_name}: #{message.content.truncate(50)}",
+      notification_type: "message_received",
+      action_url: Rails.application.routes.url_helpers.conversation_path(conversation),
+      send_email: false  # Messages are real-time, skip email
+    )
+  end
+
+  private
+
+  # Core method to create notification with email and broadcasting
+  def self.create_notification(
+    user:,
+    title:,
+    message:,
+    notification_type:,
+    actor: nil,
+    notifiable: nil,
+    action_url: nil,
+    send_email: false,
+    mailer_method: nil,
+    mailer_args: []
+  )
+    # Create in-app notification
+    notification = Notification.create!(
+      user: user,
+      actor: actor,
+      notifiable: notifiable,
+      notification_type: notification_type,
+      title: title,
+      message: message,
+      action_url: action_url
+    )
+
+    # Send email if requested and mailer method provided
+    if send_email && mailer_method.present?
+      begin
+        AppointmentMailer.public_send(mailer_method, *mailer_args).deliver_later
+        notification.mark_as_delivered!
+      rescue => e
+        Rails.logger.error("Failed to send notification email: #{e.message}")
+      end
+    end
+
+    # Broadcast to user's notification stream for real-time updates
+    broadcast_notification(notification) if defined?(Turbo)
+
+    notification
+  end
+
+  # Broadcast notification to user's Turbo Stream
+  def self.broadcast_notification(notification)
+    Turbo::StreamsChannel.broadcast_append_to(
+      "notifications_#{notification.user_id}",
+      target: "notifications",
+      partial: "notifications/notification",
+      locals: { notification: notification }
+    )
+  rescue => e
+    Rails.logger.error("Failed to broadcast notification: #{e.message}")
+  end
 end
