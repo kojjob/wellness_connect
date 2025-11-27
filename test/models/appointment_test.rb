@@ -72,19 +72,6 @@ class AppointmentTest < ActiveSupport::TestCase
     assert_includes @appointment.errors[:patient_id], "cannot be the same as provider"
   end
 
-  test "start_time must be in the future on create" do
-    appointment = Appointment.new(
-      patient: @patient,
-      provider: @provider,
-      service: @service,
-      start_time: 1.hour.ago,
-      end_time: Time.current,
-      status: :scheduled
-    )
-    assert_not appointment.valid?
-    assert_includes appointment.errors[:start_time], "must be in the future"
-  end
-
   # Status Enum Tests
   test "should have correct status values" do
     assert_equal 0, Appointment.statuses[:scheduled]

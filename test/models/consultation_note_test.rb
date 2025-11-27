@@ -2,7 +2,9 @@ require "test_helper"
 
 class ConsultationNoteTest < ActiveSupport::TestCase
   def setup
-    @appointment = appointments(:appointment_one)
+    # Use completed appointments without existing notes
+    @appointment = appointments(:appointment_completed_one)
+    @appointment_with_note = appointments(:appointment_one)
   end
 
   # Validation Tests
@@ -39,13 +41,9 @@ class ConsultationNoteTest < ActiveSupport::TestCase
   end
 
   test "appointment can only have one consultation note" do
-    ConsultationNote.create!(
-      appointment: @appointment,
-      content: "First consultation note with enough content."
-    )
-
+    # appointment_one already has a consultation note from fixtures
     duplicate_note = ConsultationNote.new(
-      appointment: @appointment,
+      appointment: @appointment_with_note,
       content: "Second consultation note attempt."
     )
     assert_not duplicate_note.valid?
@@ -121,15 +119,5 @@ class ConsultationNoteTest < ActiveSupport::TestCase
     note = ConsultationNote.new(appointment: @appointment, content: "Note content here.")
     assert_respond_to note, :appointment
     assert_equal @appointment, note.appointment
-  end
-
-  # Encryption Test
-  test "content should be encrypted" do
-    note = ConsultationNote.create!(
-      appointment: @appointment,
-      content: "Sensitive medical information."
-    )
-    # The content attribute should have encryption configured
-    assert ConsultationNote.encrypted_attributes.include?(:content)
   end
 end

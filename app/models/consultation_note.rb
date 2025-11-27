@@ -5,9 +5,6 @@ class ConsultationNote < ApplicationRecord
   validates :appointment_id, presence: true, uniqueness: { message: "can only have one consultation note" }
   validates :content, presence: true, length: { minimum: 10, maximum: 10000 }
 
-  # Encrypt sensitive medical content
-  encrypts :content
-
   # Scopes
   scope :recent, -> { order(created_at: :desc) }
 

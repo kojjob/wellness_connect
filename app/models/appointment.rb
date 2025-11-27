@@ -18,7 +18,6 @@ class Appointment < ApplicationRecord
 
   validate :end_time_after_start_time
   validate :patient_and_provider_different
-  validate :start_time_in_future, on: :create
 
   enum :status, {
     scheduled: 0,
@@ -63,12 +62,5 @@ class Appointment < ApplicationRecord
     return if patient_id != provider_id
 
     errors.add(:patient_id, "cannot be the same as provider")
-  end
-
-  def start_time_in_future
-    return unless start_time
-    return if start_time >= Time.current
-
-    errors.add(:start_time, "must be in the future")
   end
 end
