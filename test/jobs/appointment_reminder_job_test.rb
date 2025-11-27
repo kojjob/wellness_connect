@@ -5,7 +5,7 @@ class AppointmentReminderJobTest < ActiveJob::TestCase
     @appointment = appointments(:appointment_one)
     @patient = @appointment.patient
     @provider = @appointment.provider
-    
+
     # Ensure notification preferences exist
     @patient.create_notification_preference! unless @patient.notification_preference
     @provider.create_notification_preference! unless @provider.notification_preference
@@ -90,7 +90,7 @@ class AppointmentReminderJobTest < ActiveJob::TestCase
   end
 
   test "job can be enqueued for future execution" do
-    assert_enqueued_with(job: AppointmentReminderJob, args: [@appointment.id]) do
+    assert_enqueued_with(job: AppointmentReminderJob, args: [ @appointment.id ]) do
       AppointmentReminderJob.perform_later(@appointment.id)
     end
   end

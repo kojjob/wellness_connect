@@ -31,7 +31,7 @@ class Payment < ApplicationRecord
   end
 
   def formatted_amount
-    "$#{'%.2f' % amount}"
+    format("$%.2f", amount)
   end
 
   def paid?
@@ -46,8 +46,8 @@ class Payment < ApplicationRecord
 
   def refund_amount_not_exceed_original
     return unless refunded_amount.present? && amount.present?
-    if refunded_amount > amount
-      errors.add(:refunded_amount, "cannot exceed the original amount")
-    end
+    return if refunded_amount <= amount
+
+    errors.add(:refunded_amount, "cannot exceed the original amount")
   end
 end

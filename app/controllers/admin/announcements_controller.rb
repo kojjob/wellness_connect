@@ -48,7 +48,7 @@ module Admin
 
     def preview
       @announcement = Announcement.new(announcement_params)
-      
+
       respond_to do |format|
         format.turbo_stream
       end

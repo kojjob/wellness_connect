@@ -32,20 +32,21 @@ class Review < ApplicationRecord
 
   def reviewer_is_not_provider
     return unless reviewer_id && provider_profile&.user_id
-    if reviewer_id == provider_profile.user_id
-      errors.add(:reviewer, "cannot review their own profile")
-    end
+    return if reviewer_id != provider_profile.user_id
+
+    errors.add(:reviewer, "cannot review their own profile")
   end
 
   def reviewer_had_completed_appointment
     return unless reviewer_id && provider_profile&.user_id
+
     has_completed = Appointment.exists?(
       patient_id: reviewer_id,
       provider_id: provider_profile.user_id,
       status: :completed
     )
-    unless has_completed
-      errors.add(:base, "You must have a completed appointment to leave a review")
-    end
+    return if has_completed
+
+    errors.add(:base, "You must have a completed appointment to leave a review")
   end
 end

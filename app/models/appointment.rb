@@ -53,22 +53,22 @@ class Appointment < ApplicationRecord
 
   def end_time_after_start_time
     return unless start_time && end_time
-    if end_time <= start_time
-      errors.add(:end_time, "must be after start time")
-    end
+    return if end_time > start_time
+
+    errors.add(:end_time, "must be after start time")
   end
 
   def patient_and_provider_different
     return unless patient_id && provider_id
-    if patient_id == provider_id
-      errors.add(:patient_id, "cannot be the same as provider")
-    end
+    return if patient_id != provider_id
+
+    errors.add(:patient_id, "cannot be the same as provider")
   end
 
   def start_time_in_future
     return unless start_time
-    if start_time < Time.current
-      errors.add(:start_time, "must be in the future")
-    end
+    return if start_time >= Time.current
+
+    errors.add(:start_time, "must be in the future")
   end
 end
