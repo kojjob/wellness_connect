@@ -5,7 +5,6 @@ export default class extends Controller {
   static targets = ["mobileMenu", "mobileMenuButton", "mobileMenuIcon", "mobileMenuCloseIcon"]
 
   connect() {
-    console.log("Navbar controller connected")
     // Close mobile menu on window resize to desktop
     this.boundHandleResize = this.handleResize.bind(this)
     window.addEventListener("resize", this.boundHandleResize)
@@ -16,10 +15,8 @@ export default class extends Controller {
   }
 
   toggleMobileMenu() {
-    console.log("Mobile menu toggle clicked")
     const isOpen = !this.mobileMenuTarget.classList.contains("hidden")
 
-    console.log("Mobile menu is currently open:", isOpen)
 
     if (isOpen) {
       this.closeMobileMenu()

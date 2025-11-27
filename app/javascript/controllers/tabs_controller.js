@@ -8,7 +8,6 @@ export default class extends Controller {
   }
 
   connect() {
-    console.log("Tabs controller connected")
     
     // Show default tab or first tab
     const defaultTabId = this.defaultTabValue || this.tabTargets[0]?.dataset.tabId

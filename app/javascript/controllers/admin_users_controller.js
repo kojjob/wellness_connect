@@ -21,7 +21,6 @@ export default class extends Controller {
   }
 
   connect() {
-    console.log("Admin users controller connected")
     // Load saved view preference
     const savedView = localStorage.getItem("adminUsersViewPreference")
     if (savedView) {

@@ -5,7 +5,7 @@ class AddPolymorphicAndActorToNotifications < ActiveRecord::Migration[8.1]
     add_column :notifications, :delivered_at, :datetime
 
     # Add composite index for performance (user + read status)
-    add_index :notifications, [:user_id, :read_at], name: 'index_notifications_on_user_and_read_status'
+    add_index :notifications, [ :user_id, :read_at ], name: 'index_notifications_on_user_and_read_status'
     # Note: add_reference already creates index for notifiable (polymorphic)
   end
 end

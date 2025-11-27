@@ -8,6 +8,17 @@ class Appointment < ApplicationRecord
   has_one :consultation_note, dependent: :destroy
   has_one :conversation, dependent: :nullify # Conversation can exist without appointment
 
+  # Validations
+  validates :start_time, presence: true
+  validates :end_time, presence: true
+  validates :patient_id, presence: true
+  validates :provider_id, presence: true
+  validates :service_id, presence: true
+  validates :status, presence: true
+
+  validate :end_time_after_start_time
+  validate :patient_and_provider_different
+
   enum :status, {
     scheduled: 0,
     completed: 1,
@@ -16,4 +27,40 @@ class Appointment < ApplicationRecord
     no_show: 4,
     payment_pending: 5
   }, default: :payment_pending
+
+  # Scopes
+  scope :upcoming, -> { where(status: [ :scheduled, :payment_pending ]).where("start_time > ?", Time.current) }
+  scope :past, -> { where("start_time < ?", Time.current) }
+  scope :active, -> { where(status: [ :scheduled, :payment_pending ]) }
+  scope :for_date, ->(date) { where(start_time: date.beginning_of_day..date.end_of_day) }
+
+  # Instance methods
+  def duration_minutes
+    return 0 unless start_time && end_time
+    ((end_time - start_time) / 60).to_i
+  end
+
+  def cancellable?
+    scheduled? || payment_pending?
+  end
+
+  def cancelled?
+    cancelled_by_patient? || cancelled_by_provider?
+  end
+
+  private
+
+  def end_time_after_start_time
+    return unless start_time && end_time
+    return if end_time > start_time
+
+    errors.add(:end_time, "must be after start time")
+  end
+
+  def patient_and_provider_different
+    return unless patient_id && provider_id
+    return if patient_id != provider_id
+
+    errors.add(:patient_id, "cannot be the same as provider")
+  end
 end

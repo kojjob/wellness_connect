@@ -17,7 +17,6 @@ export default class extends Controller {
   }
 
   connect() {
-    console.log("Filter controller connected")
     this.updatePriceDisplay()
     this.checkClearButton()
   }

@@ -68,7 +68,7 @@ class MessageNotificationTest < ActiveSupport::TestCase
 
   test "message notification truncates long messages" do
     long_message = "A" * 200
-    
+
     Message.create!(
       conversation: @conversation,
       sender: @patient,
@@ -87,14 +87,14 @@ class MessageNotificationTest < ActiveSupport::TestCase
       sender: @patient,
       message_type: "file"
     )
-    
+
     # Attach a file
     message.attachment.attach(
       io: StringIO.new("test file content"),
       filename: "test.pdf",
       content_type: "application/pdf"
     )
-    
+
     assert_difference "Notification.count", 1 do
       message.save!
     end

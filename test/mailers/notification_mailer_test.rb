@@ -18,8 +18,8 @@ class NotificationMailerTest < ActionMailer::TestCase
       email.deliver_now
     end
 
-    assert_equal ["noreply@wellnessconnect.com"], email.from
-    assert_equal [@user.email], email.to
+    assert_equal [ "noreply@wellnessconnect.com" ], email.from
+    assert_equal [ @user.email ], email.to
     assert_equal "New Appointment Booked", email.subject
     assert_match "Your appointment has been confirmed", email.body.encoded
   end

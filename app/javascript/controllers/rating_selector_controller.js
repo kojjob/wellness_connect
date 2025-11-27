@@ -5,7 +5,6 @@ export default class extends Controller {
   static targets = [ "star", "input" ]
 
   connect() {
-    console.log("Rating selector controller connected")
   }
 
   update(event) {

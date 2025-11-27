@@ -111,4 +111,3 @@ class NotificationMailerPreview < ActionMailer::Preview
     )
   end
 end
-
