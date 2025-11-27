@@ -20,7 +20,6 @@ export default class extends Controller {
   }
 
   connect() {
-    console.log("Admin user form controller connected")
     this.setupFormChangeDetection()
     this.setupDragAndDrop()
   }

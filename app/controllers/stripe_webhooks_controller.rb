@@ -10,9 +10,18 @@ class StripeWebhooksController < ApplicationController
     endpoint_secret = Rails.configuration.stripe[:webhook_secret]
 
     begin
-      # Verify webhook signature (skip in test environment)
+      # SECURITY: Always verify webhook signature in non-test environments
+      # Raise error if webhook secret is not configured in production/development
+      if endpoint_secret.nil? && !Rails.env.test?
+        Rails.logger.error "Stripe webhook secret not configured - rejecting webhook"
+        render json: { error: "Webhook secret not configured" }, status: :internal_server_error
+        return
+      end
+
+      # Verify webhook signature (skip only in test environment with explicit nil secret)
       event = if Rails.env.test? && endpoint_secret.nil?
         # In test environment without webhook secret, parse the payload directly
+        # This is ONLY for testing - production MUST have signature verification
         JSON.parse(payload, symbolize_names: true)
       else
         Stripe::Webhook.construct_event(

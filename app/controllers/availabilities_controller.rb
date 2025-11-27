@@ -57,6 +57,7 @@ class AvailabilitiesController < ApplicationController
   end
 
   def availability_params
-    params.require(:availability).permit(:start_time, :end_time, :is_booked)
+    # SECURITY: is_booked is intentionally excluded - only system should update booking status
+    params.require(:availability).permit(:start_time, :end_time)
   end
 end

@@ -54,17 +54,17 @@ class AppointmentsController < ApplicationController
       @appointment.patient = current_user
       @appointment.status = :scheduled
 
-      # Find and lock the availability slot
-      @availability = Availability.find(params[:appointment][:availability_id])
+      # SECURITY: Use pessimistic locking to prevent race conditions
+      # This locks the row until the transaction completes, preventing double-booking
+      @availability = Availability.lock("FOR UPDATE NOWAIT").find(params[:appointment][:availability_id])
 
-      # Check if availability is still available
+      # Check if availability is still available (after acquiring lock)
       if @availability.is_booked?
         redirect_to new_appointment_path(service_id: params[:appointment][:service_id]), error: "⚠ This time slot has already been booked. Please choose another time." and return
       end
 
-      # Save appointment and lock availability
+      # Save appointment and mark availability as booked atomically (within same transaction)
       if @appointment.save
-        # Mark availability as booked
         @availability.update!(is_booked: true)
 
         # Send confirmation emails
@@ -85,6 +85,13 @@ class AppointmentsController < ApplicationController
     end
   rescue ActiveRecord::RecordNotFound
     redirect_to new_appointment_path, error: "⚠ Invalid availability slot selected. Please choose another time slot."
+  rescue ActiveRecord::LockWaitTimeout, ActiveRecord::StatementInvalid => e
+    # Handle lock contention - another user is booking this slot simultaneously
+    if e.message.include?("could not obtain lock") || e.message.include?("NOWAIT")
+      redirect_to new_appointment_path(service_id: params.dig(:appointment, :service_id)), error: "⚠ This time slot is being booked by another user. Please try again or choose a different time."
+    else
+      raise e
+    end
   rescue ActiveRecord::RecordInvalid => e
     @appointment ||= Appointment.new
     @service = Service.find(params[:appointment][:service_id]) if params[:appointment][:service_id].present?
