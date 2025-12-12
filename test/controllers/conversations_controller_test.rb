@@ -136,10 +136,6 @@ class ConversationsControllerTest < ActionDispatch::IntegrationTest
 
     other_provider = users(:provider_user_two)
 
-    # The controller reuses an existing conversation for the same participants.
-    # Ensure this test is asserting a true create.
-    Conversation.where(patient: @patient, provider: other_provider, appointment_id: nil).delete_all
-
     assert_difference("Conversation.count", 1) do
       post conversations_path, params: {
         conversation: {

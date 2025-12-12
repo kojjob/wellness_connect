@@ -1,11 +1,10 @@
 require "application_system_test_case"
-require "timeout"
 
 class ConversationsTest < ApplicationSystemTestCase
   setup do
     # Create users
-    @patient = users(:patient_user)
-    @provider = users(:provider_user)
+    @patient = users(:patient_one)
+    @provider = users(:provider_one)
 
     # Create a conversation between patient and provider
     @conversation = Conversation.create!(
@@ -32,7 +31,7 @@ class ConversationsTest < ApplicationSystemTestCase
     visit conversations_path
 
     assert_selector "h1", text: "Messages"
-    assert_selector "h2", text: "Active"
+    assert_selector "h2", text: "Active Conversations"
     assert_text @provider.full_name
   end
 
@@ -41,7 +40,7 @@ class ConversationsTest < ApplicationSystemTestCase
     visit conversations_path
 
     assert_selector "h1", text: "Messages"
-    assert_selector "h2", text: "Active"
+    assert_selector "h2", text: "Active Conversations"
     assert_text @patient.full_name
   end
 
@@ -73,42 +72,40 @@ class ConversationsTest < ApplicationSystemTestCase
     sign_in @patient
     visit conversation_path(@conversation)
 
-    before_count = Message.where(conversation: @conversation).count
+    # Fill in message form
+    fill_in "message[content]", with: "Thank you for your help!"
 
-    # Fill + submit via JS to avoid flaky click/scroll issues in headless mode
-    set_message_textarea_value("Thank you for your help!")
-    submit_message_form(@conversation)
+    # Submit form
+    click_button "Send"
 
-    wait_for_message_count(@conversation, before_count + 1)
+    # Should see the new message
+    assert_text "Thank you for your help!"
 
-    # Refresh and assert rendered in the message list
-    visit conversation_path(@conversation)
-    within("#conversation_messages") { assert_text "Thank you for your help!" }
-
-    # Message should be saved in database (content is encrypted, so don't query by content)
-    latest = Message.where(conversation: @conversation, sender: @patient).order(created_at: :desc).first
-    assert_equal "Thank you for your help!", latest.content
+    # Message should be saved in database
+    assert @conversation.messages.where(
+      sender: @patient,
+      content: "Thank you for your help!"
+    ).exists?
   end
 
   test "provider can send a text message" do
     sign_in @provider
     visit conversation_path(@conversation)
 
-    before_count = Message.where(conversation: @conversation).count
+    # Fill in message form
+    fill_in "message[content]", with: "You're welcome! Feel free to ask anytime."
 
-    # Fill + submit via JS to avoid flaky click/scroll issues in headless mode
-    set_message_textarea_value("You're welcome! Feel free to ask anytime.")
-    submit_message_form(@conversation)
+    # Submit form
+    click_button "Send"
 
-    wait_for_message_count(@conversation, before_count + 1)
+    # Should see the new message
+    assert_text "You're welcome! Feel free to ask anytime."
 
-    # Refresh and assert rendered in the message list
-    visit conversation_path(@conversation)
-    within("#conversation_messages") { assert_text "You're welcome! Feel free to ask anytime." }
-
-    # Message should be saved in database (content is encrypted, so don't query by content)
-    latest = Message.where(conversation: @conversation, sender: @provider).order(created_at: :desc).first
-    assert_equal "You're welcome! Feel free to ask anytime.", latest.content
+    # Message should be saved in database
+    assert @conversation.messages.where(
+      sender: @provider,
+      content: "You're welcome! Feel free to ask anytime."
+    ).exists?
   end
 
   test "message form clears after sending" do
@@ -117,8 +114,10 @@ class ConversationsTest < ApplicationSystemTestCase
 
     # Fill in message form
     message_text = "This message should disappear after sending"
-    set_message_textarea_value(message_text)
-    submit_message_form(@conversation)
+    fill_in "message[content]", with: message_text
+
+    # Submit form
+    click_button "Send"
 
     # Wait for turbo stream to complete
     assert_text message_text
@@ -150,12 +149,9 @@ class ConversationsTest < ApplicationSystemTestCase
     sign_in @patient
     visit root_path
 
-    # Messages lives in the user menu dropdown
-    find("button[aria-label='User menu']", visible: true, wait: 5).click
-    assert_selector("div[data-dropdown-target='menu']:not(.hidden)", wait: 5)
-
-    within("div[data-dropdown-target='menu']") do
-      click_link "Messages"
+    # Click on messages link in navbar
+    within("nav") do
+      click_link "Messages", match: :first
     end
 
     assert_current_path conversations_path
@@ -172,8 +168,8 @@ class ConversationsTest < ApplicationSystemTestCase
     sign_in @patient
     visit conversation_path(empty_conversation)
 
-    assert_text "Start the conversation"
-    assert_text "Send a message"
+    assert_text "No messages yet"
+    assert_text "Start the conversation by sending a message below"
   end
 
   test "messages show read status for sender" do
@@ -187,16 +183,19 @@ class ConversationsTest < ApplicationSystemTestCase
     sign_in @patient
     visit conversation_path(@conversation)
 
-    # Initially should show sent status (not read)
+    # Should show sent status (not read)
     within("#message_#{unread_message.id}") do
       assert_text "Sent"
     end
 
-    # Simulate recipient reading the message
-    unread_message.update!(read_at: Time.current)
+    # Mark as read
+    @conversation.mark_as_read_for_provider
+    unread_message.reload
 
-    # Sender should now see "Read" on refresh
+    # Refresh page
     visit conversation_path(@conversation)
+
+    # Should show read status
     within("#message_#{unread_message.id}") do
       assert_text "Read"
     end
@@ -206,17 +205,15 @@ class ConversationsTest < ApplicationSystemTestCase
     sign_in @patient
     visit conversation_path(@conversation)
 
-    # Click archive button (accept Turbo confirm)
-    accept_confirm(/Archive this conversation\?/i) do
-      click_button "Archive"
-    end
+    # Click archive button
+    click_button "Archive"
 
     # Should redirect to conversations index
     assert_current_path conversations_path
-    assert_text "Conversation archived."
+    assert_text "Conversation archived"
 
     # Conversation should be in archived section
-    assert_selector "h2", text: "Archived"
+    assert_selector "h2", text: "Archived Conversations"
   end
 
   test "message validation errors are displayed" do
@@ -228,7 +225,7 @@ class ConversationsTest < ApplicationSystemTestCase
     page.execute_script("document.querySelector('textarea[name=\"message[content]\"]').removeAttribute('required')")
 
     # Now try to submit empty form
-    submit_message_form(@conversation)
+    click_button "Send"
 
     # Should show error or stay on page
     # (The exact behavior depends on your validation setup)
@@ -241,15 +238,10 @@ class ConversationsTest < ApplicationSystemTestCase
 
     # Fill in multiline message
     multiline_text = "Line 1\nLine 2\nLine 3"
-    # Avoid triggering the Enter-to-send keydown handler while filling.
-    page.execute_script(<<~JS)
-      const textarea = document.querySelector("textarea[name='message[content]']")
-      textarea.value = #{multiline_text.to_json}
-      textarea.dispatchEvent(new Event('input', { bubbles: true }))
-    JS
+    fill_in "message[content]", with: multiline_text
 
     # Submit form
-    submit_message_form(@conversation)
+    click_button "Send"
 
     # Should see the multiline message
     assert_text "Line 1"
@@ -273,90 +265,39 @@ class ConversationsTest < ApplicationSystemTestCase
     visit conversation_path(@conversation)
 
     # Click back button (SVG link)
-    within("header") do
-      find("a[href='#{conversations_path}']", match: :first).click
+    within(".bg-white.dark\\:bg-gray-800.border-b") do
+      first("a[href='#{conversations_path}']").click
     end
 
     assert_current_path conversations_path
   end
 
   test "only shows active conversations by default" do
-    # Create a distinct conversation we can assert against (fixtures include other conversations)
-    unique_provider = User.create!(
-      email: "unique_provider_#{SecureRandom.hex(4)}@example.com",
-      password: "password123456",
-      first_name: "Unique",
-      last_name: "Provider",
-      role: :provider,
-      time_zone: "UTC"
-    )
-
-    unique_conversation = Conversation.create!(patient: @patient, provider: unique_provider)
-    unique_conversation.messages.create!(sender: @patient, content: "Unique last message", message_type: :text)
-    unique_conversation.update!(archived_by_patient: true)
+    # Archive conversation for patient
+    @conversation.update(archived_by_patient: true)
 
     sign_in @patient
     visit conversations_path
 
-    assert_selector "h2", text: "Active"
-    active_section = find("h2", text: "Active").ancestor("div.mb-12")
-    within(active_section) do
-      assert_no_text unique_provider.full_name
+    # Should not see the conversation in active section
+    within("h2", text: "Active Conversations") do
+      # Nothing to check here, just making sure section exists
     end
 
-    assert_selector "h2", text: "Archived"
-    assert_text unique_provider.full_name
-  end
-
-  def sign_out
-    find("button[aria-label='User menu']", wait: 5).click
-    click_on "Sign Out"
-  end
-
-  def wait_for_message_count(conversation, expected_count, timeout_seconds: 10)
-    Timeout.timeout(timeout_seconds) do
-      loop do
-        # System tests run the app server in a separate process.
-        # Avoid Rails query cache returning a stale count in this test process.
-        current_count = ActiveRecord::Base.uncached do
-          Message.where(conversation: conversation).count
-        end
-
-        break if current_count == expected_count
-        sleep 0.1
-      end
+    # Check that we don't see the provider's name in active conversations
+    # (It should only appear in archived section)
+    active_section = find("h2", text: "Active Conversations").ancestor("div.mb-12")
+    within(active_section) do
+      assert_text "No active conversations"
     end
   end
 
   private
 
-  def set_message_textarea_value(value)
-    page.execute_script(<<~JS)
-      const textarea = document.querySelector("textarea[name='message[content]']")
-      textarea.value = #{value.to_json}
-      textarea.dispatchEvent(new Event('input', { bubbles: true }))
-    JS
-  end
-
-  def submit_message_form(conversation)
-    form_selector = "form[action='#{conversation_messages_path(conversation)}']"
-    page.execute_script(<<~JS)
-      const form = document.querySelector(#{form_selector.to_json})
-      if (form.requestSubmit) {
-        form.requestSubmit()
-      } else {
-        form.submit()
-      }
-    JS
-  end
-
   def sign_in(user)
-    visit new_user_session_path
-    fill_in "Email Address", with: user.email
+    visit new_session_path
+    fill_in "Email", with: user.email
     fill_in "Password", with: "password123"  # Assuming fixtures use this password
-    click_button "Sign In"
-
-    # Wait for authenticated navbar to appear
-    assert_selector "button[aria-label='User menu']", wait: 5
+    click_button "Sign in"
   end
 end

@@ -26,8 +26,10 @@ class ProviderProfileTest < ApplicationSystemTestCase
   test "displays rating and review count" do
     visit provider_profile_path(@provider_profile)
 
-    assert_selector "svg.text-yellow-400", minimum: 1
-    assert_text @provider_profile.display_rating.to_s
+    # Should display rating stars
+    assert_selector "svg.text-yellow-400", count: 5 # Assuming 5-star rating
+    # Should display review count
+    assert_text "reviews"
   end
 
   test "displays years of experience badge when present" do
@@ -38,24 +40,24 @@ class ProviderProfileTest < ApplicationSystemTestCase
   end
 
   # Navigation Tests
-  test "displays content tabs" do
+  test "displays sticky navigation tabs" do
     visit provider_profile_path(@provider_profile)
 
-    assert_selector "nav[aria-label='Content tabs'][role='tablist']"
-    assert_selector "button[role='tab']", text: "About"
-    assert_selector "button[role='tab']", text: "Services"
-    assert_selector "button[role='tab']", text: "Reviews"
-    assert_selector "button[role='tab']", text: "FAQ"
+    assert_selector "nav[aria-label='Profile sections']"
+    assert_link "About"
+    assert_link "Services"
+    assert_link "Availability"
+    assert_link "Reviews"
+    assert_link "Contact"
   end
 
-  test "tab navigation switches panels" do
+  test "smooth scroll navigation works" do
     visit provider_profile_path(@provider_profile)
 
+    # Click on About link
+    click_link "About"
+    # Should scroll to about section (we can't test actual scroll, but can verify section exists)
     assert_selector "#about"
-    assert_no_selector "#services", visible: true
-
-    find("button", text: "Services").click
-    assert_selector "#services", visible: true
   end
 
   # About Section Tests
@@ -63,7 +65,7 @@ class ProviderProfileTest < ApplicationSystemTestCase
     visit provider_profile_path(@provider_profile)
 
     within "#about" do
-      assert_selector "h2", text: "About #{@provider_profile.user.first_name}"
+      assert_selector "h2", text: "About #{@provider_profile.full_name}"
       assert_text @provider_profile.bio
     end
   end
@@ -83,7 +85,7 @@ class ProviderProfileTest < ApplicationSystemTestCase
     visit provider_profile_path(@provider_profile)
 
     within "#about" do
-      assert_selector "h3", text: "Certifications & Licenses"
+      assert_selector "h3", text: "Certifications & Credentials"
       assert_text "Licensed Mental Health Counselor"
     end
   end
@@ -104,15 +106,14 @@ class ProviderProfileTest < ApplicationSystemTestCase
   test "displays services section with active services" do
     visit provider_profile_path(@provider_profile)
 
-    find("button", text: "Services").click
-
     within "#services" do
-      assert_selector "h2", text: "Service Packages"
+      assert_selector "h2", text: "Services Offered"
 
       @provider_profile.services.where(is_active: true).each do |service|
         assert_text service.name
+        assert_text service.description
         assert_text "$#{service.price.to_i}"
-        assert_text "#{service.duration_minutes} minutes"
+        assert_text "#{service.duration_minutes} min"
       end
     end
   end
@@ -120,8 +121,6 @@ class ProviderProfileTest < ApplicationSystemTestCase
   test "displays empty state when no services available" do
     @provider_profile.services.destroy_all
     visit provider_profile_path(@provider_profile)
-
-    find("button", text: "Services").click
 
     within "#services" do
       assert_text "No Services Available"
@@ -132,18 +131,13 @@ class ProviderProfileTest < ApplicationSystemTestCase
     sign_in @patient_user
     visit provider_profile_path(@provider_profile)
 
-    find("button[role='tab']", text: "Services").click
-    assert_selector "#services", visible: true
-
     within "#services" do
-      assert_link "Book Appointment", minimum: 1
+      assert_button "Book This Service", minimum: 1
     end
   end
 
   test "unauthenticated user sees sign in to book buttons" do
     visit provider_profile_path(@provider_profile)
-
-    find("button", text: "Services").click
 
     within "#services" do
       assert_link "Sign In to Book", minimum: 1
@@ -154,30 +148,28 @@ class ProviderProfileTest < ApplicationSystemTestCase
   test "displays reviews section with rating summary" do
     visit provider_profile_path(@provider_profile)
 
-    find("button", text: "Reviews").click
-
     within "#reviews" do
-      assert_selector "h2", text: "Client Reviews & Testimonials"
+      assert_selector "h2", text: "Reviews & Testimonials"
       assert_selector ".text-6xl", text: @provider_profile.display_rating.to_s
     end
   end
 
-  test "displays review system coming soon notice" do
+  test "displays testimonial carousel" do
     visit provider_profile_path(@provider_profile)
 
-    find("button", text: "Reviews").click
-
     within "#reviews" do
-      assert_text "Review System Coming Soon"
-      assert_text "Verified Client"
+      # Should have at least one testimonial visible
+      assert_selector "[data-carousel-target='slide']", minimum: 1
     end
   end
 
-  test "patient can message provider" do
+  test "patient can see write review CTA" do
     sign_in @patient_user
     visit provider_profile_path(@provider_profile)
 
-    assert_button "Message"
+    within "#reviews" do
+      assert_button "Write a Review"
+    end
   end
 
   # Booking Widget Tests
@@ -224,7 +216,7 @@ class ProviderProfileTest < ApplicationSystemTestCase
     )
     visit provider_profile_path(@provider_profile)
 
-    within find("h3", text: "Contact Information").find(:xpath, "./ancestor::div[contains(@class,'bg-white')][1]") do
+    within "#contact" do
       assert_selector "h3", text: "Contact Information"
       assert_text "555-123-4567"
       assert_text @provider_profile.user.email
@@ -241,8 +233,8 @@ class ProviderProfileTest < ApplicationSystemTestCase
     )
     visit provider_profile_path(@provider_profile)
 
-    within find("h3", text: "Contact Information").find(:xpath, "./ancestor::div[contains(@class,'bg-white')][1]") do
-      assert_text "Connect on social media"
+    within "#contact" do
+      assert_text "Connect on Social Media"
       assert_selector "a[title='LinkedIn']"
       assert_selector "a[title='Twitter']"
       assert_selector "a[title='Facebook']"
@@ -255,8 +247,8 @@ class ProviderProfileTest < ApplicationSystemTestCase
     visit provider_profile_path(@provider_profile)
 
     assert_selector "h3", text: "Quick Stats"
-    assert_text "Rating"
-    assert_text "Total Sessions"
+    assert_text "Reviews"
+    assert_text "Services Offered"
     assert_text "Response Time"
   end
 
@@ -265,7 +257,7 @@ class ProviderProfileTest < ApplicationSystemTestCase
     visit provider_profile_path(@provider_profile)
 
     assert_selector "[aria-label='Verified Provider']"
-    assert_selector "nav[aria-label='Content tabs'][role='tablist']"
+    assert_selector "nav[aria-label='Profile sections']"
   end
 
   test "has proper heading hierarchy" do
@@ -273,10 +265,8 @@ class ProviderProfileTest < ApplicationSystemTestCase
 
     # Should have h1 for provider name
     assert_selector "h1", count: 1
-    # Only the active tab panel is visible at once
-    assert_selector "h2", minimum: 1
-    # Other panels are present but hidden
-    assert_selector "h2", minimum: 3, visible: :all
+    # Should have h2 for major sections
+    assert_selector "h2", minimum: 3
   end
 
   # Provider Edit Access Tests

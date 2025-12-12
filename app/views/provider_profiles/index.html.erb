@@ -408,7 +408,7 @@
               </div>
 
               <h3 class="text-2xl font-bold text-gray-900 mb-3">
-                <% if params.except(:controller, :action).keys.any? %>
+                <% if params.except(:controller, :action).any? %>
                   No Providers Found
                 <% else %>
                   No Provider Profiles Yet
@@ -416,7 +416,7 @@
               </h3>
 
               <p class="text-gray-600 mb-6">
-                <% if params.except(:controller, :action).keys.any? %>
+                <% if params.except(:controller, :action).any? %>
                   We couldn't find any providers matching your search criteria. Try adjusting your filters or search terms.
                 <% else %>
                   Be the first to create a provider profile and start connecting with clients.
@@ -424,7 +424,7 @@
               </p>
 
               <div class="flex flex-col sm:flex-row gap-3 justify-center">
-                <% if params.except(:controller, :action).keys.any? %>
+                <% if params.except(:controller, :action).any? %>
                   <%= link_to providers_path,
                       class: "inline-flex items-center justify-center px-6 py-3 bg-teal-600 text-white rounded-xl font-semibold hover:bg-teal-700 transition shadow-md" do %>
                     <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">

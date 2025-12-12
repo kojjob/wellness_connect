@@ -23,8 +23,7 @@ class AuthenticationTest < ApplicationSystemTestCase
     fill_in "Password", with: "password123"
     click_button "Sign In"
 
-    assert_current_path root_path
-    assert_selector "button[aria-label='User menu']"
+    assert_text "Signed in successfully"
   end
 
   test "signing in with invalid credentials" do
@@ -65,8 +64,7 @@ class AuthenticationTest < ApplicationSystemTestCase
 
     click_button "Create Account"
 
-    assert_current_path root_path
-    assert_selector "button[aria-label='User menu']"
+    assert_text "Welcome! You have signed up successfully"
   end
 
   test "signing up with invalid email" do
@@ -78,9 +76,6 @@ class AuthenticationTest < ApplicationSystemTestCase
     fill_in "user_password", with: "SecurePassword123!"
     fill_in "Confirm Password", with: "SecurePassword123!"
     check "terms"
-
-    # Disable HTML5 validation (email input type blocks invalid formats client-side)
-    page.execute_script("document.querySelector('form').noValidate = true")
 
     click_button "Create Account"
 
@@ -143,7 +138,7 @@ class AuthenticationTest < ApplicationSystemTestCase
     fill_in "Email Address", with: @user.email
     click_button "Send Reset Instructions"
 
-    assert_text "If your email address exists in our database"
+    assert_text "You will receive an email with instructions"
   end
 
   test "requesting password reset with invalid email" do
@@ -153,7 +148,7 @@ class AuthenticationTest < ApplicationSystemTestCase
     click_button "Send Reset Instructions"
 
     # Devise shows the same message for security reasons
-    assert_text "If your email address exists in our database"
+    assert_text "You will receive an email with instructions"
   end
 
   test "sign up page displays role selection" do
@@ -199,7 +194,6 @@ class AuthenticationTest < ApplicationSystemTestCase
     visit new_user_registration_path
 
     # Submit form without filling required fields
-    page.execute_script("document.querySelector('form').noValidate = true")
     click_button "Create Account"
 
     # Check for error message container

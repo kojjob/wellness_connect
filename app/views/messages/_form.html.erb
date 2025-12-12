@@ -2,39 +2,160 @@
               url: conversation_messages_path(conversation),
               method: :post,
               data: { controller: "message-form", action: "turbo:submit-end->message-form#clearForm" },
-              class: "relative") do |form| %>
+              class: "flex items-end space-x-4") do |form| %>
 
   <%# Hidden field for message type (default to text) %>
   <%= form.hidden_field :message_type, value: "text" %>
 
-  <div class="flex items-end gap-3">
-    <div class="flex-1">
-      <div class="rounded-2xl bg-white border border-gray-200 focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-100">
-        <%= form.text_area :content,
-              placeholder: "Type a message…",
-              rows: 1,
-              required: true,
-              data: {
-                controller: "autosize",
-                action: "input->autosize#resize keydown->message-form#handleKeydown"
-              },
-              class: "block w-full px-4 py-3 border-0 bg-transparent text-gray-900 placeholder-gray-500 focus:ring-0 sm:text-sm resize-none rounded-2xl max-h-32 overflow-y-auto" %>
+  <%# Message content textarea %>
+  <div class="flex-1">
+    <%= form.text_area :content,
+          id: "message_content",
+          placeholder: "Type your message...",
+          rows: 1,
+          data: {
+            controller: "autosize",
+            action: "input->autosize#resize keydown->message-form#handleKeydown"
+          },
+          class: "block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm resize-none" %>
 
-      <%# Display validation errors if any %>
-      <% if message.errors[:content].any? %>
-        <div class="mt-2 flex items-center text-sm text-red-600">
-          <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-          </svg>
-          <%= message.errors[:content].first %>
-        </div>
-      <% end %>
+    <%# File attachment input (hidden) %>
+    <%= form.file_field :attachment,
+          id: "message_attachment",
+          accept: "image/jpeg,image/jpg,image/png,image/webp,application/pdf",
+          data: { action: "change->message-form#handleFileSelect" },
+          class: "hidden" %>
+
+    <%# Selected file name display %>
+    <div id="selected_file_name" class="mt-2 text-sm text-gray-600 dark:text-gray-400 hidden">
+      <span id="file_name"></span>
+      <button type="button" data-action="click->message-form#clearFile" class="ml-2 text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300">
+        Remove
+      </button>
     </div>
 
-    <div class="shrink-0">
-      <%= form.submit "Send",
-            data: { disable_with: "Sending..." },
-            class: "inline-flex items-center justify-center px-5 py-3 rounded-xl text-sm font-semibold text-white bg-emerald-500 hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-200 disabled:opacity-50 disabled:cursor-not-allowed" %>
-    </div>
+    <%# Display validation errors %>
+    <% if message.errors[:content].any? || message.errors[:attachment].any? || message.errors[:base].any? %>
+      <div class="mt-2">
+        <% if message.errors[:content].any? %>
+          <p class="text-sm text-red-600 dark:text-red-400">
+            <%= message.errors[:content].first %>
+          </p>
+        <% end %>
+        <% if message.errors[:attachment].any? %>
+          <p class="text-sm text-red-600 dark:text-red-400">
+            <%= message.errors[:attachment].first %>
+          </p>
+        <% end %>
+        <% if message.errors[:base].any? %>
+          <p class="text-sm text-red-600 dark:text-red-400">
+            <%= message.errors[:base].first %>
+          </p>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+
+  <%# Attachment button %>
+  <div class="flex-shrink-0">
+    <button type="button"
+            data-action="click->message-form#triggerFileInput"
+            class="inline-flex items-center p-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:focus:ring-offset-gray-800"
+            title="Attach file">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+      </svg>
+    </button>
+  </div>
+
+  <%# Send button %>
+  <div class="flex-shrink-0">
+    <%= form.submit "Send",
+          data: { disable_with: "Sending..." },
+          class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed" %>
   </div>
 <% end %>
+
+<%# Stimulus controller for form behavior %>
+<script>
+  // Auto-resize textarea controller
+  Stimulus.register("autosize", class extends Stimulus.Controller {
+    resize(event) {
+      const textarea = event.target;
+      textarea.style.height = 'auto';
+      textarea.style.height = (textarea.scrollHeight) + 'px';
+    }
+  });
+
+  // Message form controller
+  Stimulus.register("message-form", class extends Stimulus.Controller {
+    clearForm(event) {
+      if (event.detail.success) {
+        const textarea = this.element.querySelector('textarea');
+        const fileInput = this.element.querySelector('#message_attachment');
+        const fileNameDisplay = document.getElementById('selected_file_name');
+
+        if (textarea) {
+          textarea.value = '';
+          textarea.style.height = 'auto';
+          textarea.focus();
+        }
+
+        if (fileInput) {
+          fileInput.value = '';
+        }
+
+        if (fileNameDisplay) {
+          fileNameDisplay.classList.add('hidden');
+        }
+      }
+    }
+
+    handleKeydown(event) {
+      // Submit form on Enter (but not Shift+Enter for multiline)
+      if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        event.target.closest('form').requestSubmit();
+      }
+    }
+
+    triggerFileInput(event) {
+      event.preventDefault();
+      const fileInput = document.getElementById('message_attachment');
+      if (fileInput) {
+        fileInput.click();
+      }
+    }
+
+    handleFileSelect(event) {
+      const fileInput = event.target;
+      const fileNameDisplay = document.getElementById('selected_file_name');
+      const fileNameSpan = document.getElementById('file_name');
+
+      if (fileInput.files && fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        const fileName = file.name;
+        const fileSize = (file.size / 1024 / 1024).toFixed(2); // Convert to MB
+
+        fileNameSpan.textContent = `${fileName} (${fileSize} MB)`;
+        fileNameDisplay.classList.remove('hidden');
+      } else {
+        fileNameDisplay.classList.add('hidden');
+      }
+    }
+
+    clearFile(event) {
+      event.preventDefault();
+      const fileInput = document.getElementById('message_attachment');
+      const fileNameDisplay = document.getElementById('selected_file_name');
+
+      if (fileInput) {
+        fileInput.value = '';
+      }
+
+      if (fileNameDisplay) {
+        fileNameDisplay.classList.add('hidden');
+      }
+    }
+  });
+</script>

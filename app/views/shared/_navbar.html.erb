@@ -211,13 +211,8 @@
                     aria-label="User menu">
               <div class="relative">
                 <div class="absolute inset-0 bg-gradient-to-br from-teal-500 to-gray-600 rounded-full blur opacity-20 group-hover:opacity-30 transition-opacity duration-300"></div>
-                <div class="relative group-hover:scale-105 transition-all duration-300">
-                  <%= render "shared/user_avatar",
-                        user: current_user,
-                        size: :small,
-                        shape: :circle,
-                        show_ring: true,
-                        additional_classes: "shadow-lg group-hover:shadow-xl" %>
+                <div class="relative h-10 w-10 rounded-full bg-gradient-to-br from-teal-500 to-gray-600 flex items-center justify-center text-white font-bold shadow-lg ring-2 ring-white group-hover:scale-105 group-hover:shadow-xl transition-all duration-300">
+                  <%= current_user.email[0].upcase %>
                 </div>
               </div>
               <div class="hidden sm:block">
@@ -246,13 +241,8 @@
                 <div class="relative flex items-center space-x-4">
                   <div class="relative">
                     <div class="absolute inset-0 bg-white/30 rounded-full blur"></div>
-                    <div class="relative [&>div]:bg-white/20 [&>div]:backdrop-blur-sm [&>div]:ring-white/40">
-                      <%= render "shared/user_avatar",
-                            user: current_user,
-                            size: :large,
-                            shape: :circle,
-                            show_ring: true,
-                            additional_classes: "shadow-lg" %>
+                    <div class="relative h-14 w-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white font-bold text-lg ring-2 ring-white/40 shadow-lg">
+                      <%= current_user.email[0].upcase %>
                     </div>
                   </div>
                   <div class="flex-1 min-w-0">
@@ -517,13 +507,8 @@
           <div class="flex items-center">
             <div class="flex-shrink-0 relative">
               <div class="absolute inset-0 bg-white/30 rounded-full blur"></div>
-              <div class="relative [&>div]:bg-white/20 [&>div]:backdrop-blur-sm [&>div]:ring-white/40">
-                <%= render "shared/user_avatar",
-                      user: current_user,
-                      size: :medium,
-                      shape: :circle,
-                      show_ring: true,
-                      additional_classes: "shadow-lg" %>
+              <div class="relative h-12 w-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white font-bold text-lg ring-2 ring-white/40 shadow-lg">
+                <%= current_user.email[0].upcase %>
               </div>
             </div>
             <div class="ml-3 flex-1">

@@ -50,8 +50,6 @@ class NotificationPreferencesControllerTest < ActionDispatch::IntegrationTest
   test "should create preference if user doesn't have one" do
     # Create a new user - the after_create callback will create the preference
     new_user = User.create!(
-      first_name: "New",
-      last_name: "User",
       email: "newuser@example.com",
       password: "password123",
       password_confirmation: "password123",

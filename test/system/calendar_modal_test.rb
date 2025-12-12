@@ -192,14 +192,13 @@ class CalendarModalTest < ApplicationSystemTestCase
       sleep 0.5
 
       # Click first "Book Now" link
-      link = all("a", text: "Book Now").first
-      page.execute_script("arguments[0].click()", link)
+      all("a", text: "Book Now").first.click
     end
 
     # Should navigate to appointments/new
     # We don't know which slot was clicked, just verify we're on the booking form
-    assert_current_path(/\/appointments\/new/, wait: 5)
-    assert_text(/Book Your\s+Appointment/)
+    assert_match %r{/appointments/new}, current_path
+    assert_text "Book Your Appointment"
   end
 
   test "booked slots are not shown in calendar" do
@@ -248,10 +247,7 @@ class CalendarModalTest < ApplicationSystemTestCase
       assert_text current_month
 
       # Click next month button
-      next_button = find('[data-action="click->availability-calendar#nextMonth"]')
-      page.execute_script("arguments[0].click()", next_button)
-
-      sleep 0.2
+      find('[data-action="click->availability-calendar#nextMonth"]').click
 
       # Should show next month
       assert_text next_month
@@ -299,12 +295,11 @@ class CalendarModalTest < ApplicationSystemTestCase
 
     # Click close button
     within '[data-availability-calendar-target="modal"]' do
-      close_button = find('button[data-action="click->availability-calendar#closeModal"]')
-      page.execute_script("arguments[0].click()", close_button)
+      find('button[data-action="click->availability-calendar#closeModal"]').click
     end
 
     # Modal should be hidden
-    assert_no_selector '[data-availability-calendar-target="modal"].flex', wait: 3
+    assert_no_selector '[data-availability-calendar-target="modal"].flex', visible: :visible
   end
 
   test "calendar modal can be closed with Escape key" do
@@ -320,19 +315,18 @@ class CalendarModalTest < ApplicationSystemTestCase
     # Modal should be visible
     assert_selector '[data-availability-calendar-target="modal"].flex', visible: :visible
 
-    # Press Escape key (dispatch on document for reliability in headless)
-    page.execute_script("document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))")
+    # Press Escape key
+    page.find("body").send_keys(:escape)
 
     # Modal should be hidden
-    assert_no_selector '[data-availability-calendar-target="modal"].flex', wait: 3
+    assert_no_selector '[data-availability-calendar-target="modal"].flex', visible: :visible
   end
 
   test "calendar shows message when no slots available for selected date" do
     # Create a provider with no availability
     provider_no_slots = User.create!(
       email: "noslots@example.com",
-      password: "password12345",
-      password_confirmation: "password12345",
+      password: "password123",
       first_name: "No",
       last_name: "Slots",
       role: :provider
