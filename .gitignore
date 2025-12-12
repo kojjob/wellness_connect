@@ -38,4 +38,4 @@
 !/app/assets/builds/.keep
 
 # Local-only review artifacts
-/CODEBASE_COMPREHENSIVE_REVIEW.md
+/CODEBASE_*.md
