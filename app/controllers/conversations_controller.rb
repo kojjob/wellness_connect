@@ -52,6 +52,20 @@ class ConversationsController < ApplicationController
     @conversation.patient_id ||= current_user.id if current_user.patient?
     @conversation.provider_id ||= current_user.id if current_user.provider?
 
+    if @conversation.patient_id.present? && @conversation.provider_id.present?
+      existing_conversation = Conversation.find_by(
+        patient_id: @conversation.patient_id,
+        provider_id: @conversation.provider_id,
+        appointment_id: @conversation.appointment_id
+      )
+
+      if existing_conversation
+        authorize existing_conversation, :show?
+        redirect_to existing_conversation, notice: "Conversation started successfully."
+        return
+      end
+    end
+
     authorize @conversation
 
     if @conversation.save
@@ -101,6 +115,13 @@ class ConversationsController < ApplicationController
 
   # Mark unread messages as read for current user
   def mark_conversation_as_read
+    # Mark per-message read status so the sender can see "Read" in the UI.
+    # Only mark messages sent by the other participant.
+    @conversation.messages
+      .where.not(sender_id: current_user.id)
+      .where(read_at: nil)
+      .update_all(read_at: Time.current)
+
     if current_user.patient? && @conversation.patient_id == current_user.id
       @conversation.mark_as_read_for_patient
     elsif current_user.provider? && @conversation.provider_id == current_user.id

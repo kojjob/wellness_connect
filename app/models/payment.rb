@@ -2,6 +2,8 @@ class Payment < ApplicationRecord
   belongs_to :payer, class_name: "User"
   belongs_to :appointment, optional: true
 
+  before_validation :normalize_currency
+
   # Validations
   validates :amount, presence: true, numericality: { greater_than: 0 }
   validates :currency, presence: true, format: { with: /\A[A-Z]{3}\z/, message: "must be a 3-letter currency code" }
@@ -9,8 +11,6 @@ class Payment < ApplicationRecord
   validates :stripe_payment_intent_id, presence: true, if: :requires_stripe_id?
   validates :stripe_payment_intent_id, uniqueness: true, allow_nil: true
   validates :payer_id, presence: true
-
-  validate :refund_amount_not_exceed_original
 
   enum :status, {
     pending: 0,
@@ -44,10 +44,7 @@ class Payment < ApplicationRecord
     succeeded? || refunded?
   end
 
-  def refund_amount_not_exceed_original
-    return unless refunded_amount.present? && amount.present?
-    return if refunded_amount <= amount
-
-    errors.add(:refunded_amount, "cannot exceed the original amount")
+  def normalize_currency
+    self.currency = currency.to_s.upcase.presence
   end
 end

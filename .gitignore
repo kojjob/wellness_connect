@@ -36,3 +36,10 @@
 
 /app/assets/builds/*
 !/app/assets/builds/.keep
+
+# Local-only review artifacts
+/CODEBASE_*.md
+
+# Local-only scratch notes
+/MESSAGING_ANALYSIS.md
+/TODO.md
