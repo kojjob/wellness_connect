@@ -36,6 +36,10 @@ class User < ApplicationRecord
   # Active Storage
   has_one_attached :avatar
 
+  # Validations
+  validates :first_name, :last_name, presence: true
+  validate :avatar_validation
+
   # Scopes for filtering users by status
   scope :active, -> { where(suspended_at: nil, blocked_at: nil) }
   scope :suspended, -> { where.not(suspended_at: nil) }
@@ -134,10 +138,59 @@ class User < ApplicationRecord
     end
   end
 
+  # Avatar helper methods
+  def initials
+    "#{first_name.first}#{last_name.first}".upcase
+  rescue
+    email.first(2).upcase
+  end
+
+  def avatar_gradient_classes
+    case role.to_sym
+    when :provider
+      "from-teal-500 to-teal-600"
+    when :admin, :super_admin
+      "from-purple-500 to-purple-600"
+    else # patient
+      "from-gray-400 to-gray-500"
+    end
+  end
+
+  def avatar_variant(size: :medium)
+    return nil unless avatar.attached?
+
+    variant_size = case size
+                   when :small then [64, 64]
+                   when :medium then [96, 96]
+                   when :large then [128, 128]
+                   when :xlarge then [192, 192]
+                   else [96, 96]
+                   end
+
+    avatar.variant(resize_to_fill: variant_size)
+  end
+
   private
 
   # Create default notification preferences for new users
   def create_default_notification_preferences
     create_notification_preference! unless notification_preference.present?
+  end
+
+  # Avatar validation
+  def avatar_validation
+    return unless avatar.attached?
+
+    # File type validation
+    allowed_types = %w[image/jpeg image/png image/webp]
+    unless allowed_types.include?(avatar.content_type)
+      errors.add(:avatar, "must be a JPEG, PNG, or WebP image")
+      return
+    end
+
+    # File size validation (max 5MB)
+    if avatar.byte_size > 5.megabytes
+      errors.add(:avatar, "size must be less than 5MB")
+    end
   end
 end

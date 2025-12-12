@@ -108,16 +108,24 @@
         </h3>
         <ul class="space-y-3">
           <li>
-            <a href="#" class="text-sm text-gray-300 hover:text-teal-400 transition-colors duration-200">Mental Health</a>
+            <%= link_to providers_path(specialty: "Mental Health"), class: "text-sm text-gray-300 hover:text-teal-400 transition-colors duration-200" do %>
+              Mental Health
+            <% end %>
           </li>
           <li>
-            <a href="#" class="text-sm text-gray-300 hover:text-teal-400 transition-colors duration-200">Wellness & Nutrition</a>
+            <%= link_to providers_path(specialty: "Wellness & Nutrition"), class: "text-sm text-gray-300 hover:text-teal-400 transition-colors duration-200" do %>
+              Wellness & Nutrition
+            <% end %>
           </li>
           <li>
-            <a href="#" class="text-sm text-gray-300 hover:text-teal-400 transition-colors duration-200">Primary Care</a>
+            <%= link_to providers_path(specialty: "Primary Care"), class: "text-sm text-gray-300 hover:text-teal-400 transition-colors duration-200" do %>
+              Primary Care
+            <% end %>
           </li>
           <li>
-            <a href="#" class="text-sm text-gray-300 hover:text-teal-400 transition-colors duration-200">Specialty Care</a>
+            <%= link_to providers_path(specialty: "Specialty Care"), class: "text-sm text-gray-300 hover:text-teal-400 transition-colors duration-200" do %>
+              Specialty Care
+            <% end %>
           </li>
           <li>
             <%= link_to "For Providers", become_provider_path, class: "text-sm text-teal-400 hover:text-teal-300 font-semibold transition-colors duration-200" %>
