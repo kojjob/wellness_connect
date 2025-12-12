@@ -66,7 +66,7 @@ class Admin::AnnouncementsControllerTest < ActionDispatch::IntegrationTest
   test "should create announcement for patients only" do
     sign_in @admin
     patient_count = User.where(role: "patient").count
-    
+
     assert_difference("Notification.count", patient_count) do
       post admin_announcements_path, params: {
         announcement: {
@@ -84,7 +84,7 @@ class Admin::AnnouncementsControllerTest < ActionDispatch::IntegrationTest
   test "should create announcement for providers only" do
     sign_in @admin
     provider_count = User.where(role: "provider").count
-    
+
     assert_difference("Notification.count", provider_count) do
       post admin_announcements_path, params: {
         announcement: {
@@ -204,7 +204,7 @@ class Admin::AnnouncementsControllerTest < ActionDispatch::IntegrationTest
 
   test "should not create announcement with invalid params" do
     sign_in @admin
-    
+
     assert_no_difference("Notification.count") do
       post admin_announcements_path, params: {
         announcement: {
@@ -294,13 +294,13 @@ class Admin::AnnouncementsControllerTest < ActionDispatch::IntegrationTest
   # === Notification Preference Respect Tests ===
   test "should respect user notification preferences" do
     sign_in @admin
-    
+
     # Disable system notifications for patient
     @patient.notification_preference.update!(in_app_system: false)
-    
+
     # Should not create notification for patient with disabled preferences
     initial_count = Notification.where(user: @patient).count
-    
+
     post admin_announcements_path, params: {
       announcement: {
         title: "System Update",
@@ -308,19 +308,19 @@ class Admin::AnnouncementsControllerTest < ActionDispatch::IntegrationTest
         recipient_type: "all"
       }
     }
-    
+
     # Patient should not receive notification
     assert_equal initial_count, Notification.where(user: @patient).count
   end
 
   test "should count only users who will receive notification" do
     sign_in @admin
-    
+
     # Disable system notifications for some users
     User.limit(2).each do |user|
       user.notification_preference.update!(in_app_system: false)
     end
-    
+
     post admin_announcements_path, params: {
       announcement: {
         title: "Test",
@@ -328,7 +328,7 @@ class Admin::AnnouncementsControllerTest < ActionDispatch::IntegrationTest
         recipient_type: "all"
       }
     }
-    
+
     # Should mention actual count in flash message
     assert_match(/sent to \d+ users/, flash[:notice])
   end

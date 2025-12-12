@@ -4,6 +4,8 @@ class PaymentsController < ApplicationController
   before_action :authorize_appointment_access, only: [ :create ]
 
   def index
+    authorize Payment
+
     # Build base query based on user role
     base_payments = if current_user.provider?
       # Providers see payments they've received

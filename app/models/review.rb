@@ -10,6 +10,9 @@ class Review < ApplicationRecord
   validates :reviewer_id, uniqueness: { scope: :provider_profile_id,
                                        message: "can only review a provider once" }
 
+  validate :reviewer_is_not_provider
+  validate :reviewer_had_completed_appointment
+
   # Scopes
   scope :recent, -> { order(created_at: :desc) }
   scope :highest_rated, -> { order(rating: :desc) }
@@ -23,5 +26,27 @@ class Review < ApplicationRecord
   def short_comment(length = 150)
     return "" if comment.blank?
     comment.length > length ? "#{comment[0...length]}..." : comment
+  end
+
+  private
+
+  def reviewer_is_not_provider
+    return unless reviewer_id && provider_profile&.user_id
+    return if reviewer_id != provider_profile.user_id
+
+    errors.add(:reviewer, "cannot review their own profile")
+  end
+
+  def reviewer_had_completed_appointment
+    return unless reviewer_id && provider_profile&.user_id
+
+    has_completed = Appointment.exists?(
+      patient_id: reviewer_id,
+      provider_id: provider_profile.user_id,
+      status: :completed
+    )
+    return if has_completed
+
+    errors.add(:base, "You must have a completed appointment to leave a review")
   end
 end

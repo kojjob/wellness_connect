@@ -1,0 +1,42 @@
+{
+  "ignored_warnings": [
+    {
+      "fingerprint": "0268feba81f21834a9beb307a2b1c9d8777a55de879bd9ce5da103f61d00d191",
+      "note": "False positive - website URL is validated at model level and link uses noopener/noreferrer"
+    },
+    {
+      "fingerprint": "240ed0b3825bf7b4da28c6ee315b13a14878e91e1c6804184f16eb1bc90dee45",
+      "note": "False positive - LinkedIn URL is validated at model level and link uses noopener/noreferrer"
+    },
+    {
+      "fingerprint": "93d3632172dfce34a9b558b57f1287d72725ff4c7f8025bfff0280104b411764",
+      "note": "False positive - Instagram URL is validated at model level and link uses noopener/noreferrer"
+    },
+    {
+      "fingerprint": "a5473dc03cf909e61977c8d0df8206a000e591bf0482ef37e235d7679c14450a",
+      "note": "False positive - Facebook URL is validated at model level and link uses noopener/noreferrer"
+    },
+    {
+      "fingerprint": "cc4c831717a684f518e951275a2fb34b338adaa4dfbcddaf286368927cef09e4",
+      "note": "False positive - Twitter URL is validated at model level and link uses noopener/noreferrer"
+    },
+    {
+      "fingerprint": "3ffe9404a70671222180edf447bd557c1e49a5a498c8f06f3bc5a5a304b67255",
+      "note": "Intentional - Admin users controller requires admin role, role assignment is protected by Pundit authorization"
+    },
+    {
+      "fingerprint": "5cf511faf6cf51e2248a87bd4076004a5602a80211b33394a917c5851b27cb56",
+      "note": "False positive - date_column is an internal parameter from allowed list, not user input"
+    },
+    {
+      "fingerprint": "a55f496e755c5990b468538c0e611ffd3e19f195849a87f1335c2671c8b25aa7",
+      "note": "False positive - date_column is an internal parameter from allowed list, not user input"
+    },
+    {
+      "fingerprint": "c92ba141d044d6c01c874bb9cc4b7ad9487812d02303f7be22c01891a2f319f1",
+      "note": "False positive - render path is pagination collection, not user-controlled"
+    }
+  ],
+  "updated": "2025-11-27",
+  "brakeman_version": "7.1.1"
+}

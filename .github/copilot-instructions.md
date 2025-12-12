@@ -1,3 +1,5 @@
+<<<<<<< HEAD
+# Copilot Instructions for WellnessConnect
 # Copilot Instructions for WellnessConnect
 
 ## Architecture Overview
@@ -22,19 +24,23 @@ WellnessConnect is a **Rails 8.1** healthcare marketplace connecting patients wi
 
 ### Authorization with Pundit
 Every controller action must call `authorize` with the resource:
+
 ```ruby
 def show
   @appointment = Appointment.find(params[:id])
   authorize @appointment  # Uses AppointmentPolicy#show?
 end
 ```
+
 Policies scope records per user role. See `ConversationPolicy` for dual-participant authorization pattern.
 
 ### Notification System
 Use `NotificationService` (not direct `Notification.create!`) to respect user preferences:
+
 ```ruby
 NotificationService.notify_appointment_booked(appointment)  # Checks preferences, sends email + in-app
 ```
+
 Notification preferences are per-user in `notification_preferences` table with `email_*` and `in_app_*` boolean columns.
 
 ### Stimulus Controllers
@@ -51,6 +57,7 @@ Reusable partials in `app/views/shared/`:
 
 ### User Status Management
 Users have `suspended_at` and `blocked_at` timestamps. Use instance methods:
+
 ```ruby
 user.suspend!(reason)  # Sets suspended_at
 user.active?           # Checks both suspended_at and blocked_at are nil
@@ -59,12 +66,12 @@ user.active?           # Checks both suspended_at and blocked_at are nil
 ## Development Commands
 
 ```bash
-bin/dev              # Start Rails server + Tailwind watcher (Procfile.dev)
-bin/rails test       # Run Minitest suite (uses mocha for mocking)
+bin/dev               # Start Rails server + Tailwind watcher (Procfile.dev)
+bin/rails test        # Run Minitest suite (uses mocha for mocking)
 bin/rails test:system # System tests with Capybara
-bin/rubocop          # Lint with Rails Omakase style
-bin/brakeman         # Security static analysis
-bin/bundler-audit    # Gem vulnerability check
+bin/rubocop           # Lint with Rails Omakase style
+bin/brakeman          # Security static analysis
+bin/bundler-audit     # Gem vulnerability check
 ```
 
 ## Testing Patterns

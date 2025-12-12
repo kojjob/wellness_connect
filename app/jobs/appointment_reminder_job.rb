@@ -30,7 +30,7 @@ class AppointmentReminderJob < ApplicationJob
     return unless appointment.present?
 
     # Skip if appointment is cancelled or completed
-    return if appointment.status.in?(["cancelled_by_patient", "cancelled_by_provider", "completed", "no_show"])
+    return if appointment.status.in?([ "cancelled_by_patient", "cancelled_by_provider", "completed", "no_show" ])
 
     # Send reminder notifications via NotificationService
     # This respects user preferences and sends both in-app and email notifications

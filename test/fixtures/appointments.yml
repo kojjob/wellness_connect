@@ -9,3 +9,25 @@ appointment_one:
   status: 0
   cancellation_reason:
   video_session_id:
+
+# Completed appointment for patient_user with provider_user (for review fixture)
+appointment_completed_one:
+  patient: patient_user
+  provider: provider_user
+  service: service_one
+  start_time: <%= 7.days.ago %>
+  end_time: <%= 7.days.ago + 1.hour %>
+  status: 1
+  cancellation_reason:
+  video_session_id:
+
+# Completed appointment for patient_user_two with provider_user_two (for review fixture)
+appointment_completed_two:
+  patient: patient_user_two
+  provider: provider_user_two
+  service: service_two
+  start_time: <%= 14.days.ago %>
+  end_time: <%= 14.days.ago + 1.hour %>
+  status: 1
+  cancellation_reason:
+  video_session_id:

@@ -9,7 +9,6 @@ export default class extends Controller {
   }
 
   connect() {
-    console.log("View toggle controller connected")
     // Load saved preference from localStorage
     const savedView = localStorage.getItem("providerViewPreference")
     if (savedView) {

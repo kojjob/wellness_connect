@@ -5,8 +5,14 @@ export default class extends Controller {
   static targets = ["spendingChart"]
 
   connect() {
-    console.log("Payments controller connected")
     this.initializeSpendingChart()
+  }
+
+  // Escape HTML to prevent XSS attacks
+  escapeHtml(text) {
+    const div = document.createElement('div')
+    div.textContent = text
+    return div.innerHTML
   }
 
   disconnect() {
@@ -190,7 +196,7 @@ export default class extends Controller {
         ${icons[type] || icons.info}
       </div>
       <div class="flex-1">
-        <p class="font-medium">${message}</p>
+        <p class="font-medium" id="toast-message"></p>
       </div>
       <button class="flex-shrink-0 ml-2 hover:bg-white/20 rounded-lg p-1 transition-colors" data-action="click->payments#dismissToast">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -198,6 +204,11 @@ export default class extends Controller {
         </svg>
       </button>
     `
+    // Safely set message using textContent to prevent XSS
+    const messageEl = toast.querySelector('#toast-message')
+    if (messageEl) {
+      messageEl.textContent = message
+    }
 
     document.body.appendChild(toast)
 

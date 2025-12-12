@@ -3,7 +3,6 @@ import { Controller } from "@hotwired/stimulus"
 // Connects to data-controller="patient-dashboard"
 export default class extends Controller {
   connect() {
-    console.log("Patient dashboard controller connected")
     this.initializeCountdowns()
     this.startCountdownUpdates()
   }

@@ -5,7 +5,14 @@ export default class extends Controller {
   static targets = ["input", "item"]
 
   connect() {
-    console.log("Search controller connected")
+    // Controller initialized
+  }
+
+  // Escape HTML to prevent XSS attacks
+  escapeHtml(text) {
+    const div = document.createElement('div')
+    div.textContent = text
+    return div.innerHTML
   }
 
   filter(event) {
@@ -61,8 +68,13 @@ export default class extends Controller {
         </svg>
       </div>
       <h3 class="text-lg font-bold text-gray-900 mb-2">No conversations found</h3>
-      <p class="text-gray-600">No conversations match "${searchTerm}". Try a different search term.</p>
+      <p class="text-gray-600">No conversations match "<span id="search-term-display"></span>". Try a different search term.</p>
     `
+    // Safely set the search term using textContent to prevent XSS
+    const searchTermSpan = div.querySelector('#search-term-display')
+    if (searchTermSpan) {
+      searchTermSpan.textContent = searchTerm
+    }
     return div
   }
 

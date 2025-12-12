@@ -9,7 +9,6 @@ export default class extends Controller {
   }
 
   connect() {
-    console.log("Sort controller connected")
     this.boundHandleClickOutside = this.handleClickOutside.bind(this)
   }
 

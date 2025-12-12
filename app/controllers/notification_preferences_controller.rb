@@ -36,4 +36,3 @@ class NotificationPreferencesController < ApplicationController
     current_user.create_notification_preference! unless current_user.notification_preference.present?
   end
 end
-

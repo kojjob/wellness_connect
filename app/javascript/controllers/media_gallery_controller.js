@@ -9,7 +9,6 @@ export default class extends Controller {
   }
 
   connect() {
-    console.log("Media gallery controller connected")
     this.boundHandleKeydown = this.handleKeydown.bind(this)
   }
 

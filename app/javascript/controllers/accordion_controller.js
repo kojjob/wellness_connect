@@ -8,7 +8,6 @@ export default class extends Controller {
   }
 
   connect() {
-    console.log("Accordion controller connected")
     
     // Set initial ARIA attributes
     this.buttonTargets.forEach((button, index) => {

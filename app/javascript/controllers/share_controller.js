@@ -9,7 +9,6 @@ export default class extends Controller {
   }
 
   connect() {
-    console.log("Share controller connected")
   }
 
   async shareProfile(event) {
@@ -25,7 +24,6 @@ export default class extends Controller {
     if (navigator.share) {
       try {
         await navigator.share(shareData)
-        console.log("Profile shared successfully")
       } catch (error) {
         if (error.name !== 'AbortError') {
           console.error("Error sharing:", error)

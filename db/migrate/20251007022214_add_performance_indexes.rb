@@ -8,7 +8,7 @@ class AddPerformanceIndexes < ActiveRecord::Migration[8.1]
 
     # Add composite index for common search pattern: rating + specialty
     # Many searches filter by specialty AND sort by rating
-    add_index :provider_profiles, [:average_rating, :specialty],
+    add_index :provider_profiles, [ :average_rating, :specialty ],
               name: 'index_provider_profiles_on_rating_and_specialty',
               comment: 'Optimize searches filtering by specialty and sorting by rating'
 
@@ -23,7 +23,7 @@ class AddPerformanceIndexes < ActiveRecord::Migration[8.1]
               comment: 'Optimize user search by last name'
 
     # Add composite index for full name searches
-    add_index :users, [:first_name, :last_name],
+    add_index :users, [ :first_name, :last_name ],
               name: 'index_users_on_first_and_last_name',
               comment: 'Optimize user search by full name'
   end

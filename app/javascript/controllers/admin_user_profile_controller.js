@@ -21,9 +21,16 @@ export default class extends Controller {
   }
 
   connect() {
-    console.log("Admin user profile controller connected")
     this.setupDragAndDrop()
     this.showTab(this.currentTabValue)
+  }
+
+  disconnect() {
+    // Clean up drag and drop event listeners
+    if (this.hasAvatarUploadAreaTarget) {
+      const area = this.avatarUploadAreaTarget
+      area.replaceWith(area.cloneNode(true))
+    }
   }
 
   // Avatar Upload
@@ -87,8 +94,7 @@ export default class extends Controller {
         this.showNotification('Failed to update avatar', 'error')
       }
     })
-    .catch(error => {
-      console.error('Error uploading avatar:', error)
+    .catch(() => {
       this.showNotification('Failed to update avatar', 'error')
     })
   }
@@ -124,8 +130,7 @@ export default class extends Controller {
         this.showNotification('Failed to remove avatar', 'error')
       }
     })
-    .catch(error => {
-      console.error('Error removing avatar:', error)
+    .catch(() => {
       this.showNotification('Failed to remove avatar', 'error')
     })
   }
@@ -205,7 +210,8 @@ export default class extends Controller {
 
   // Helper methods
   getCSRFToken() {
-    return document.querySelector('meta[name="csrf-token"]').content
+    const token = document.querySelector('meta[name="csrf-token"]')
+    return token ? token.content : ''
   }
 
   showNotification(message, type = 'info') {

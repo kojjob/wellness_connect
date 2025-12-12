@@ -8,7 +8,6 @@ export default class extends Controller {
   }
 
   connect() {
-    console.log("Gallery controller connected")
     this.currentIndexValue = 0
   }
 

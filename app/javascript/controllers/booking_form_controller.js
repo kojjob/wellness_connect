@@ -5,7 +5,14 @@ export default class extends Controller {
   static targets = ["submitButton", "spinner", "form"]
 
   connect() {
-    console.log("Booking form controller connected")
+    // Controller initialized
+  }
+
+  // Escape HTML to prevent XSS attacks
+  escapeHtml(text) {
+    const div = document.createElement('div')
+    div.textContent = text
+    return div.innerHTML
   }
 
   submit(event) {
@@ -52,7 +59,7 @@ export default class extends Controller {
         </svg>
         <div class="flex-1">
           <h3 class="text-sm font-bold text-red-800 mb-1">Validation Error</h3>
-          <p class="text-sm text-red-700">${message}</p>
+          <p class="text-sm text-red-700" id="error-message"></p>
         </div>
         <button type="button" onclick="this.parentElement.parentElement.remove()" class="ml-3 flex-shrink-0 text-red-500 hover:text-red-700" aria-label="Dismiss">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -61,6 +68,12 @@ export default class extends Controller {
         </button>
       </div>
     `
+
+    // Safely set error message using textContent to prevent XSS
+    const messageEl = errorDiv.querySelector('#error-message')
+    if (messageEl) {
+      messageEl.textContent = message
+    }
 
     // Insert error before form
     this.formTarget.parentElement.insertBefore(errorDiv, this.formTarget)
