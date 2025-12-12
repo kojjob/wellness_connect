@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_10_07_102819) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_27_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -169,6 +169,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_07_102819) do
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["actor_id"], name: "index_notifications_on_actor_id"
+    t.index ["created_at"], name: "index_notifications_on_created_at"
     t.index ["notifiable_type", "notifiable_id"], name: "index_notifications_on_notifiable"
     t.index ["notification_type"], name: "index_notifications_on_notification_type", comment: "Filter notifications by type"
     t.index ["read_at"], name: "index_notifications_on_read_at", comment: "Find unread notifications (WHERE read_at IS NULL)"
@@ -200,8 +201,10 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_07_102819) do
     t.string "stripe_payment_intent_id"
     t.datetime "updated_at", null: false
     t.index ["appointment_id"], name: "index_payments_on_appointment_id"
+    t.index ["created_at"], name: "index_payments_on_created_at"
     t.index ["payer_id", "status"], name: "index_payments_on_payer_id_and_status", comment: "Find user's payments by status"
     t.index ["payer_id"], name: "index_payments_on_payer_id"
+    t.index ["status", "created_at"], name: "index_payments_on_status_and_created_at"
     t.index ["status"], name: "index_payments_on_status", comment: "Filter payments by status (pending, succeeded, failed)"
     t.index ["stripe_payment_intent_id"], name: "index_payments_on_stripe_payment_intent_id"
     t.check_constraint "amount > 0::numeric", name: "payments_amount_positive"
