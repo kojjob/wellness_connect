@@ -3,6 +3,8 @@
 # your test database is "scratch space" for the test suite and is wiped
 # and recreated between test runs. Don't rely on the data there!
 
+require "digest"
+
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
@@ -50,4 +52,30 @@ Rails.application.configure do
 
   # Raise error when a before_action's only/except options reference missing actions.
   config.action_controller.raise_on_missing_callback_actions = true
+
+  # Active Record Encryption
+  # CI/test does not load production credentials (no RAILS_MASTER_KEY), but
+  # Rails may still require encryption keys when interacting with encrypted
+  # attributes (including framework tables like Active Storage in newer Rails).
+  # IMPORTANT: system tests boot the app server separately from the test process.
+  # If we generate random keys per boot, records encrypted in one process can't
+  # be decrypted in the other.
+  # IMPORTANT: keep this stable across processes AND across runs. Some CI
+  # environments (and local setups without credentials) may generate
+  # `secret_key_base` dynamically, which would make encryption keys drift and
+  # break decrypting records created earlier in the run.
+  test_key_base = ENV["ACTIVE_RECORD_ENCRYPTION_TEST_KEY_BASE"].presence ||
+    "wellness_connect-test-encryption-key-base"
+
+  config.active_record.encryption.key_derivation_salt ||= Digest::SHA256.hexdigest("#{test_key_base}-salt")
+
+  # Don't call ActiveRecord::Encryption.key_generator here: it depends on the
+  # encryption config being fully initialized (including the salt), and system
+  # tests boot the app multiple times.
+  config.active_record.encryption.primary_key ||= Digest::SHA256.digest("#{test_key_base}-primary")
+  config.active_record.encryption.deterministic_key ||= Digest::SHA256.digest("#{test_key_base}-deterministic")
+
+  # Fixtures insert raw values directly into the DB (bypassing model encryption).
+  # Allow reading those plaintext values in tests.
+  config.active_record.encryption.support_unencrypted_data = true
 end

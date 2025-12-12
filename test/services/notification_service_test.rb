@@ -291,7 +291,7 @@ class NotificationServiceTest < ActiveSupport::TestCase
   test "can_notify? creates preferences if they don't exist" do
     new_user = User.create!(
       email: "noprefs@example.com",
-      password: "password123",
+      password: "password12345",
       first_name: "No",
       last_name: "Prefs"
     )
@@ -323,7 +323,7 @@ class NotificationServiceTest < ActiveSupport::TestCase
   test "can_email_notify? creates preferences if they don't exist" do
     new_user = User.create!(
       email: "noemailprefs@example.com",
-      password: "password123",
+      password: "password12345",
       first_name: "No",
       last_name: "EmailPrefs"
     )

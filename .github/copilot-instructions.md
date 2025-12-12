@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-# Copilot Instructions for WellnessConnect
 # Copilot Instructions for WellnessConnect
 
 ## Architecture Overview
@@ -10,7 +8,7 @@ WellnessConnect is a **Rails 8.1** healthcare marketplace connecting patients wi
 - **Users** have roles: `patient`, `provider`, `admin`, `super_admin` (enum in `app/models/user.rb`)
 - **Provider ↔ Patient** relationships are modeled through `Appointment`, `Conversation`, and `Payment` with explicit `patient_id`/`provider_id` foreign keys
 - **Appointments** link to `Service`, `Availability`, and optional `Payment`/`ConsultationNote`
-- Conversations track `patient_unread_count`/`provider_unread_count` separately
+- **Conversations** track `patient_unread_count`/`provider_unread_count` separately and support dual-participant authorization
 
 ### Tech Stack
 - **Frontend**: Hotwire (Turbo + Stimulus), Tailwind CSS, Importmap (no Node.js build)
@@ -32,7 +30,12 @@ def show
 end
 ```
 
-Policies scope records per user role. See `ConversationPolicy` for dual-participant authorization pattern.
+**Dual-Participant Pattern (ConversationPolicy):**
+```ruby
+def participant?
+  user == record.patient || user == record.provider
+end
+```
 
 ### Notification System
 Use `NotificationService` (not direct `Notification.create!`) to respect user preferences:
@@ -48,6 +51,7 @@ Controllers live in `app/javascript/controllers/`. Common patterns:
 - `dropdown_controller.js` - Reusable dropdown menus
 - `toast_controller.js` - Flash message auto-dismiss
 - `booking_form_controller.js` - Multi-step appointment booking
+- `modal_controller.js` - Calendar date picker
 
 ### Shared View Components
 Reusable partials in `app/views/shared/`:
@@ -78,6 +82,7 @@ bin/bundler-audit     # Gem vulnerability check
 - Fixtures in `test/fixtures/` - load with `fixtures :all` in test_helper
 - Devise helpers: `sign_in users(:patient)` in integration tests
 - Policy tests in `test/policies/` - test each action method
+- **Note:** Ensure fixtures do not create duplicate reviews for the same provider/reviewer pair (enforced by validation).
 
 ## Database Conventions
 - Counter caches: `appointments_count`, `services_count`, `availabilities_count`

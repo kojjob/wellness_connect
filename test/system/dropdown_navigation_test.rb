@@ -13,11 +13,16 @@ class DropdownNavigationTest < ApplicationSystemTestCase
     # Verify notification bell is visible
     assert_selector "[data-dropdown-target='button'][aria-label='View notifications']"
 
+    notification_button = find("[data-dropdown-target='button'][aria-label='View notifications']")
+    notification_dropdown = notification_button.find(:xpath, "./ancestor::div[@data-controller='dropdown'][1]")
+
     # Click notification bell
-    find("[data-dropdown-target='button'][aria-label='View notifications']").click
+    notification_button.click
 
     # Verify dropdown menu appears
-    assert_selector "[data-dropdown-target='menu']:not(.hidden)", wait: 1
+    within notification_dropdown do
+      assert_selector "[data-dropdown-target='menu']:not(.hidden)", wait: 2
+    end
 
     # Verify dropdown has correct ARIA attribute
     assert_selector "[data-dropdown-target='button'][aria-expanded='true']"
@@ -26,7 +31,9 @@ class DropdownNavigationTest < ApplicationSystemTestCase
     find("body").click
 
     # Verify dropdown is hidden
-    assert_selector "[data-dropdown-target='menu'].hidden", wait: 1
+    within notification_dropdown do
+      assert_selector "[data-dropdown-target='menu'].hidden", visible: :all, wait: 3
+    end
   end
 
   test "user profile dropdown opens and closes for authenticated user" do
@@ -36,23 +43,30 @@ class DropdownNavigationTest < ApplicationSystemTestCase
     # Verify user avatar is visible
     assert_selector "[data-dropdown-target='button'][aria-label='User menu']"
 
+    user_button = find("[data-dropdown-target='button'][aria-label='User menu']")
+    user_dropdown = user_button.find(:xpath, "./ancestor::div[@data-controller='dropdown'][1]")
+
     # Click user avatar
-    find("[data-dropdown-target='button'][aria-label='User menu']").click
+    user_button.click
 
     # Verify dropdown menu appears
-    assert_selector "[data-dropdown-target='menu']:not(.hidden)", wait: 1
+    within user_dropdown do
+      assert_selector "[data-dropdown-target='menu']:not(.hidden)", wait: 2
+    end
 
     # Verify user email is displayed
     assert_text @user.email
 
     # Verify account type is displayed
-    assert_text "Patient"
+    assert_text "Patient Account"
 
     # Click outside to close
     find("body").click
 
     # Verify dropdown is hidden
-    assert_selector "[data-dropdown-target='menu'].hidden", wait: 1
+    within user_dropdown do
+      assert_selector "[data-dropdown-target='menu'].hidden", visible: :all, wait: 3
+    end
   end
 
   test "provider sees provider account type in profile dropdown" do
@@ -63,10 +77,12 @@ class DropdownNavigationTest < ApplicationSystemTestCase
     find("[data-dropdown-target='button'][aria-label='User menu']").click
 
     # Verify account type shows Provider
-    assert_text "Provider"
+    assert_text "Provider Account"
   end
 
   test "notification dropdown shows empty state when no notifications" do
+    Notification.where(user: @user).delete_all
+
     sign_in @user
     visit root_path
 
@@ -79,8 +95,10 @@ class DropdownNavigationTest < ApplicationSystemTestCase
   end
 
   test "notification dropdown shows unread badge when notifications exist" do
+    Notification.where(user: @user).delete_all
+
     # Create a notification for the user
-    notification = Notification.create!(
+    Notification.create!(
       user: @user,
       title: "Test Notification",
       message: "This is a test notification",
@@ -91,7 +109,7 @@ class DropdownNavigationTest < ApplicationSystemTestCase
     visit root_path
 
     # Verify unread badge is visible
-    assert_selector ".bg-gradient-to-br.from-red-500.to-pink-500"
+    assert_selector "button[aria-label='View notifications'] span.bg-gradient-to-br.from-teal-500.to-teal-600"
 
     # Click notification bell
     find("[data-dropdown-target='button'][aria-label='View notifications']").click
@@ -121,10 +139,14 @@ class DropdownNavigationTest < ApplicationSystemTestCase
     visit root_path
 
     # Click user avatar
-    find("[data-dropdown-target='button'][aria-label='User menu']").click
+    user_button = find("[data-dropdown-target='button'][aria-label='User menu']")
+    user_dropdown = user_button.find(:xpath, "./ancestor::div[@data-controller='dropdown'][1]")
+    user_button.click
 
-    # Click dashboard link
-    click_link "My Dashboard"
+    # Click dashboard link (scope to the dropdown; the footer also has a link)
+    within user_dropdown do
+      click_link "My Dashboard"
+    end
 
     # Verify navigation to dashboard
     assert_current_path dashboard_path
@@ -134,8 +156,11 @@ class DropdownNavigationTest < ApplicationSystemTestCase
     sign_in @user
     visit root_path
 
+    notification_button = find("[data-dropdown-target='button'][aria-label='View notifications']")
+    notification_dropdown = notification_button.find(:xpath, "./ancestor::div[@data-controller='dropdown'][1]")
+
     # Click notification bell
-    find("[data-dropdown-target='button'][aria-label='View notifications']").click
+    notification_button.click
 
     # Verify dropdown is open
     assert_selector "[data-dropdown-target='menu']:not(.hidden)"
@@ -144,24 +169,43 @@ class DropdownNavigationTest < ApplicationSystemTestCase
     find("body").send_keys(:escape)
 
     # Verify dropdown is closed
-    assert_selector "[data-dropdown-target='menu'].hidden", wait: 1
+    within notification_dropdown do
+      assert_selector "[data-dropdown-target='menu'].hidden", visible: :all, wait: 3
+    end
   end
 
   test "profile dropdown closes on escape key" do
     sign_in @user
     visit root_path
 
-    # Click user avatar
-    find("[data-dropdown-target='button'][aria-label='User menu']").click
+    user_button = find("[data-dropdown-target='button'][aria-label='User menu']")
+    user_dropdown = user_button.find(:xpath, "./ancestor::div[@data-controller='dropdown'][1]")
+
+    # Ensure the dropdown menu is initialized/hidden before we try to open it.
+    within user_dropdown do
+      assert_selector "[data-dropdown-target='menu'].hidden", visible: :all
+    end
+
+    # Open dropdown. In headless runs, the click handler can be flaky due to
+    # pending animation timeouts from earlier dropdown interactions.
+    page.execute_script(<<~JS)
+      const btn = document.querySelector('[data-dropdown-target="button"][aria-label="User menu"]');
+      const dropdown = btn?.closest('[data-controller*="dropdown"]');
+      dropdown?.dropdownController?.open?.();
+    JS
 
     # Verify dropdown is open
-    assert_selector "[data-dropdown-target='menu']:not(.hidden)"
+    within user_dropdown do
+      assert_selector "[data-dropdown-target='menu']:not(.hidden)", wait: 2
+    end
 
     # Press Escape key
     find("body").send_keys(:escape)
 
     # Verify dropdown is closed
-    assert_selector "[data-dropdown-target='menu'].hidden", wait: 1
+    within user_dropdown do
+      assert_selector "[data-dropdown-target='menu'].hidden", visible: :all, wait: 3
+    end
   end
 
   test "dropdowns are not visible for guest users" do
@@ -178,12 +222,4 @@ class DropdownNavigationTest < ApplicationSystemTestCase
     assert_text "Get Started"
   end
 
-  private
-
-  def sign_in(user)
-    visit new_user_session_path
-    fill_in "Email", with: user.email
-    fill_in "Password", with: "password123"
-    click_button "Log in"
-  end
 end

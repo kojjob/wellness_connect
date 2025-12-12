@@ -115,6 +115,13 @@ class ConversationsController < ApplicationController
 
   # Mark unread messages as read for current user
   def mark_conversation_as_read
+    # Mark per-message read status so the sender can see "Read" in the UI.
+    # Only mark messages sent by the other participant.
+    @conversation.messages
+      .where.not(sender_id: current_user.id)
+      .where(read_at: nil)
+      .update_all(read_at: Time.current)
+
     if current_user.patient? && @conversation.patient_id == current_user.id
       @conversation.mark_as_read_for_patient
     elsif current_user.provider? && @conversation.provider_id == current_user.id

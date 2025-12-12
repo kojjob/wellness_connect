@@ -21,11 +21,17 @@ export default class extends Controller {
     this.escapeHandler = this.handleKeydown.bind(this)
   }
 
+  disconnect() {
+    document.removeEventListener('keydown', this.escapeHandler)
+  }
+
   openModal(event) {
     event.preventDefault()
     this.modalTarget.classList.remove('hidden')
     this.modalTarget.classList.add('flex')
     document.body.style.overflow = 'hidden'
+
+    document.addEventListener('keydown', this.escapeHandler)
     
     // Render the calendar
     this.renderCalendar()
@@ -36,6 +42,8 @@ export default class extends Controller {
     this.modalTarget.classList.add('hidden')
     this.modalTarget.classList.remove('flex')
     document.body.style.overflow = 'auto'
+
+    document.removeEventListener('keydown', this.escapeHandler)
   }
 
   closeOnBackdrop(event) {
@@ -212,9 +220,8 @@ export default class extends Controller {
 
   // Handle escape key to close modal
   handleKeydown(event) {
-    if (event.key === 'Escape') {
+    if (event.key === 'Escape' && this.modalTarget.classList.contains('flex')) {
       this.closeModal(event)
     }
   }
 }
-

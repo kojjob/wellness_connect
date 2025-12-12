@@ -10,14 +10,14 @@ module AvatarHelper
   # @return [String] HTML for the avatar
   def render_user_avatar(user, size: :medium, shape: :rounded, show_ring: false, show_status: false, additional_classes: "")
     render partial: "shared/user_avatar",
-           locals: {
+          locals: {
              user: user,
              size: size,
              shape: shape,
              show_ring: show_ring,
              show_status: show_status,
              additional_classes: additional_classes
-           }
+          }
   end
 
   # Get avatar size in pixels for inline styles
