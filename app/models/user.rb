@@ -159,13 +159,14 @@ class User < ApplicationRecord
   def avatar_variant(size: :medium)
     return nil unless avatar.attached?
 
-    variant_size = case size
-                   when :small then [64, 64]
-                   when :medium then [96, 96]
-                   when :large then [128, 128]
-                   when :xlarge then [192, 192]
-                   else [96, 96]
-                   end
+    variant_size =
+      case size
+      when :small then [ 64, 64 ]
+      when :medium then [ 96, 96 ]
+      when :large then [ 128, 128 ]
+      when :xlarge then [ 192, 192 ]
+      else [ 96, 96 ]
+      end
 
     avatar.variant(resize_to_fill: variant_size)
   end

@@ -1,6 +1,6 @@
 module AvatarHelper
   # Render user avatar with consistent styling
-  # 
+  #
   # @param user [User] The user object
   # @param size [Symbol] Avatar size (:small, :medium, :large, :xlarge)
   # @param shape [Symbol] Avatar shape (:rounded, :circle)
@@ -47,4 +47,3 @@ module AvatarHelper
     user.initials
   end
 end
-
