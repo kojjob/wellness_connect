@@ -52,6 +52,20 @@ class ConversationsController < ApplicationController
     @conversation.patient_id ||= current_user.id if current_user.patient?
     @conversation.provider_id ||= current_user.id if current_user.provider?
 
+    if @conversation.patient_id.present? && @conversation.provider_id.present?
+      existing_conversation = Conversation.find_by(
+        patient_id: @conversation.patient_id,
+        provider_id: @conversation.provider_id,
+        appointment_id: @conversation.appointment_id
+      )
+
+      if existing_conversation
+        authorize existing_conversation, :show?
+        redirect_to existing_conversation, notice: "Conversation started successfully."
+        return
+      end
+    end
+
     authorize @conversation
 
     if @conversation.save

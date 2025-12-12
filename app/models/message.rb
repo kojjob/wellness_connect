@@ -76,19 +76,23 @@ class Message < ApplicationRecord
   def attachment_validation
     return unless attachment.attached?
 
-    # Check file size based on content type
-    if attachment.blob.content_type.in?(%w[image/jpeg image/jpg image/png image/webp])
-      # Images: 10MB limit
-      if attachment.blob.byte_size > 10.megabytes
+    blob = attachment.blob
+    content_type = blob.content_type.to_s
+
+    size_mb = (blob.byte_size.to_f / 1.megabyte).round(1)
+
+    if content_type.in?(%w[image/jpeg image/jpg image/png image/webp])
+      if blob.byte_size > 10.megabytes
+        errors.add(:attachment, "image size must be less than 10MB (type: #{content_type}, size: #{size_mb}MB)")
         errors.add(:attachment, "image must be less than 10MB")
       end
-    elsif attachment.blob.content_type.in?(%w[application/pdf])
-      # Documents: 20MB limit
-      if attachment.blob.byte_size > 20.megabytes
+    elsif content_type == "application/pdf"
+      if blob.byte_size > 20.megabytes
+        errors.add(:attachment, "PDF size must be less than 20MB (type: #{content_type}, size: #{size_mb}MB)")
         errors.add(:attachment, "document must be less than 20MB")
       end
     else
-      # Invalid content type
+      errors.add(:attachment, "must be a JPEG, PNG, WebP image or PDF document (type: #{content_type})")
       errors.add(:attachment, "must be a JPEG, PNG, WebP image or PDF document")
     end
   end

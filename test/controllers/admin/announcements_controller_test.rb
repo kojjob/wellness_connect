@@ -262,6 +262,8 @@ class Admin::AnnouncementsControllerTest < ActionDispatch::IntegrationTest
 
     # Create a user and get their ID
     temp_user = User.create!(
+      first_name: "Temp",
+      last_name: "User",
       email: "temp@example.com",
       password: "password123",
       role: "patient"
